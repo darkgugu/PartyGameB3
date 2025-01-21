@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { Engine, Scene } from '@babylonjs/core'
 import '@babylonjs/loaders' // Ensure loaders are included for .glb files
+import { MenuItem } from './MenuItem'
 
 const BabylonScene = ({ onSceneReady }) => {
 	const canvasRef = useRef(null)
@@ -33,7 +34,12 @@ const BabylonScene = ({ onSceneReady }) => {
 		}
 	}, [onSceneReady])
 
-	return <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
+	return (
+		<div>
+			<canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
+			<MenuItem />
+		</div>
+	)
 }
 
 export default BabylonScene

@@ -1,25 +1,15 @@
 import React from 'react'
 import BabylonScene from './BabylonScene'
-import { Animation } from '@babylonjs/core'
-import {
-	SceneLoader,
-	Vector3,
-	ArcRotateCamera,
-	HemisphericLight,
-} from '@babylonjs/core'
+import { Animation, FreeCamera } from '@babylonjs/core'
+import { SceneLoader, Vector3, HemisphericLight } from '@babylonjs/core'
 
 const App = () => {
 	const handleSceneReady = (scene, engine) => {
 		// Add a camera
-		const camera = new ArcRotateCamera(
-			'Camera',
-			Math.PI / 2,
-			Math.PI / 4,
-			10,
-			new Vector3(0, 1, 0),
-			scene,
-		)
+		const camera = new FreeCamera('Camera', new Vector3(2, 2, 0), scene)
 		camera.attachControl(scene.getEngine().getRenderingCanvas(), true)
+		camera.setTarget(new Vector3(2, 2, -10))
+		camera.inputs.clear()
 
 		// Add lighting
 		new HemisphericLight('light', new Vector3(0, 1, 0), scene)
@@ -30,6 +20,7 @@ const App = () => {
 		})
 
 		// Camera Flythrough Animation
+		// eslint-disable-next-line no-unused-vars
 		const animateCamera = () => {
 			const animation = new Animation(
 				'cameraAnimation',
@@ -43,7 +34,7 @@ const App = () => {
 			const keys = [
 				{ frame: 0, value: new Vector3(0, 1, -10) }, // Starting position
 				{ frame: 30, value: new Vector3(10, 3, 0) }, // Mid position
-				{ frame: 60, value: new Vector3(0, 1, 10) }, // Ending position
+				{ frame: 60, value: new Vector3(0, 20, 0) }, // Ending position
 			]
 
 			animation.setKeys(keys)
@@ -55,7 +46,7 @@ const App = () => {
 			scene.beginAnimation(camera, 0, 60, true) // Loop from frame 0 to 60
 		}
 
-		animateCamera() // Call the function to start the flythrough
+		//animateCamera() // Call the function to start the flythrough
 	}
 
 	return (
