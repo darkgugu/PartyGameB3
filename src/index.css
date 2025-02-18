@@ -18,3 +18,8 @@ html, body {
   overflow: hidden; /* Prevent scrollbars */
   height: 100%; /* Take the full viewport height */
 }
+
+@font-face {
+  font-family: 'KronaOne';
+  src: local('KronaOne-Regular'), url(./fonts/KronaOne-Regular.ttf) format('truetype');
+}

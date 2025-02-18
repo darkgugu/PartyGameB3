@@ -27,6 +27,7 @@ export const BabylonScene = ({ onSceneReady }) => {
 		const camera = new FreeCamera('Camera', new Vector3(2, 2.5, -6), scene)
 		camera.attachControl(canvas, true)
 		camera.setTarget(new Vector3(1.5, 1, 2))
+		camera.inputs.clear()
 
 		// Create a basic light
 		// eslint-disable-next-line no-unused-vars

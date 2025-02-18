@@ -2,12 +2,12 @@ import '../assets/css/MenuItem.css'
 import React from 'react'
 import { useBabylon } from '../context/BabylonProvider'
 import { Animation } from '@babylonjs/core'
+import '../fonts/KronaOne-Regular.ttf'
 
 export const MoveButton = ({
 	positionKeys,
 	targetKeys,
 	name,
-	top,
 	renderPosition,
 	isActive,
 	onShow,
@@ -24,7 +24,7 @@ export const MoveButton = ({
 		const positionAnimation = new Animation(
 			'moveCameraPositionAnimation',
 			'position',
-			30,
+			10,
 			Animation.ANIMATIONTYPE_VECTOR3,
 			Animation.ANIMATIONLOOPMODE_CONSTANT,
 		)
@@ -32,7 +32,7 @@ export const MoveButton = ({
 		const targetAnimation = new Animation(
 			'moveCameraTargetAnimation',
 			'target',
-			30,
+			10,
 			Animation.ANIMATIONTYPE_VECTOR3,
 			Animation.ANIMATIONLOOPMODE_CONSTANT,
 		)
@@ -48,11 +48,7 @@ export const MoveButton = ({
 	return (
 		<>
 			{isActive ? (
-				<button
-					onClick={moveCamera}
-					className="MoveButton"
-					style={{ top: `${top}` }}
-				>
+				<button onClick={moveCamera} className="MoveButton">
 					{name}
 				</button>
 			) : null}
