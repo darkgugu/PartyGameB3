@@ -8,16 +8,15 @@ export const TravellingButton = ({
 	positionKeys,
 	targetKeys,
 	name,
+	positionInParent,
+	zIndex,
+	color,
 	renderPosition,
-	isActive,
-	onShow,
 }) => {
 	const { camera, scene } = useBabylon()
 
 	const moveCamera = () => {
 		if (!camera || !scene) return // Ensure camera and scene exist
-
-		onShow()
 
 		console.log(camera.position)
 
@@ -47,11 +46,17 @@ export const TravellingButton = ({
 
 	return (
 		<>
-			{isActive ? (
-				<button onClick={moveCamera} className="TravellingButton">
-					{name}
-				</button>
-			) : null}
+			<button
+				onClick={moveCamera}
+				className={`TravellingButton ${color}`}
+				style={{
+					top: positionInParent[0],
+					left: positionInParent[1],
+					zIndex: zIndex,
+				}}
+			>
+				{name}
+			</button>
 		</>
 	)
 }

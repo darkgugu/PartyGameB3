@@ -1,0 +1,7 @@
+.TravellingButtonContainer {
+  display: flex;
+  justify-content: center; /* Centers horizontally */
+  align-items: center; /* Centers vertically */
+  height: 100vh; /* Ensures the container takes the full viewport height */
+  position: relative;
+}/*# sourceMappingURL=TravellingButtonContainer.css.map */

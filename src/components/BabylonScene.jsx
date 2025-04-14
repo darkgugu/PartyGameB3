@@ -73,6 +73,14 @@ export const BabylonScene = ({ onSceneReady }) => {
 	}, [onSceneReady, setScene, setCamera])
 
 	return (
-		<canvas ref={canvasRef} style={{ width: '100vw', height: '100vh' }} />
+		<canvas
+			ref={canvasRef}
+			style={{
+				width: '100vw',
+				height: '100vh',
+				position: 'absolute',
+				zIndex: -10,
+			}}
+		/>
 	)
 }
