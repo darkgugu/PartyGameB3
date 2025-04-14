@@ -1,16 +1,17 @@
 import React from 'react'
 import { BabylonScene } from './BabylonScene'
-import { TravellingButtonContainer } from './TravellingButtonContainer'
-import { useBabylon } from '../context/BabylonProvider'
 import '../assets/css/App.css'
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router'
+import { Home } from './Home'
 export const App = () => {
-	const { camera } = useBabylon()
-
 	return (
 		<div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
 			<BabylonScene />
-			{camera && <TravellingButtonContainer />}
+			<Router>
+				<Routes>
+					<Route path="/" element={<Home />} />
+				</Routes>
+			</Router>
 		</div>
 	)
 }

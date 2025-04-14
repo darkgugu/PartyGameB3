@@ -3,9 +3,11 @@ import { TravellingButton } from './TravellingButton'
 import React from 'react'
 import { Vector3 } from '@babylonjs/core'
 import { useBabylon } from '../context/BabylonProvider'
+import { useState } from 'react'
 
 export const TravellingButtonContainer = () => {
 	const { camera } = useBabylon()
+	const [menu, setMenu] = useState('home')
 
 	return (
 		<div className="TravellingButtonContainer">
