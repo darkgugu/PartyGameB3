@@ -1,10 +1,10 @@
-import '../assets/css/MenuItem.css'
+import '../assets/css/TravellingButton.css'
 import React from 'react'
 import { useBabylon } from '../context/BabylonProvider'
 import { Animation } from '@babylonjs/core'
 import '../fonts/KronaOne-Regular.ttf'
 
-export const MoveButton = ({
+export const TravellingButton = ({
 	positionKeys,
 	targetKeys,
 	name,
@@ -48,7 +48,7 @@ export const MoveButton = ({
 	return (
 		<>
 			{isActive ? (
-				<button onClick={moveCamera} className="MoveButton">
+				<button onClick={moveCamera} className="TravellingButton">
 					{name}
 				</button>
 			) : null}

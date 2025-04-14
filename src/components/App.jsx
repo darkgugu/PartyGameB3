@@ -1,6 +1,6 @@
 import React from 'react'
 import { BabylonScene } from './BabylonScene'
-import { MoveButton } from './MoveButton'
+import { TravellingButton } from './TravellingButton'
 import { Vector3 } from '@babylonjs/core'
 import { useBabylon } from '../context/BabylonProvider'
 import { useState } from 'react'
@@ -14,7 +14,7 @@ export const App = () => {
 			<BabylonScene />
 			{camera && (
 				<div>
-					<MoveButton
+					<TravellingButton
 						positionKeys={[
 							{
 								frame: 0,
@@ -31,7 +31,7 @@ export const App = () => {
 						isActive={activeIndex === 0}
 						onShow={() => setActiveIndex(1)}
 					/>
-					<MoveButton
+					<TravellingButton
 						positionKeys={[
 							{
 								frame: 0,
