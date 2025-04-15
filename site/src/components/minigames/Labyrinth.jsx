@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { Client } from 'colyseus.js'
 import {
 	Engine,
 	Scene,
@@ -9,8 +10,15 @@ import {
 	StandardMaterial,
 	Color3,
 } from '@babylonjs/core'
-export const Labyrinth = () => {
+
+export const Labyrinth = async () => {
 	const canvasRef = useRef(null)
+	const client = new Client('ws://localhost:2567')
+	const room = await client.joinOrCreate('labyrinth')
+
+	room.onMessage('state', (state) => {
+		// Update players
+	})
 
 	useEffect(() => {
 		const canvas = canvasRef.current
