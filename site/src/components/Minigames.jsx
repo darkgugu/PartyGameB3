@@ -7,6 +7,9 @@ export const Minigames = () => {
 			<Link to="/">
 				<div>Home</div>
 			</Link>
+			<Link to="/minigame/labyrinth">
+				<div>Labyrinth</div>
+			</Link>
 		</div>
 	)
 }

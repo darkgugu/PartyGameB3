@@ -68,6 +68,7 @@ export const BabylonScene = ({ onSceneReady }) => {
 		// Cleanup on component unmount
 		return () => {
 			window.removeEventListener('resize', handleResize)
+			scene.dispose()
 			engine.dispose()
 		}
 	}, [onSceneReady, setScene, setCamera])
