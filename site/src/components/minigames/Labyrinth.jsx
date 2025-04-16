@@ -27,9 +27,9 @@ export const Labyrinth = () => {
 			{ height: 0.3, width: 0.3, depth: 0.3 },
 			scene,
 		)
-		player.position = new BABYLON.Vector3(-9, 0.4, -9.5)
+		player.position = new BABYLON.Vector3(-20, 0.4, 20)
 		player.checkCollisions = true
-		player.ellipsoid = new BABYLON.Vector3(0.2, 0.4, 0.2)
+		player.ellipsoid = new BABYLON.Vector3(0.2, 0.6, 0.2)
 		player.ellipsoidOffset = new BABYLON.Vector3(0, 0.4, 0) // Collider center above bottom
 
 		// Color the player
@@ -55,7 +55,7 @@ export const Labyrinth = () => {
 		const onMouseMove = (e) => {
 			if (isPointerLocked) {
 				const deltaX = e.movementX || 0
-				yaw -= deltaX * sensitivity
+				yaw += deltaX * sensitivity
 			}
 		}
 
@@ -85,7 +85,7 @@ export const Labyrinth = () => {
 			(meshes) => {
 				const labyrinth = meshes[0]
 				labyrinth.scaling = new BABYLON.Vector3(2, 2, 2)
-				labyrinth.position = new BABYLON.Vector3(0, 0, 0)
+				labyrinth.position = new BABYLON.Vector3(0, -0.1, 0)
 				labyrinth.rotation = new BABYLON.Vector3(Math.PI / -2, 0, 0)
 				labyrinth.checkCollisions = true
 			},
@@ -101,6 +101,11 @@ export const Labyrinth = () => {
 		)
 		ground.position.y = 0
 		ground.checkCollisions = true
+
+		// Color the ground
+		const groundMaterial = new BABYLON.StandardMaterial('groundMat', scene)
+		groundMaterial.diffuseColor = new BABYLON.Color3(0.6, 0.4, 0.2) // Light brown color
+		ground.material = groundMaterial
 
 		// Light
 		new BABYLON.HemisphericLight(
