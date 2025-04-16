@@ -1,0 +1,27 @@
+.TravellingButton{
+    position: absolute;
+    transform: translate(-50%, -50%);
+
+    width: 800px;
+    height: 250px;
+
+    padding: 5px 40px;
+    color: black;
+    border: 2px solid black;
+    font-size: 5em;
+    border-radius: 30px;
+    font-family: "KronaOne";
+    cursor: pointer;
+
+    &:hover{
+        z-index: 20 !important;
+    }
+}
+
+.main{
+    background-color: #73BA9B
+}
+
+.secondary{
+    background-color: #A4D6BF;
+}

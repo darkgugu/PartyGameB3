@@ -1,0 +1,15 @@
+.MoveButton {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1;
+  padding: 30px 60px;
+  font-size: 16px;
+  background-color: #A4D6BF;
+  color: black;
+  border: 2px solid black;
+  font-size: 5em;
+  border-radius: 30px;
+  font-family: "KronaOne";
+  cursor: pointer;
+}/*# sourceMappingURL=MenuItem.css.map */

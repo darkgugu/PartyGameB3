@@ -1,0 +1,59 @@
+.Header {
+  height: 50px;
+  background-color: #FE7A76;
+  position: fixed;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.Header #left-part, .Header #right-part {
+  display: flex;
+  align-items: center;
+}
+.Header #right-part {
+  margin-right: 20px;
+}
+.Header #logo {
+  height: 40px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+.Header button {
+  border: none;
+  border-radius: 5px;
+  height: 30px;
+  margin: 5px;
+  padding: 0 10px 0 10px;
+  cursor: pointer;
+}
+.Header #login {
+  background-color: #F4F3EE;
+  color: black;
+}
+.Header #register {
+  background-color: #333232;
+  color: white;
+}
+.Header #shop {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+.Header a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}/*# sourceMappingURL=Header.css.map */

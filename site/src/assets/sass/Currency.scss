@@ -1,0 +1,15 @@
+.Currency{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+
+    img{
+        margin-right: 5px;
+        height: 30px;
+    }
+
+    p{
+        font-size: 20px;
+    }
+}
