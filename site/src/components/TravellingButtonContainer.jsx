@@ -10,7 +10,7 @@ export const TravellingButtonContainer = () => {
 
 	return (
 		<div className="TravellingButtonContainer">
-			<Link to="/minigames">
+			<Link to="/joinRoom">
 				<TravellingButton
 					positionKeys={[
 						{
@@ -23,31 +23,33 @@ export const TravellingButtonContainer = () => {
 						{ frame: 0, value: camera.target },
 						{ frame: 10, value: new Vector3(1.5, 1, 2) },
 					]}
-					name={'Mini jeux'}
+					name={'Rejoindre une salle'}
 					renderPosition={camera.position}
 					positionInParent={['45%', '30%']}
 					zIndex={5}
 					color={'secondary'}
 				/>
 			</Link>
-			<TravellingButton
-				positionKeys={[
-					{
-						frame: 0,
-						value: new Vector3(2, 2.5, -6),
-					},
-					{ frame: 10, value: new Vector3(1.5, 1, 2) },
-				]}
-				targetKeys={[
-					{ frame: 0, value: camera.target },
-					{ frame: 10, value: new Vector3(2, 2, -10) },
-				]}
-				name={'Lancer une partie'}
-				renderPosition={camera.position}
-				positionInParent={['55%', '70%']}
-				zIndex={10}
-				color={'main'}
-			/>
+			<Link to="/createRoom">
+				<TravellingButton
+					positionKeys={[
+						{
+							frame: 0,
+							value: new Vector3(2, 2.5, -6),
+						},
+						{ frame: 10, value: new Vector3(1.5, 1, 2) },
+					]}
+					targetKeys={[
+						{ frame: 0, value: camera.target },
+						{ frame: 10, value: new Vector3(2, 2, -10) },
+					]}
+					name={'Créer une salle'}
+					renderPosition={camera.position}
+					positionInParent={['55%', '70%']}
+					zIndex={10}
+					color={'main'}
+				/>
+			</Link>
 		</div>
 	)
 }
