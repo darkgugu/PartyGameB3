@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3001
 app.use(express.json())
 
 // Health check
-//app.get('/', (_, res) => res.send('API is up and running 🚀'))
+app.get('/', (_, res) => {res.send('API is up and running 🚀')})
 
 // Get all users
 app.get('/users', async (_, res) => {
