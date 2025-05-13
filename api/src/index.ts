@@ -17,10 +17,16 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || []
 
 app.use(
   cors({
-    origin: process.env.ALLOWED_ORIGINS?.split(','),
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
-)
+);
 
 // Health check
 app.get('/', (_, res) => {res.send('API is up and running 🚀')})
