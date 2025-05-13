@@ -23,9 +23,11 @@ export const Header = () => {
 	const [modalType, setModalType] = useState('login')
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
+	const [confirmPassword, setConfirmPassword] = useState('') // New for signup
 	const [error, setError] = useState(null)
 
-	const { user, login, loginWithGoogle, anonymousLogin, logout } = useAuth()
+	const { user, login, loginWithGoogle, anonymousLogin, logout, register } =
+		useAuth() // Add `register` if it exists
 
 	function openModal(type) {
 		setModalType(type)
@@ -35,6 +37,7 @@ export const Header = () => {
 		setModalIsOpen(false)
 		setEmail('')
 		setPassword('')
+		setConfirmPassword('')
 		setError(null)
 	}
 
@@ -42,6 +45,20 @@ export const Header = () => {
 		e.preventDefault()
 		try {
 			await login(email, password)
+			closeModal()
+		} catch (err) {
+			setError(err.message)
+		}
+	}
+
+	const handleRegister = async (e) => {
+		e.preventDefault()
+		if (password !== confirmPassword) {
+			setError('Les mots de passe ne correspondent pas.')
+			return
+		}
+		try {
+			await register(email, password) // Make sure `register` is in your `AuthContext`
 			closeModal()
 		} catch (err) {
 			setError(err.message)
@@ -147,9 +164,42 @@ export const Header = () => {
 						</div>
 					</div>
 				) : (
-					<div>
-						<p>Formulaire d'inscription</p>
-						{/* Registration form can go here later */}
+					<div className={'modal'}>
+						<h2>Créer un compte</h2>
+						<form onSubmit={handleRegister}>
+							<label htmlFor="register-email">Email</label>
+							<input
+								type="email"
+								id="register-email"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+								required
+							/>
+							<label htmlFor="register-password">
+								Mot de passe
+							</label>
+							<input
+								type="password"
+								id="register-password"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								required
+							/>
+							<label htmlFor="register-confirm-password">
+								Confirmez le mot de passe
+							</label>
+							<input
+								type="password"
+								id="register-confirm-password"
+								value={confirmPassword}
+								onChange={(e) =>
+									setConfirmPassword(e.target.value)
+								}
+								required
+							/>
+							{error && <p className="error">{error}</p>}
+							<button type="submit">S'inscrire</button>
+						</form>
 					</div>
 				)}
 			</Modal>

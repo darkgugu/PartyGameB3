@@ -17,9 +17,11 @@
     "@railway/cli": "^4.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "firebase-admin": "^13.3.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.18",
     "@types/express": "^5.0.1",
     "prisma": "^6.6.0",
     "ts-node": "^10.9.2",

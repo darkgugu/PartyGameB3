@@ -1,7 +1,9 @@
 import express from 'express'
+import type { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import dotenv from 'dotenv'
-
+import { verifyIdToken } from './firebaseAdmin'
+import cors from 'cors'
 dotenv.config()
 
 const app = express()
@@ -9,6 +11,7 @@ const prisma = new PrismaClient()
 const PORT = process.env.PORT || 3001
 
 app.use(express.json())
+app.use(cors())
 
 // Health check
 app.get('/', (_, res) => {res.send('API is up and running 🚀')})
@@ -44,6 +47,49 @@ app.post('/users', async (req, res) => {
 		res.status(400).json({ error: 'Could not create user' })
 	}
 })
+
+app.post('/register', async (req, res): Promise<any> => {
+	const { idToken, pseudo } = req.body
+
+	if (!idToken || !pseudo) {
+		return res.status(400).json({ error: 'Missing idToken or pseudo' })
+	}
+
+	try {
+		console.log('Status: ', req.statusCode)
+
+		const decoded = await verifyIdToken(idToken)
+		const firebase_uid = decoded.uid
+		const email = decoded.email ?? ''
+
+		const existingUser = await prisma.utilisateur.findUnique({
+			where: { firebase_uid },
+		})
+
+		if (existingUser) {
+			return res.status(200).json({ message: 'User already registered', user: existingUser })
+		}
+
+		const newUser = await prisma.utilisateur.create({
+			data: {
+				firebase_uid,
+				email,
+				pseudo,
+				prenom: '',
+				nom_de_famille: '',
+				date_inscription: new Date(),
+				points_succes: 0,
+				avatar: '',
+			},
+		})
+
+		return res.status(201).json({ message: 'User created', user: newUser })
+	} catch (error) {
+		console.error('Registration error:', error)
+		return res.status(401).json({ error: 'Invalid token or internal error' })
+	}
+})
+
 
 // Get all game sessions
 /* app.get('/game-sessions', async (_, res) => {
