@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL") // <- use MYSQL_URL or MYSQL_PUBLIC_URL based on context
+}
+
+model Utilisateur {
+  idUtilisateur    Int      @id @default(autoincrement())
+  firebase_uid     String   @unique
+  email            String   @unique
+  prenom           String
+  nom_de_famille   String
+  pseudo           String
+  date_inscription DateTime
+  points_succes    Int
+  avatar           String
+
+  statistiques Statistique[]
+  succes       Succes[]
+  sessions     Joueurs_dans_Session[]
+  relations1   Relations_Joueurs[]    @relation("Relations1")
+  relations2   Relations_Joueurs[]    @relation("Relations2")
+}
+
+model Statistique {
+  idStatistiques  Int @id @default(autoincrement())
+  idUtilisateur   Int
+  nombre_victoire Int
+  heure_jouees    Int
+  nombre_parties  Int
+
+  utilisateur Utilisateur @relation(fields: [idUtilisateur], references: [idUtilisateur])
+}
+
+model Relations_Joueurs {
+  idJoueur1 Int
+  idJoueur2 Int
+  relation  String // ENUM can be made in Prisma later
+
+  joueur1 Utilisateur @relation("Relations1", fields: [idJoueur1], references: [idUtilisateur])
+  joueur2 Utilisateur @relation("Relations2", fields: [idJoueur2], references: [idUtilisateur])
+
+  @@id([idJoueur1, idJoueur2])
+}
+
+model Succes {
+  idSucces      Int    @id @default(autoincrement())
+  idUtilisateur Int
+  nom           String
+  points        Int
+
+  utilisateur Utilisateur @relation(fields: [idUtilisateur], references: [idUtilisateur])
+}
+
+model Session {
+  idsession Int      @id @default(autoincrement())
+  url       String
+  date      DateTime
+
+  joueurs Joueurs_dans_Session[]
+  jeux    Jeux_has_Session[]
+}
+
+model Joueurs_dans_Session {
+  idUtilisateur Int
+  idSession     Int
+
+  utilisateur Utilisateur @relation(fields: [idUtilisateur], references: [idUtilisateur])
+  session     Session     @relation(fields: [idSession], references: [idsession])
+
+  @@id([idUtilisateur, idSession])
+}
+
+model Jeux {
+  idJeux            Int    @id @default(autoincrement())
+  nom               String
+  url               String
+  score_victoire    Int
+  nombre_de_joueurs Int
+  format            String
+
+  sessions Jeux_has_Session[]
+}
+
+model Jeux_has_Session {
+  idJeux    Int
+  idSession Int
+  gagnant   Int
+
+  jeu     Jeux    @relation(fields: [idJeux], references: [idJeux])
+  session Session @relation(fields: [idSession], references: [idsession])
+
+  @@id([idJeux, idSession])
+}

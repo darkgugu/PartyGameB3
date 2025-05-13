@@ -23,3 +23,8 @@ html, body {
   font-family: 'KronaOne';
   src: local('KronaOne-Regular'), url(./fonts/KronaOne-Regular.ttf) format('truetype');
 }
+
+.ReactModalPortal {
+  z-index: 90;
+  position: relative;
+}

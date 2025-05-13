@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "target": "ES2020",
+    "strict": true,
+    "allowJs": false,       // make sure it's false if you're using .ts only
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "outDir": "./dist",
+    "baseUrl": "./src"       // optional
+  },
+  "include": ["src"]
+}

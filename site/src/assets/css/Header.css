@@ -2,7 +2,7 @@
   height: 50px;
   background-color: #FE7A76;
   position: fixed;
-  z-index: 10;
+  z-index: 100;
   width: 100%;
   display: flex;
   align-items: center;
@@ -55,5 +55,61 @@
 .Header a {
   text-decoration: none;
   color: inherit;
+  cursor: pointer;
+}
+
+.modal {
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  flex-direction: column;
+  padding: 15px;
+}
+.modal form {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+}
+.modal form label {
+  font-size: 1.3em;
+}
+.modal form input {
+  margin: 5px 0;
+  padding: 5px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+.modal form button {
+  margin: 5px 0;
+  width: 100%;
+  padding: 5px 0;
+  border-radius: 5px;
+  border: none;
+  background-color: #F4F3EE;
+  color: black;
+  cursor: pointer;
+}
+.modal form button:hover {
+  background-color: #333232;
+  color: white;
+}
+.modal hr {
+  width: 100%;
+  margin: 10px 0;
+  background-color: black;
+}
+.modal .connectProvider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: 5px 0;
+  padding: 5px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
   cursor: pointer;
 }/*# sourceMappingURL=Header.css.map */
