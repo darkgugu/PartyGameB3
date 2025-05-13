@@ -199,6 +199,19 @@ export const Header = () => {
 							/>
 							{error && <p className="error">{error}</p>}
 							<button type="submit">S'inscrire</button>
+							<hr />
+							<div
+								className="connectProvider google"
+								onClick={handleGoogleLogin}
+							>
+								Continuer avec Google
+							</div>
+							<div
+								className="connectProvider guest"
+								onClick={handleGuestLogin}
+							>
+								Continuer en tant qu'invité
+							</div>
 						</form>
 					</div>
 				)}

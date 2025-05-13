@@ -10,6 +10,8 @@ import {
 	signInWithPopup,
 } from 'firebase/auth'
 
+const API_URL = process.env.REACT_APP_API_URL
+
 const AuthContext = createContext()
 export const useAuth = () => useContext(AuthContext)
 
@@ -41,7 +43,7 @@ export const AuthProvider = ({ children }) => {
 		const idToken = await userCredential.user.getIdToken()
 
 		// 3. Call your backend /register route
-		const response = await fetch('http://localhost:3001/register', {
+		const response = await fetch(`${API_URL}/register`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
