@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client'
 import dotenv from 'dotenv'
 import { verifyIdToken } from './firebaseAdmin'
 import cors from 'cors'
+
 dotenv.config()
 
 const app = express()
@@ -11,6 +12,21 @@ const prisma = new PrismaClient()
 const PORT = process.env.PORT || 3001
 
 app.use(express.json())
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || []
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+}))
+
 app.use(cors())
 
 // Health check
@@ -56,8 +72,6 @@ app.post('/register', async (req, res): Promise<any> => {
 	}
 
 	try {
-		console.log('Status: ', req.statusCode)
-
 		const decoded = await verifyIdToken(idToken)
 		const firebase_uid = decoded.uid
 		const email = decoded.email ?? ''
