@@ -27,6 +27,8 @@ app.use(
 
 app.use(express.json())
 
+app.options('*', cors()); // <-- this handles preflight requests
+
 // Health check
 app.get('/', (_, res) => {res.send('API is up and running 🚀')})
 
