@@ -65,7 +65,7 @@ app.post('/users', async (req, res) => {
 	}
 })
 
-app.post('/register', async (req, res): Promise<any> => {
+app.post('/register', cors(corsOptions),async (req, res): Promise<any> => {
 	const { idToken, pseudo } = req.body
 
 	if (!idToken || !pseudo) {
