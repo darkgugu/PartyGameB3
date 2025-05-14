@@ -22,12 +22,12 @@ app.use(
       }
     },
     credentials: true,
+	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+	allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
 app.use(express.json())
-
-app.options('*', cors()); // <-- this handles preflight requests
 
 // Health check
 app.get('/', (_, res) => {res.send('API is up and running 🚀')})
@@ -139,5 +139,6 @@ app.post('/register', async (req, res): Promise<any> => {
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-	console.log(`Server running on http://localhost:${PORT}`)
+	console.log(`Server running`)
+	console.log(`Allowed Origins: ${allowedOrigins}`)
 })
