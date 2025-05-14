@@ -12,9 +12,8 @@ const prisma = new PrismaClient()
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || []
 console.log('Allowed Origins:', process.env.ALLOWED_ORIGINS);
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
+const corsOptions = {
+	origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -22,12 +21,14 @@ app.use(
       }
     },
     credentials: true,
-	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-	allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
+  }
+
+app.use(cors(corsOptions))
+
+app.options('*', cors(corsOptions))
 
 app.use(express.json())
+
 
 // Health check
 app.get('/', (_, res) => {res.send('API is up and running 🚀')})
