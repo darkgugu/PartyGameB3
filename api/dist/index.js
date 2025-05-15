@@ -9,6 +9,7 @@ const client_1 = require("@prisma/client");
 const firebaseAdmin_1 = require("./firebaseAdmin");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const axios_1 = __importDefault(require("axios"));
 const app = (0, express_1.default)();
 const prisma = new client_1.PrismaClient();
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
@@ -95,36 +96,48 @@ app.post('/register', (0, cors_1.default)(corsOptions), async (req, res) => {
         return res.status(401).json({ error: 'Invalid token or internal error' });
     }
 });
-// Get all game sessions
-/* app.get('/game-sessions', async (_, res) => {
-    try {
-        const sessions = await prisma.session.findMany({
-            include: {
-                players: true,
-            },
-        })
-        res.json(sessions)
-    } catch (error) {
-        res.status(500).json({ error: 'Error fetching game sessions' })
+app.post('/rooms', async (req, res) => {
+    const { idToken, roomType, roomName, maxClients, customRules } = req.body;
+    if (!idToken || !roomType) {
+        return res.status(400).json({ error: 'Missing required fields' });
     }
-}) */
-// Add a score to a user in a game session
-/* app.post('/scores', async (req, res) => {
-    const { userId, gameSessionId, score, miniGameId } = req.body
     try {
-        const newScore = await prisma.score.create({
-            data: {
-                userId,
-                gameSessionId,
-                miniGameId,
-                value: score,
-            },
-        })
-        res.status(201).json(newScore)
-    } catch (error) {
-        res.status(400).json({ error: 'Could not add score' })
+        // 1. Verify Firebase token
+        const decoded = await (0, firebaseAdmin_1.verifyIdToken)(idToken);
+        const firebase_uid = decoded.uid;
+        const pseudo = decoded.name || decoded.email || "Anonymous";
+        // 2. Prepare metadata
+        const metadata = {
+            roomName,
+            createdBy: firebase_uid,
+            creatorName: pseudo,
+            customRules,
+        };
+        // 3. Create room via Colyseus matchmaking API
+        const COLYSEUS_URL = process.env.COLYSEUS_URL || "https://partygameb3-production-40fb.up.railway.app";
+        const response = await axios_1.default.post(`${COLYSEUS_URL}/matchmake/create/${roomType}`, {
+            metadata,
+            maxClients,
+        });
+        const room = response.data.room;
+        return res.status(201).json({
+            roomId: room.roomId,
+            joinOptions: {
+                // You can include any info you want the frontend to send to Colyseus during `join`
+                idToken, // For onAuth()
+            }
+        });
     }
-}) */
+    catch (error) {
+        if (axios_1.default.isAxiosError(error)) {
+            console.error("Room creation error:", error.response?.data || error.message);
+        }
+        else {
+            console.error("Room creation error:", error);
+        }
+        return res.status(500).json({ error: "Failed to create room" });
+    }
+});
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server running`);
