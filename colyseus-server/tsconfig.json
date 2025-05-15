@@ -9,7 +9,11 @@
     "strict": true,                           // Enable all strict type-checking options
     "esModuleInterop": true,                  // Allow default imports from CommonJS modules
     "skipLibCheck": true,                     // Skip type checks for declaration files
-    "forceConsistentCasingInFileNames": true  // Enforce consistent casing
+    "forceConsistentCasingInFileNames": true,  // Enforce consistent casing
+    //"target": "es6",
+    //"module": "commonjs",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["./**/*.ts"],
   "exclude": ["node_modules", "dist"]
