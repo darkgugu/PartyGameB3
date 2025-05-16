@@ -2,6 +2,7 @@ import '../assets/css/CreateRoom.css'
 // eslint-disable-next-line no-unused-vars
 import { Link } from 'react-router'
 import { useAuth } from '../context/AuthContext'
+import { Lobby } from './Lobby'
 
 export const CreateRoom = () => {
 	const { idToken } = useAuth()
@@ -15,7 +16,7 @@ export const CreateRoom = () => {
 			body: JSON.stringify({
 				idToken: idToken,
 				roomName: 'Test Room',
-				roomType: 'labyrinth',
+				roomType: 'gameType2',
 				maxPlayers: 4,
 				customRules: {},
 			}),
@@ -25,8 +26,6 @@ export const CreateRoom = () => {
 			const err = await response.json()
 			throw new Error(err.error || 'Error creating room')
 		}
-
-		console.log('Response:', response)
 	}
 
 	return (
@@ -43,6 +42,7 @@ export const CreateRoom = () => {
 			>
 				Test
 			</button>
+			<Lobby />
 		</div>
 	)
 }

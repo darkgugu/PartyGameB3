@@ -13,6 +13,7 @@ class State extends Schema {
 export class MyRoom extends Room<State> {
   onCreate() {
     this.setState(new State());
+    console.log("Room created!");
 
     this.onMessage("move", (client, data) => {
       const player = this.state.players.get(client.sessionId);
