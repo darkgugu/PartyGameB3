@@ -13,7 +13,6 @@ const axios_1 = __importDefault(require("axios"));
 const app = (0, express_1.default)();
 const prisma = new client_1.PrismaClient();
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
-console.log('Allowed Origins:', process.env.ALLOWED_ORIGINS);
 const corsOptions = {
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {
@@ -97,7 +96,7 @@ app.post('/register', (0, cors_1.default)(corsOptions), async (req, res) => {
     }
 });
 app.post('/rooms', async (req, res) => {
-    const { idToken, roomType, roomName, maxClients, customRules } = req.body;
+    const { idToken, roomType, roomName, maxPlayers, customRules } = req.body;
     if (!idToken || !roomType) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -117,9 +116,10 @@ app.post('/rooms', async (req, res) => {
         const COLYSEUS_URL = process.env.COLYSEUS_URL || "https://partygameb3-production-40fb.up.railway.app";
         const response = await axios_1.default.post(`${COLYSEUS_URL}/matchmake/create/${roomType}`, {
             metadata,
-            maxClients,
+            maxPlayers,
         });
         const room = response.data.room;
+        console.log("Response :", response.data);
         return res.status(201).json({
             roomId: room.roomId,
             joinOptions: {
@@ -141,5 +141,4 @@ app.post('/rooms', async (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server running`);
-    console.log(`Allowed Origins: ${allowedOrigins}`);
 });

@@ -9,6 +9,9 @@ const port = Number(process.env.PORT) || 2567;
 const server = createServer(app);
 const gameServer = new Server({ server });
 
-gameServer.define("labyrinth", MyRoom);
+gameServer.define("gameType1", MyRoom);
+gameServer.define("gameType2", MyRoom);
+gameServer.define("gameType3", MyRoom);
+
 gameServer.listen(port);
 console.log(`Colyseus listening on ws://0.0.0.0:${port}`);
