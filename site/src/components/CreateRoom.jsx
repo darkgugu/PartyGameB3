@@ -22,6 +22,8 @@ export const CreateRoom = () => {
 			}),
 		})
 
+		console.log('Response:', response)
+
 		if (!response.ok) {
 			const err = await response.json()
 			throw new Error(err.error || 'Error creating room')
@@ -37,7 +39,7 @@ export const CreateRoom = () => {
 				onClick={handleCreateRoom}
 				style={{
 					width: '400px',
-					height: '400px',
+					height: '200px',
 				}}
 			>
 				Test

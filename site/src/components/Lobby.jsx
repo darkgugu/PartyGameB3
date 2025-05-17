@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Client } from 'colyseus.js'
+import '../assets/css/Lobby.css'
 
 const COLYSEUS_URL = process.env.REACT_APP_COLYSEUS_URL || 'ws://localhost:2567'
 
@@ -51,7 +52,7 @@ export const Lobby = () => {
 	}, [])
 
 	return (
-		<div>
+		<div className="Lobby">
 			<h2>Available Rooms</h2>
 			<ul>
 				{rooms.map((room) => (
