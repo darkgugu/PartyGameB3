@@ -106,7 +106,7 @@ app.post('/register', cors(corsOptions),async (req, res): Promise<any> => {
 })
 
 app.post('/rooms', async (req, res): Promise<any> => {
-	const { idToken, roomType, roomName, maxPlayers, customRules } = req.body
+	const { idToken, roomType, roomName, maxClients, customRules } = req.body
 
 	if (!idToken || !roomType) {
 		return res.status(400).json({ error: 'Missing required fields' })
@@ -118,19 +118,22 @@ app.post('/rooms', async (req, res): Promise<any> => {
 		const firebase_uid = decoded.uid
 		const pseudo = decoded.name || decoded.email || "Anonymous"
 
+
+		console.log("Max clients :", maxClients)
 		// 2. Prepare metadata
 		const metadata = {
 			roomName,
 			createdBy: firebase_uid,
 			creatorName: pseudo,
 			customRules,
+			maxClients
 		}
 
 		// 3. Create room via Colyseus matchmaking API
 		const COLYSEUS_URL = process.env.COLYSEUS_URL || "https://partygameb3-production-40fb.up.railway.app"
 		const response = await axios.post(`${COLYSEUS_URL}/matchmake/create/${roomType}`, {
 			metadata,
-			maxPlayers,
+			maxClients,
 		})
 
 		const room = response.data.room

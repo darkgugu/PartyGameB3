@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Client } from 'colyseus.js'
 import '../assets/css/Lobby.css'
-
-const COLYSEUS_URL = process.env.REACT_APP_COLYSEUS_URL || 'ws://localhost:2567'
+import { Link } from 'react-router'
 
 export const Lobby = () => {
+	const COLYSEUS_URL =
+		process.env.REACT_APP_COLYSEUS_URL || 'ws://localhost:2567'
 	const [rooms, setRooms] = useState([])
 
 	useEffect(() => {
@@ -49,7 +50,18 @@ export const Lobby = () => {
 		return () => {
 			if (lobbyRoom) lobbyRoom.leave()
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
+
+	const join = (roomId) => async () => {
+		try {
+			const client = new Client(COLYSEUS_URL)
+			const room = await client.joinById(roomId)
+			console.log('Joined room:', room)
+		} catch (err) {
+			console.error('Failed to join room:', err)
+		}
+	}
 
 	return (
 		<div className="Lobby">
@@ -57,13 +69,10 @@ export const Lobby = () => {
 			<ul>
 				{rooms.map((room) => (
 					<li key={room.roomId}>
-						{room.metadata?.name || room.roomId} - {room.clients}/
-						{room.maxClients}
-						<button
-							onClick={() => console.log('Join:', room.roomId)}
-						>
-							Join
-						</button>
+						{room.metadata?.roomName || room.roomId} -{' '}
+						{room.clients}/{room.maxClients}
+						<button onClick={join(room.roomId)}>Join</button>
+						<Link to={`/room/${room.roomId}`}></Link>
 					</li>
 				))}
 			</ul>
