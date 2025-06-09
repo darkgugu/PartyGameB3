@@ -3,6 +3,8 @@ import { createServer } from "http";
 import express from "express";
 import { MyRoom } from "./rooms/MyRoom";
 import { LobbyRoom } from "colyseus";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 const port = Number(process.env.PORT) || 2567;

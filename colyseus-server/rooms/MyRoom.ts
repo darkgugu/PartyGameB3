@@ -1,6 +1,6 @@
 import { Room, Client } from "colyseus";
 import { Schema, MapSchema, type } from "@colyseus/schema";
-import { admin } from "../firebaseadmin";
+import { admin } from "../firebaseAdmin";
 
 class Player extends Schema {
   @type("number") x = 0;
