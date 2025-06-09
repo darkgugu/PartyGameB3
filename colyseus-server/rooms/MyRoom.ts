@@ -33,7 +33,9 @@ export class MyRoom extends Room<State> {
   }
 
   onJoin(client: Client) {
+    console.log("Client joined:", client.userData);
     const player = new Player();
+    const playerName = client.userData.name || "Anonymous";
     this.state.players.set(client.sessionId, player);
   }
 
@@ -55,8 +57,8 @@ export class MyRoom extends Room<State> {
       client.userData = {
         uid: decodedToken.uid,
         name: decodedToken.name || decodedToken.email || "Anonymous",
-        email: decodedToken.email,
-        picture: decodedToken.picture || null,
+        //email: decodedToken.email,
+        //picture: decodedToken.picture || null,
       }
 
       return true

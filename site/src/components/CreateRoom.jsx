@@ -28,7 +28,7 @@ export const CreateRoom = () => {
 			console.log('idToken', idToken)
 			// Join or create the room directly via client
 			const room = await client.joinOrCreate('gameType2', {
-				idToken, // this gets passed to your room's onAuth()
+				idToken,
 				...metadata,
 			})
 

@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import { Client } from 'colyseus.js'
 import '../assets/css/Lobby.css'
 import { Link } from 'react-router'
+import { useAuth } from '../context/AuthContext'
 
 export const Lobby = () => {
 	const COLYSEUS_URL =
 		process.env.REACT_APP_COLYSEUS_URL || 'ws://localhost:2567'
 	const [rooms, setRooms] = useState([])
+	const { user } = useAuth()
 
 	useEffect(() => {
 		console.log('Connecting to Colyseus lobby...')
@@ -55,8 +57,10 @@ export const Lobby = () => {
 
 	const join = (roomId) => async () => {
 		try {
+			const idToken = await user.getIdToken()
+
 			const client = new Client(COLYSEUS_URL)
-			const room = await client.joinById(roomId)
+			const room = await client.joinById(roomId, { idToken })
 			console.log('Joined room:', room)
 		} catch (err) {
 			console.error('Failed to join room:', err)
