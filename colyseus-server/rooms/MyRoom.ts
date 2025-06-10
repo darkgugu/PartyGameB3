@@ -3,8 +3,8 @@ import { Schema, MapSchema, type } from "@colyseus/schema";
 import { admin } from "../firebaseAdmin";
 
 class Player extends Schema {
-  @type("number") x = 0;
-  @type("number") z = 0;
+  @type("string") name = "";
+  @type("string") uid = "";
 }
 
 class State extends Schema {
@@ -18,10 +18,6 @@ export class MyRoom extends Room<State> {
 
     this.onMessage("move", (client, data) => {
       const player = this.state.players.get(client.sessionId);
-      if (player) {
-        player.x = data.x;
-        player.z = data.z;
-      }
     });
     this.maxClients = options.maxClients;
 
@@ -35,7 +31,9 @@ export class MyRoom extends Room<State> {
   onJoin(client: Client) {
     console.log("Client joined:", client.userData);
     const player = new Player();
-    const playerName = client.userData.name || "Anonymous";
+    //this.state.players.set(client.sessionId, player);
+    player.name = client.userData.name || "Anonymous";
+    player.uid = client.userData.uid || "unknown";
     this.state.players.set(client.sessionId, player);
   }
 
@@ -57,7 +55,7 @@ export class MyRoom extends Room<State> {
       client.userData = {
         uid: decodedToken.uid,
         name: decodedToken.name || decodedToken.email || "Anonymous",
-        //email: decodedToken.email,
+        email: decodedToken.email,
         //picture: decodedToken.picture || null,
       }
 

@@ -1,15 +1,15 @@
 import '../assets/css/CreateRoom.css'
 import { useAuth } from '../context/AuthContext'
 import { Client } from 'colyseus.js'
-import { useState } from 'react'
 import { useNavigate } from 'react-router'
+import { useRoom } from '../context/RoomContext'
 
 export const CreateRoom = () => {
-	let navigate = useNavigate()
+	const navigate = useNavigate()
 	const COLYSEUS_URL =
 		process.env.REACT_APP_COLYSEUS_URL || 'ws://localhost:2567'
 	const { user } = useAuth()
-	const [room, setRoom] = useState(null)
+	const { setRoom } = useRoom() // <-- use context here!
 
 	const handleCreateRoom = async () => {
 		try {
@@ -25,20 +25,13 @@ export const CreateRoom = () => {
 				maxClients: 4,
 			}
 
-			console.log('idToken', idToken)
 			// Join or create the room directly via client
 			const room = await client.joinOrCreate('gameType2', {
 				idToken,
 				...metadata,
 			})
 
-			console.log('Joined room:', room)
-			setRoom(room)
-
-			// Example: handle messages from server
-			room.onMessage('someMessage', (message) => {
-				console.log('Message from server:', message)
-			})
+			setRoom(room) // <-- Store the room in context
 
 			navigate(`/room/${room.roomId}`)
 		} catch (err) {
@@ -57,13 +50,6 @@ export const CreateRoom = () => {
 			>
 				Create & Join Room
 			</button>
-
-			{room && (
-				<div style={{ marginTop: '20px' }}>
-					<p>Room ID: {room.id}</p>
-					<p>Connected as: {room.sessionId}</p>
-				</div>
-			)}
 		</div>
 	)
 }

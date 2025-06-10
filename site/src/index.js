@@ -6,14 +6,17 @@ import { BabylonProvider } from './context/BabylonProvider'
 import { AuthProvider } from './context/AuthContext'
 import { Header } from './components/Header'
 import { BrowserRouter as Router } from 'react-router'
+import { RoomProvider } from './context/RoomContext'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
 	<Router>
 		<AuthProvider>
 			<BabylonProvider>
-				<Header />
-				<App></App>
+				<RoomProvider>
+					<Header />
+					<App></App>
+				</RoomProvider>
 			</BabylonProvider>
 		</AuthProvider>
 	</Router>,
