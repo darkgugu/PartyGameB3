@@ -22,7 +22,10 @@ export const App = () => {
 	)
 
 	return (
-		<div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+		<div
+			id="app"
+			style={{ width: '100vw', height: '100vh', position: 'relative' }}
+		>
 			{isMenuRoute && <BabylonScene />}
 			<Routes>
 				<Route path="/" element={<Home />} />
