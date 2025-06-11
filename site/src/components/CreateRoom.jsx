@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import { Client } from 'colyseus.js'
 import { useNavigate } from 'react-router'
 import { useRoom } from '../context/RoomContext'
+import { Link } from 'react-router'
 
 export const CreateRoom = () => {
 	const navigate = useNavigate()
@@ -26,7 +27,7 @@ export const CreateRoom = () => {
 			}
 
 			// Join or create the room directly via client
-			const room = await client.joinOrCreate('gameType2', {
+			const room = await client.joinOrCreate('party', {
 				idToken,
 				...metadata,
 			})
@@ -50,6 +51,9 @@ export const CreateRoom = () => {
 			>
 				Create & Join Room
 			</button>
+			<Link to="/minigame/labyrinth">
+				<div>Labyrinth</div>
+			</Link>
 		</div>
 	)
 }

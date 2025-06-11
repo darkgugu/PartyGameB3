@@ -10,7 +10,7 @@ import {
 	Route,
 	useLocation,
 } from 'react-router'
-import { Rooms } from './Rooms'
+import { Room } from './Room'
 import { JoinRoom } from './JoinRoom'
 
 export const App = () => {
@@ -32,7 +32,7 @@ export const App = () => {
 				<Route path="/createRoom" element={<CreateRoom />} />
 				<Route path="/joinRoom" element={<JoinRoom />} />
 				<Route path="/minigame/labyrinth" element={<Labyrinth />} />
-				<Route path="/room/:roomId" element={<Rooms />} />
+				<Route path="/room/:roomId" element={<Room />} />
 			</Routes>
 		</div>
 	)

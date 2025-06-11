@@ -4,6 +4,7 @@ import express from "express";
 import { MyRoom } from "./rooms/MyRoom";
 import { LobbyRoom } from "colyseus";
 import dotenv from "dotenv";
+import { PartyRoom } from "./rooms/PartyRoom";
 dotenv.config();
 
 const app = express();
@@ -13,7 +14,7 @@ const server = createServer(app);
 const gameServer = new Server({ server });
 
 gameServer.define("lobby", LobbyRoom);
-gameServer.define("gameType1", MyRoom).enableRealtimeListing();
+gameServer.define("party", PartyRoom).enableRealtimeListing();
 gameServer.define("gameType2", MyRoom).enableRealtimeListing();
 gameServer.define("gameType3", MyRoom).enableRealtimeListing();
 

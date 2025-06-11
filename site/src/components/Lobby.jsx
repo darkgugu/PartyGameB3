@@ -4,6 +4,7 @@ import '../assets/css/Lobby.css'
 import { Link } from 'react-router'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router'
+import { useRoom } from '../context/RoomContext'
 
 export const Lobby = () => {
 	const COLYSEUS_URL =
@@ -11,6 +12,7 @@ export const Lobby = () => {
 	const [rooms, setRooms] = useState([])
 	const { user } = useAuth()
 	const navigate = useNavigate()
+	const { setRoom } = useRoom()
 
 	useEffect(() => {
 		console.log('Connecting to Colyseus lobby...')
@@ -63,6 +65,8 @@ export const Lobby = () => {
 
 			const client = new Client(COLYSEUS_URL)
 			const room = await client.joinById(roomId, { idToken })
+
+			setRoom(room)
 			navigate(`/room/${room.roomId}`)
 		} catch (err) {
 			console.error('Failed to join room:', err)
