@@ -1,73 +1,57 @@
 import { useEffect, useState } from 'react'
-import { Client } from 'colyseus.js'
 import '../assets/css/Lobby.css'
-import { Link } from 'react-router'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router'
-import { useRoom } from '../context/RoomContext'
+import { useColyseusRoom, connectToColyseus } from '../colyseus'
+import { Link } from 'react-router'
 
 export const Lobby = () => {
-	const COLYSEUS_URL =
-		process.env.REACT_APP_COLYSEUS_URL || 'ws://localhost:2567'
 	const [rooms, setRooms] = useState([])
 	const { user } = useAuth()
 	const navigate = useNavigate()
-	const { setRoom } = useRoom()
+	const lobbyRoom = useColyseusRoom() // You can join a separate lobby room
+
+	// Join the "lobby" room to get room listings
+	useEffect(() => {
+		if (!lobbyRoom) {
+			connectToColyseus('lobby', {}) // no options needed for listing
+		}
+	}, [lobbyRoom])
 
 	useEffect(() => {
-		console.log('Connecting to Colyseus lobby...')
-		const client = new Client(COLYSEUS_URL)
+		if (!lobbyRoom) return
+		// Listen for lobby room list updates
+		const handleRooms = (roomsList) => setRooms(roomsList)
+		const handleRoomAdd = ([roomId, room]) =>
+			setRooms((prev) => {
+				const idx = prev.findIndex((r) => r.roomId === roomId)
+				if (idx !== -1) {
+					const copy = [...prev]
+					copy[idx] = room
+					return copy
+				}
+				return [...prev, room]
+			})
+		const handleRoomRemove = (roomId) =>
+			setRooms((prev) => prev.filter((r) => r.roomId !== roomId))
 
-		let lobbyRoom
-
-		const connectToLobby = async () => {
-			try {
-				lobbyRoom = await client.joinOrCreate('lobby')
-				console.log('Joined lobby!')
-
-				lobbyRoom.onMessage('rooms', (roomsList) => {
-					setRooms(roomsList)
-				})
-
-				lobbyRoom.onMessage('+', ([roomId, room]) => {
-					setRooms((prev) => {
-						const index = prev.findIndex((r) => r.roomId === roomId)
-						if (index !== -1) {
-							const newList = [...prev]
-							newList[index] = room
-							return newList
-						}
-						return [...prev, room]
-					})
-				})
-
-				lobbyRoom.onMessage('-', (roomId) => {
-					setRooms((prev) =>
-						prev.filter((room) => room.roomId !== roomId),
-					)
-				})
-			} catch (err) {
-				console.error('Failed to join lobby:', err)
-			}
-		}
-
-		connectToLobby()
+		lobbyRoom.onMessage('rooms', handleRooms)
+		lobbyRoom.onMessage('+', handleRoomAdd)
+		lobbyRoom.onMessage('-', handleRoomRemove)
 
 		return () => {
-			if (lobbyRoom) lobbyRoom.leave()
+			// Optionally: cleanup listeners if needed
+			// lobbyRoom.leave(); // Only if you want to leave the lobby room on unmount
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
+	}, [lobbyRoom])
 
+	// Join a party room
 	const join = (roomId) => async () => {
 		try {
 			const idToken = await user.getIdToken()
-
-			const client = new Client(COLYSEUS_URL)
-			const room = await client.joinById(roomId, { idToken })
-
-			setRoom(room)
-			navigate(`/room/${room.roomId}`)
+			await connectToColyseus('party', { roomId, idToken })
+			// After join, Room.js will redirect
+			navigate(`/room/${roomId}`)
 		} catch (err) {
 			console.error('Failed to join room:', err)
 		}

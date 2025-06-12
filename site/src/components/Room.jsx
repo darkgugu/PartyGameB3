@@ -1,93 +1,53 @@
-import React, { useEffect, useState } from 'react'
-import { useRoom } from '../context/RoomContext'
-import { useNavigate } from 'react-router'
+import React, { useEffect } from 'react'
+import {
+	useColyseusRoom,
+	useColyseusState,
+	connectToColyseus,
+} from '../colyseus'
+import { useNavigate, useParams } from 'react-router'
 
 export const Room = () => {
-	const { room, setRoom } = useRoom()
-	const [players, setPlayers] = useState([])
-	const [ownerId, setOwnerId] = useState('')
-	const [mySessionId, setMySessionId] = useState('')
+	const { id } = useParams() // /room/:id
 	const navigate = useNavigate()
+	const room = useColyseusRoom()
+	const state = useColyseusState()
 
-	// Listen for phase/minigame changes
+	// Join the room by ID if not joined
 	useEffect(() => {
-		if (!room) return
-
-		// Set up player list listeners
-		const updatePlayers = () => {
-			if (!room.state.players) return setPlayers([])
-			setPlayers(
-				Object.entries(room.state.players).map(
-					([sessionId, player]) => ({
-						...player,
-						sessionId,
-					}),
-				),
-			)
+		if (!room && id) {
+			connectToColyseus('party', { roomId: id })
 		}
+	}, [room, id])
 
-		// Attach listeners if players map exists
-		if (room.state.players) {
-			updatePlayers()
-			room.state.players.onAdd = updatePlayers
-			room.state.players.onRemove = updatePlayers
-			room.state.players.onChange = updatePlayers
-		}
-
-		// Set up phase redirect listener ON THE ROOM STATE
-		let alreadyRedirected = false
-		const phaseListener = (changes) => {
-			let shouldRedirect = false
-			let minigame = ''
-
-			changes.forEach((change) => {
-				if (change.field === 'phase' && change.value === 'minigame') {
-					shouldRedirect = true
-				}
-				if (change.field === 'currentMinigame') {
-					minigame = change.value
-				}
-				if (change.field === 'ownerId') setOwnerId(change.value)
-			})
-
-			if (
-				shouldRedirect &&
-				(minigame || room.state.currentMinigame) === 'labyrinth' &&
-				!alreadyRedirected
-			) {
-				alreadyRedirected = true
-				navigate('/labyrinth')
-			}
-		}
-
-		room.state.onChange = phaseListener
-
-		// Also check initial state on mount (important!)
+	// Redirect to minigame if phase changes
+	useEffect(() => {
 		if (
-			room.state.phase === 'minigame' &&
-			room.state.currentMinigame === 'labyrinth'
+			state?.phase === 'minigame' &&
+			state?.currentMinigame === 'labyrinth'
 		) {
-			navigate('/labyrinth')
+			navigate('/minigame/labyrinth')
 		}
+	}, [state?.phase, state?.currentMinigame, navigate])
 
-		setOwnerId(room.state.ownerId)
-		setMySessionId(room.sessionId)
+	if (!room || !state) return <div>Joining room...</div>
 
-		// Cleanup: remove listeners and reset state/context
-		return () => {
-			if (room.state) room.state.onChange = undefined
-			setPlayers([])
-			setOwnerId('')
-			setMySessionId('')
-			setRoom(null) // Clear from context!
-		}
-		// eslint-disable-next-line
-	}, [room, navigate, setRoom])
+	console.log('Room :', room)
+	console.log('Room state:', room.state)
+
+	const mySessionId = room.sessionId
+	const ownerId = state.ownerId
+	console.log('Owner ID:', ownerId)
+	console.log('State.phase:', state.phase)
+
+	const players = state.players
+		? Object.entries(state.players).map(([sessionId, player]) => ({
+				...player,
+				sessionId,
+			}))
+		: []
 
 	const handleStartGame = () => {
-		if (room) {
-			room.send('startGame', { minigame: 'labyrinth' })
-		}
+		room?.send('startGame', { minigame: 'labyrinth' })
 	}
 
 	return (
