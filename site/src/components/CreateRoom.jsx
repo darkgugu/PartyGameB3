@@ -42,9 +42,9 @@ export const CreateRoom = () => {
 			>
 				Create & Join Room
 			</button>
-			<Link to="/minigame/labyrinth">
+			{/* 			<Link to="/minigame/labyrinth">
 				<div>Labyrinth</div>
-			</Link>
+			</Link> */}
 		</div>
 	)
 }
