@@ -100,7 +100,8 @@ export const Header = () => {
 						<p style={{ marginRight: '1rem' }}>
 							{user.isAnonymous
 								? 'Invité'
-								: user.email || 'Connecté'}
+								: <Link to="/profile">{user.email}</Link> ||
+									'Connecté'}
 						</p>
 						<button onClick={logout}>Déconnexion</button>
 					</>
