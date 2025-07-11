@@ -13,8 +13,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@colyseus/schema": "^3.0.33",
-    "colyseus": "^0.16.4",
+    "@colyseus/schema": "^2.0.37",
+    "colyseus": "^0.15.57",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "firebase-admin": "^13.4.0",

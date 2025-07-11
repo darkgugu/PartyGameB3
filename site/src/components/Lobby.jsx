@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Client } from 'colyseus.js'
 import '../assets/css/Lobby.css'
 import { Link } from 'react-router'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router'
-import { useRoom } from '../context/RoomContext'
+import { connectToColyseus, disconnectFromColyseus } from '../colyseus'
 
 export const Lobby = () => {
 	const COLYSEUS_URL =
@@ -12,64 +12,90 @@ export const Lobby = () => {
 	const [rooms, setRooms] = useState([])
 	const { user } = useAuth()
 	const navigate = useNavigate()
-	const { setRoom } = useRoom()
+	const lobbyClient = useRef(null)
+	const lobbyRoom = useRef(null)
 
+	// Connect to LOBBY with a *dedicated* client, always fresh!
 	useEffect(() => {
-		console.log('Connecting to Colyseus lobby...')
-		const client = new Client(COLYSEUS_URL)
-
-		let lobbyRoom
+		console.log('[Lobby] Connecting to Colyseus lobby...')
+		lobbyClient.current = new Client(COLYSEUS_URL)
+		let leaveTimeout
 
 		const connectToLobby = async () => {
 			try {
-				lobbyRoom = await client.joinOrCreate('lobby')
-				console.log('Joined lobby!')
+				lobbyRoom.current =
+					await lobbyClient.current.joinOrCreate('lobby')
+				console.log(
+					'[Lobby] Joined lobby room:',
+					lobbyRoom.current.roomId,
+				)
 
-				lobbyRoom.onMessage('rooms', (roomsList) => {
-					setRooms(roomsList)
+				lobbyRoom.current.onMessage('rooms', (roomsList) => {
+					console.log('[Lobby] Received rooms list:', roomsList)
+					setRooms(roomsList || [])
 				})
 
-				lobbyRoom.onMessage('+', ([roomId, room]) => {
+				lobbyRoom.current.onMessage('+', ([roomId, room]) => {
+					console.log('[Lobby] Room added/updated:', roomId, room)
 					setRooms((prev) => {
-						const index = prev.findIndex((r) => r.roomId === roomId)
-						if (index !== -1) {
-							const newList = [...prev]
-							newList[index] = room
-							return newList
+						const idx = prev.findIndex((r) => r.roomId === roomId)
+						if (idx !== -1) {
+							const copy = [...prev]
+							copy[idx] = room
+							return copy
 						}
 						return [...prev, room]
 					})
 				})
 
-				lobbyRoom.onMessage('-', (roomId) => {
-					setRooms((prev) =>
-						prev.filter((room) => room.roomId !== roomId),
-					)
+				lobbyRoom.current.onMessage('-', (roomId) => {
+					console.log('[Lobby] Room removed:', roomId)
+					setRooms((prev) => prev.filter((r) => r.roomId !== roomId))
 				})
 			} catch (err) {
-				console.error('Failed to join lobby:', err)
+				console.error('[Lobby] Failed to join lobby:', err)
 			}
 		}
 
 		connectToLobby()
 
 		return () => {
-			if (lobbyRoom) lobbyRoom.leave()
+			if (lobbyRoom.current) {
+				console.log(
+					'[Lobby] Leaving lobby room:',
+					lobbyRoom.current.roomId,
+				)
+				// Add a little timeout to avoid server-side race condition (optional)
+				leaveTimeout = setTimeout(() => {
+					lobbyRoom.current.leave()
+					lobbyRoom.current = null
+				}, 100)
+			}
+			if (lobbyClient.current) {
+				lobbyClient.current = null
+			}
+			return () => clearTimeout(leaveTimeout)
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
+	}, [COLYSEUS_URL])
 
+	// When joining a party/game room, use your app-wide use-colyseus logic.
 	const join = (roomId) => async () => {
 		try {
+			console.log(`[Lobby] Attempting to join party room ${roomId}...`)
+			// 1. Leave the lobby room (dedicated client)
+			if (lobbyRoom.current) {
+				console.log('[Lobby] Leaving lobby before joining party...')
+				await lobbyRoom.current.leave()
+				lobbyRoom.current = null
+			}
+			// 2. Use your app-wide connectToColyseus for the party room
 			const idToken = await user.getIdToken()
-
-			const client = new Client(COLYSEUS_URL)
-			const room = await client.joinById(roomId, { idToken })
-
-			setRoom(room)
-			navigate(`/room/${room.roomId}`)
+			await disconnectFromColyseus() // ensures use-colyseus context is clear
+			await connectToColyseus('party', { roomId, idToken })
+			console.log(`[Lobby] Joined party room ${roomId}, navigating...`)
+			navigate(`/room/${roomId}`)
 		} catch (err) {
-			console.error('Failed to join room:', err)
+			console.error('[Lobby] Failed to join room:', err)
 		}
 	}
 

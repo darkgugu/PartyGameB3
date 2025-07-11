@@ -5,6 +5,7 @@ import { MyRoom } from "./rooms/MyRoom";
 import { LobbyRoom } from "colyseus";
 import dotenv from "dotenv";
 import { PartyRoom } from "./rooms/PartyRoom";
+
 dotenv.config();
 
 const app = express();
