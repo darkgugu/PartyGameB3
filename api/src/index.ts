@@ -39,7 +39,7 @@ app.get('/users', async (_, res) => {
 		const users = await prisma.utilisateur.findMany()
 		res.json(users)
 	} catch (error) {
-		res.status(500).json({ error: 'Error fetching users' })
+		res.status(500).json({ error: error })
 	}
 })
 
@@ -57,6 +57,9 @@ app.post('/users', async (req, res) => {
 				firebase_uid: '',
 				points_succes: 0,
 				avatar: '',
+				country: null, // Optional field
+				about: null, // Optional field
+				age: null, // Optional field
 			},
 		})
 		res.status(201).json(newUser)
@@ -105,6 +108,72 @@ app.post('/register', cors(corsOptions),async (req, res): Promise<any> => {
 	}
 })
 
+app.get('/users/:id', async (req: any, res: any) => {
+	try {
+		const { id } = req.params
+
+		// Try to find the user by primary key (usually 'id') or firebase_uid
+		const user = await prisma.utilisateur.findUnique({
+			where: {
+				idUtilisateur: Number(id), // or firebase_uid: id, if you're using Firebase UID
+			},
+		})
+
+		if (!user) {
+			return res.status(404).json({ error: 'User not found' })
+		}
+
+		res.json(user)
+	} catch (error) {
+		console.error('Error fetching user:', error)
+		res.status(500).json({ error: error })
+	}
+})
+
+app.get('/users/getByPseudo/:pseudo', async (req: any, res: any) => {
+	try {
+		const { pseudo } = req.params
+
+		// Try to find the user by pseudo (not a unique field, so use findFirst)
+		const user = await prisma.utilisateur.findFirst({
+			where: {
+				pseudo: pseudo, // or firebase_uid: id, if you're using Firebase UID
+			},
+		})
+
+		if (!user) {
+			return res.status(404).json({ error: 'User not found' })
+		}
+
+		res.json(user)
+	} catch (error) {
+		console.error('Error fetching user:', error)
+		res.status(500).json({ error: error })
+	}
+})
+
+app.get('/users/getByUID/:uid', async (req: any, res: any) => {
+	try {
+		const { uid } = req.params
+
+		const user = await prisma.utilisateur.findUnique({
+			where: {
+				firebase_uid: uid,
+			},
+		})
+
+		if (!user) {
+			return res.status(404).json({ error: 'User not found' })
+		}
+
+		res.json(user)
+	} catch (error) {
+		console.error('Error fetching user:', error)
+		res.status(500).json({ error: error })
+	}
+})
+
+
 
 // Get all game sessions
 /* app.get('/game-sessions', async (_, res) => {
@@ -141,5 +210,4 @@ app.post('/register', cors(corsOptions),async (req, res): Promise<any> => {
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
 	console.log(`Server running`)
-	console.log(`Allowed Origins: ${allowedOrigins}`)
 })
