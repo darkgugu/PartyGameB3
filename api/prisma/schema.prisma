@@ -17,6 +17,9 @@ model Utilisateur {
   date_inscription DateTime
   points_succes    Int
   avatar           String
+  age              Int?
+  country          String?
+  about            String?
 
   statistiques Statistique[]
   succes       Succes[]
