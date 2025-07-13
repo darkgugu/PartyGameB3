@@ -16,7 +16,7 @@ export const App = () => {
 	const location = useLocation()
 
 	// Define routes where you want the background scene
-	const isMenuRoute = ['/', '/createRoom', '/joinRoom', '/profile'].includes(
+	const isMenuRoute = ['/', '/createRoom', '/joinRoom', '/profile/'].includes(
 		location.pathname,
 	)
 
@@ -27,7 +27,8 @@ export const App = () => {
 				<Route path="/" element={<Home />} />
 				<Route path="/createRoom" element={<CreateRoom />} />
 				<Route path="/minigame/labyrinth" element={<Labyrinth />} />
-				<Route path="/profile" element={<Profile />} />
+				<Route path="/profile/:id" element={<Profile />} />
+				{/* <Route path="*" element={<Error></Error>}></Route> */}
 			</Routes>
 		</div>
 	)
