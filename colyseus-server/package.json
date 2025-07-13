@@ -12,5 +12,9 @@
   "dependencies": {
     "@colyseus/schema": "^3.0.33",
     "colyseus": "^0.16.3"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }
