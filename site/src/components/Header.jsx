@@ -93,7 +93,6 @@ export const Header = () => {
 					`${process.env.REACT_APP_API_URL}/users/getByUID/${user.uid}`,
 				)
 				setFetchedUser(res.data)
-				console.log('Fetched user:', res.data) // For debugging purposes
 			} catch (error) {
 				console.error('Error fetching user:', error)
 			}

@@ -53,8 +53,39 @@
                 gap: 10px;
 
                 .content-info {
-                    width: calc(50% - 10px); // two columns with gap
+                    width: calc(50% - 15px); // two columns with gap
                     margin: 0;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-radius: 10px;
+                    padding: 4px;
+
+                    .edit-profile{
+                        display: none;
+                    }
+
+                    &:hover {
+                        background-color: darken(#73BA9B, 5%);
+
+                        .edit-profile {
+                            display: inline-block;
+                            border: none;
+                            background-color: transparent;
+                            border-radius: 50%;
+                            padding: 10px;
+                            cursor: pointer;
+                            transition: background-color 0.3s;
+                            &:focus {
+                                outline: none;
+                            }
+                            &:active {
+                                background-color: #b2dfdb;
+                            }
+                            z-index: 10;
+                            font-size: 0.7em;
+                        }
+                    }
                 }
             }
         }
