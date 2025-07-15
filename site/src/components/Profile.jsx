@@ -5,10 +5,12 @@ import { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons'
 import { useAuth } from '../context/AuthContext'
+import { useNavigate } from 'react-router'
 
 export const Profile = () => {
 	const { pseudo } = useParams()
 	const { user: authUser } = useAuth()
+	const navigate = useNavigate()
 
 	const [user, setUser] = useState(null)
 	const [isOwner, setIsOwner] = useState(false)
@@ -25,10 +27,15 @@ export const Profile = () => {
 				setUser(res.data)
 				setIsOwner(authUser && authUser.uid === res.data.firebase_uid)
 			} catch (error) {
-				console.error('Error fetching user:', error)
+				if (error.response && error.response.status === 404) {
+					navigate('/profile404')
+				} else {
+					console.error('Error fetching user:', error)
+				}
 			}
 		}
 		fetchUser()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pseudo, authUser])
 
 	const dateFormat = (dateString) => {

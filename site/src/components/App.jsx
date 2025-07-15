@@ -11,6 +11,7 @@ import {
 	Route,
 	useLocation,
 } from 'react-router'
+import { ErrorProfile } from './ErrorProfile'
 
 export const App = () => {
 	const location = useLocation()
@@ -28,6 +29,7 @@ export const App = () => {
 				<Route path="/createRoom" element={<CreateRoom />} />
 				<Route path="/minigame/labyrinth" element={<Labyrinth />} />
 				<Route path="/profile/:pseudo" element={<Profile />} />
+				<Route path="/profile404" element={<ErrorProfile />} />
 				{/* <Route path="*" element={<Error></Error>}></Route> */}
 			</Routes>
 		</div>
