@@ -24,6 +24,7 @@ export const Header = () => {
 	const [modalIsOpen, setModalIsOpen] = useState(false)
 	const [modalType, setModalType] = useState('login')
 	const [email, setEmail] = useState('')
+	const [pseudo, setPseudo] = useState('')
 	const [password, setPassword] = useState('')
 	const [confirmPassword, setConfirmPassword] = useState('') // New for signup
 	const [error, setError] = useState(null)
@@ -31,8 +32,6 @@ export const Header = () => {
 
 	const { user, login, loginWithGoogle, anonymousLogin, logout, register } =
 		useAuth()
-
-	console.log('Current user:', user) // For debugging purposes
 
 	function openModal(type) {
 		setModalType(type)
@@ -49,7 +48,8 @@ export const Header = () => {
 	const handleLogin = async (e) => {
 		e.preventDefault()
 		try {
-			await login(email, password)
+			const user = await login(email, password)
+			setPseudo(user.pseudo)
 			closeModal()
 		} catch (err) {
 			setError(err.message)
@@ -63,7 +63,7 @@ export const Header = () => {
 			return
 		}
 		try {
-			await register(email, password) // Make sure `register` is in your `AuthContext`
+			await register(email, password, pseudo)
 			closeModal()
 		} catch (err) {
 			setError(err.message)
@@ -125,10 +125,8 @@ export const Header = () => {
 							{user.isAnonymous
 								? 'Invité'
 								: (
-										<Link
-											to={`/profile/${fetchedUser.pseudo}`}
-										>
-											{fetchedUser.pseudo}
+										<Link to={`/profile/${pseudo}`}>
+											{pseudo}
 										</Link>
 									) || 'Connecté'}
 						</p>
@@ -197,6 +195,14 @@ export const Header = () => {
 					<div className={'modal'}>
 						<h2>Créer un compte</h2>
 						<form onSubmit={handleRegister}>
+							<label htmlFor="register-pseudo">Pseudo</label>
+							<input
+								type="text"
+								id="register-pseudo"
+								value={pseudo}
+								onChange={(e) => setPseudo(e.target.value)}
+								required
+							/>
 							<label htmlFor="register-email">Email</label>
 							<input
 								type="email"

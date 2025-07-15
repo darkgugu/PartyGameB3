@@ -9,6 +9,7 @@ import {
 	GoogleAuthProvider,
 	signInWithPopup,
 } from 'firebase/auth'
+import axios from 'axios'
 
 const API_URL = process.env.REACT_APP_API_URL
 
@@ -28,10 +29,22 @@ export const AuthProvider = ({ children }) => {
 	}, [])
 
 	// Auth methods
-	const login = (email, password) =>
-		signInWithEmailAndPassword(auth, email, password)
+	const login = (email, password) => {
+		return signInWithEmailAndPassword(auth, email, password).then(
+			async () => {
+				try {
+					const res = await axios.get(
+						`${process.env.REACT_APP_API_URL}/users/getByUID/${auth.currentUser.uid}`,
+					)
+					return res.data
+				} catch (error) {
+					console.error('Error fetching user:', error)
+				}
+			},
+		)
+	}
 
-	const register = async (email, password) => {
+	const register = async (email, password, pseudo) => {
 		// 1. Create user in Firebase
 		const userCredential = await createUserWithEmailAndPassword(
 			auth,
@@ -50,7 +63,7 @@ export const AuthProvider = ({ children }) => {
 			},
 			body: JSON.stringify({
 				idToken,
-				pseudo: email.split('@')[0], // basic pseudo fallback
+				pseudo: pseudo,
 				email: email,
 			}),
 		})
