@@ -13,7 +13,7 @@ model Utilisateur {
   email            String   @unique
   prenom           String
   nom_de_famille   String
-  pseudo           String
+  pseudo           String   @unique
   date_inscription DateTime
   points_succes    Int
   avatar           String

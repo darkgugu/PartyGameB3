@@ -45,6 +45,22 @@ export const AuthProvider = ({ children }) => {
 	}
 
 	const register = async (email, password, pseudo) => {
+		// Verify email before creating user
+		const verifyEmailRes = await axios.post(`${API_URL}/verify/email`, {
+			email,
+		})
+		if (verifyEmailRes.status === 409) {
+			throw new Error('Email verification failed')
+		}
+
+		// Verify pseudo before creating user
+		const verifyPseudoRes = await axios.post(`${API_URL}/verify/pseudo`, {
+			pseudo,
+		})
+		if (verifyPseudoRes.status === 409) {
+			throw new Error('Pseudo verification failed')
+		}
+
 		// 1. Create user in Firebase
 		const userCredential = await createUserWithEmailAndPassword(
 			auth,

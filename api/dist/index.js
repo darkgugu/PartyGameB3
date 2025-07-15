@@ -124,6 +124,44 @@ app.post('/register', (0, cors_1.default)(corsOptions), async (req, res) => {
         return res.status(401).json({ error: 'Invalid token or internal error' });
     }
 });
+app.post('/verify/email', async (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+        return res.status(400).json({ error: 'Missing email' });
+    }
+    try {
+        const user = await prisma.utilisateur.findFirst({
+            where: { email },
+        });
+        if (user) {
+            return res.status(409).json({ message: 'Email is already taken', user });
+        }
+        return res.status(200).json({ message: 'Email is available' });
+    }
+    catch (error) {
+        console.error('Verification error:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+app.post('/verify/pseudo', async (req, res) => {
+    const { pseudo } = req.body;
+    if (!pseudo) {
+        return res.status(400).json({ error: 'Missing pseudo' });
+    }
+    try {
+        const user = await prisma.utilisateur.findFirst({
+            where: { pseudo },
+        });
+        if (user) {
+            return res.status(409).json({ message: 'Pseudo is already taken', user });
+        }
+        return res.status(200).json({ message: 'Pseudo is available' });
+    }
+    catch (error) {
+        console.error('Verification error:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
 app.get('/users/:id', async (req, res) => {
     try {
         const { id } = req.params;
