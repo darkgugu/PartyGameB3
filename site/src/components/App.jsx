@@ -3,6 +3,7 @@ import { Labyrinth } from './minigames/Labyrinth'
 import { Home } from './Home'
 import { CreateRoom } from './CreateRoom'
 import { Profile } from './Profile'
+import { Error404 } from './Error404'
 //import CreateGame from './CreateGame'
 import {
 	// eslint-disable-next-line no-unused-vars
@@ -30,7 +31,7 @@ export const App = () => {
 				<Route path="/minigame/labyrinth" element={<Labyrinth />} />
 				<Route path="/profile/:pseudo" element={<Profile />} />
 				<Route path="/profile404" element={<ErrorProfile />} />
-				{/* <Route path="*" element={<Error></Error>}></Route> */}
+				<Route path="*" element={<Error404 />} />
 			</Routes>
 		</div>
 	)
