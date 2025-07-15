@@ -27,7 +27,7 @@ export const App = () => {
 				<Route path="/" element={<Home />} />
 				<Route path="/createRoom" element={<CreateRoom />} />
 				<Route path="/minigame/labyrinth" element={<Labyrinth />} />
-				<Route path="/profile/:id" element={<Profile />} />
+				<Route path="/profile/:pseudo" element={<Profile />} />
 				{/* <Route path="*" element={<Error></Error>}></Route> */}
 			</Routes>
 		</div>

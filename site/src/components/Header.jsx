@@ -5,6 +5,8 @@ import { Currency } from './Currency'
 import Modal from 'react-modal'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import axios from 'axios'
+import { useEffect } from 'react'
 
 export const Header = () => {
 	const customStyles = {
@@ -25,9 +27,10 @@ export const Header = () => {
 	const [password, setPassword] = useState('')
 	const [confirmPassword, setConfirmPassword] = useState('') // New for signup
 	const [error, setError] = useState(null)
+	const [fetchedUser, setFetchedUser] = useState(null)
 
 	const { user, login, loginWithGoogle, anonymousLogin, logout, register } =
-		useAuth() // Add `register` if it exists
+		useAuth()
 
 	function openModal(type) {
 		setModalType(type)
@@ -83,6 +86,24 @@ export const Header = () => {
 		}
 	}
 
+	useEffect(() => {
+		const fetchUser = async () => {
+			try {
+				const res = await axios.get(
+					`${process.env.REACT_APP_API_URL}/users/getByUID/${user.uid}`,
+				)
+				setFetchedUser(res.data)
+				console.log('Fetched user:', res.data) // For debugging purposes
+			} catch (error) {
+				console.error('Error fetching user:', error)
+			}
+		}
+
+		fetchUser()
+	}, [user.uid])
+
+	//console.log('Current user:', user) // For debugging purposes
+
 	return (
 		<div className="Header">
 			<Link to="/">
@@ -95,13 +116,18 @@ export const Header = () => {
 				<Currency type="diamond" />
 				<Currency type="dollar" />
 
-				{user ? (
+				{user && fetchedUser ? (
 					<>
 						<p style={{ marginRight: '1rem' }}>
 							{user.isAnonymous
 								? 'Invité'
-								: <Link to="/profile">{user.email}</Link> ||
-									'Connecté'}
+								: (
+										<Link
+											to={`/profile/${fetchedUser.pseudo}`}
+										>
+											{fetchedUser.pseudo}
+										</Link>
+									) || 'Connecté'}
 						</p>
 						<button onClick={logout}>Déconnexion</button>
 					</>
