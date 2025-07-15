@@ -32,6 +32,8 @@ export const Header = () => {
 	const { user, login, loginWithGoogle, anonymousLogin, logout, register } =
 		useAuth()
 
+	console.log('Current user:', user) // For debugging purposes
+
 	function openModal(type) {
 		setModalType(type)
 		setModalIsOpen(true)
@@ -87,6 +89,8 @@ export const Header = () => {
 	}
 
 	useEffect(() => {
+		if (!user) return
+
 		const fetchUser = async () => {
 			try {
 				const res = await axios.get(
@@ -99,7 +103,7 @@ export const Header = () => {
 		}
 
 		fetchUser()
-	}, [user.uid])
+	}, [user])
 
 	//console.log('Current user:', user) // For debugging purposes
 

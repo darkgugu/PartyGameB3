@@ -68,6 +68,45 @@ app.post('/users', async (req, res) => {
 	}
 })
 
+//Update a user
+app.put('/users/:uid', async (req, res) => {
+	const { uid } = req.params
+	const {
+		pseudo,
+		prenom,
+		nom_de_famille,
+		avatar,
+		country,
+		about,
+		age,
+		points_succes,
+		email,
+	} = req.body
+
+	try {
+		const updatedUser = await prisma.utilisateur.update({
+			where: { firebase_uid: uid },
+			data: {
+				pseudo,
+				prenom,
+				nom_de_famille,
+				avatar,
+				country,
+				about,
+				age,
+				points_succes,
+				email,
+			},
+		})
+
+		res.status(200).json(updatedUser)
+	} catch (error) {
+		console.error('Update error:', error)
+		res.status(400).json({ error: `Could not update user :  ${error}` })
+	}
+})
+
+
 app.post('/register', cors(corsOptions),async (req, res): Promise<any> => {
 	const { idToken, pseudo } = req.body
 
