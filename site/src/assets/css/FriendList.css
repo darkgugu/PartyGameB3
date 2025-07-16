@@ -76,6 +76,11 @@
 .FriendList ul::-webkit-scrollbar-thumb:hover {
   background-color: #999;
 }
+.FriendList ul .friend-name {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
 .FriendList ul li {
   display: flex;
   justify-content: space-between;
@@ -85,6 +90,9 @@
   border-top: 1px solid #ccc;
   font-size: 13px;
   height: 36px;
+}
+.FriendList ul li:hover {
+  background-color: #e0e0e0;
 }
 .FriendList ul li .icons {
   display: flex;

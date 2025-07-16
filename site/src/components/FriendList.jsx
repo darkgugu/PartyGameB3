@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useUser } from '../context/UserContext'
 import { ToastContainer, toast } from 'react-toastify'
+import { Link } from 'react-router'
 
 export const FriendList = () => {
 	const [friends, setFriends] = useState([])
@@ -142,24 +143,33 @@ export const FriendList = () => {
 			</div>
 			<ul>
 				{friends.map((friend, index) => (
-					<li key={index}>
-						<span>{friend.joueur2.pseudo}</span>
-						<div className="icons">
-							<FontAwesomeIcon
-								icon={faCircleSolid}
-								className={friend.online ? 'online' : 'offline'}
-							/>
-							<button
-								className="menu-button"
-								onClick={() => handleDeleteFriend(friend.id)}
-							>
+					<Link
+						to={`/profile/${friend.joueur2.pseudo}`}
+						className="friend-name"
+					>
+						<li key={index}>
+							<span>{friend.joueur2.pseudo}</span>
+							<div className="icons">
 								<FontAwesomeIcon
-									icon={faEllipsisV}
-									className="menu-icon"
+									icon={faCircleSolid}
+									className={
+										friend.online ? 'online' : 'offline'
+									}
 								/>
-							</button>
-						</div>
-					</li>
+								<button
+									className="menu-button"
+									onClick={() =>
+										handleDeleteFriend(friend.id)
+									}
+								>
+									<FontAwesomeIcon
+										icon={faEllipsisV}
+										className="menu-icon"
+									/>
+								</button>
+							</div>
+						</li>
+					</Link>
 				))}
 			</ul>
 		</div>

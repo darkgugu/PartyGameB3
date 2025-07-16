@@ -84,6 +84,13 @@
 			background-color: #999;
 		}
 
+        .friend-name {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+
 		li {
 			display: flex;
 			justify-content: space-between;
@@ -94,6 +101,9 @@
 			font-size: 13px;
 			height: 36px;
 
+            &:hover {
+                background-color: #e0e0e0;
+            }
 			.icons {
 				display: flex;
 				align-items: center;

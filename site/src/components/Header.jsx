@@ -30,7 +30,7 @@ export const Header = () => {
 
 	const { user, login, loginWithGoogle, anonymousLogin, logout, register } =
 		useAuth()
-	const { userData } = useUser()
+	const { userData, loading } = useUser()
 
 	const openModal = (type) => {
 		setModalType(type)
@@ -86,6 +86,8 @@ export const Header = () => {
 			setError(err.message)
 		}
 	}
+
+	if (loading) return null
 
 	return (
 		<div className="Header">

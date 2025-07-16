@@ -89,11 +89,11 @@ export const Profile = () => {
 					<p id="username">{user.pseudo}</p>
 					<div className="content-infos">
 						<p className="content-info">
-							Âge : {user.age}{' '}
+							Date de naissance : {user.birthdate}{' '}
 							{isOwner && (
 								<button
 									className="edit-profile"
-									onClick={() => handleEditClick('age')}
+									onClick={() => handleEditClick('birthdate')}
 								>
 									<FontAwesomeIcon icon={faPencilAlt} />
 								</button>
