@@ -106,6 +106,8 @@ export const FriendList = () => {
 		}
 	}
 
+	if (!userData) return null
+
 	return (
 		<div className="FriendList">
 			<ToastContainer position="bottom-right" autoClose={2500} />
