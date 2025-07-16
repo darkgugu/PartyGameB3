@@ -258,7 +258,37 @@ app.get('/users/getByUID/:uid', async (req: any, res: any) => {
 	}
 })
 
+app.get('/relations/:id/friends', async (req: any, res: any) => {
+	try {
+		const { id } = req.params
 
+		const friends = await prisma.relations_Joueurs.findMany({
+			where: {
+				idJoueur1: Number(id),
+				relation: 'friend',
+			},
+			select: {
+				joueur2: {
+					select: {
+						idUtilisateur: true,
+						firebase_uid: true,
+						pseudo: true,
+					},
+				},
+			},
+		})
+
+
+		if (!friends) {
+			return res.status(404).json({ error: 'No friends found' })
+		}
+
+		res.json(friends)
+	} catch (error) {
+		console.error('Error fetching friends:', error)
+		res.status(500).json({ error: 'Internal server error' })
+	}
+})
 
 // Get all game sessions
 /* app.get('/game-sessions', async (_, res) => {

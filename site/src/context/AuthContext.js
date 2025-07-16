@@ -10,6 +10,7 @@ import {
 	signInWithPopup,
 } from 'firebase/auth'
 import axios from 'axios'
+import { useNavigate } from 'react-router'
 
 const API_URL = process.env.REACT_APP_API_URL
 
@@ -19,6 +20,7 @@ export const useAuth = () => useContext(AuthContext)
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null)
 	const [loading, setLoading] = useState(true)
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -93,7 +95,10 @@ export const AuthProvider = ({ children }) => {
 		console.log('Backend registration:', data)
 	}
 
-	const logout = () => signOut(auth)
+	const logout = () => {
+		signOut(auth)
+		navigate('/')
+	}
 	const anonymousLogin = () => signInAnonymously(auth)
 	const loginWithGoogle = () => {
 		const provider = new GoogleAuthProvider()
