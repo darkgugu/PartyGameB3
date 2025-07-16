@@ -61,7 +61,7 @@ export const Profile = () => {
 	const handleModalSave = async () => {
 		try {
 			const response = await axios.put(
-				`http://localhost:3001/users/${user.firebase_uid}`,
+				`${process.env.REACT_APP_API_URL}/users/${user.firebase_uid}`,
 				{
 					[editField]: editValue,
 				},
