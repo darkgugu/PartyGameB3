@@ -9,12 +9,13 @@ CREATE TABLE `Utilisateur` (
     `date_inscription` DATETIME(3) NOT NULL,
     `points_succes` INTEGER NOT NULL,
     `avatar` VARCHAR(191) NOT NULL,
-    `age` INTEGER NOT NULL,
-    `country` VARCHAR(191) NOT NULL,
-    `about` VARCHAR(191) NOT NULL,
+    `birthdate` DATETIME(3) NULL,
+    `country` VARCHAR(191) NULL,
+    `about` VARCHAR(191) NULL,
 
     UNIQUE INDEX `Utilisateur_firebase_uid_key`(`firebase_uid`),
     UNIQUE INDEX `Utilisateur_email_key`(`email`),
+    UNIQUE INDEX `Utilisateur_pseudo_key`(`pseudo`),
     PRIMARY KEY (`idUtilisateur`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -31,11 +32,12 @@ CREATE TABLE `Statistique` (
 
 -- CreateTable
 CREATE TABLE `Relations_Joueurs` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `idJoueur1` INTEGER NOT NULL,
     `idJoueur2` INTEGER NOT NULL,
     `relation` VARCHAR(191) NOT NULL,
 
-    PRIMARY KEY (`idJoueur1`, `idJoueur2`)
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable

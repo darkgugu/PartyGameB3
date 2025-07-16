@@ -4,20 +4,20 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL") // <- use MYSQL_URL or MYSQL_PUBLIC_URL based on context
+  url      = env("DATABASE_URL")
 }
 
 model Utilisateur {
-  idUtilisateur    Int      @id @default(autoincrement())
-  firebase_uid     String   @unique
-  email            String   @unique
+  idUtilisateur    Int       @id @default(autoincrement())
+  firebase_uid     String    @unique
+  email            String    @unique
   prenom           String
   nom_de_famille   String
-  pseudo           String   @unique
+  pseudo           String    @unique
   date_inscription DateTime
   points_succes    Int
   avatar           String
-  age              Int?
+  birthdate        DateTime? // 👈 replaces age
   country          String?
   about            String?
 
@@ -39,14 +39,13 @@ model Statistique {
 }
 
 model Relations_Joueurs {
+  id        Int    @id @default(autoincrement()) // 👈 new primary key
   idJoueur1 Int
   idJoueur2 Int
-  relation  String // ENUM can be made in Prisma later
+  relation  String
 
   joueur1 Utilisateur @relation("Relations1", fields: [idJoueur1], references: [idUtilisateur])
   joueur2 Utilisateur @relation("Relations2", fields: [idJoueur2], references: [idUtilisateur])
-
-  @@id([idJoueur1, idJoueur2])
 }
 
 model Succes {
