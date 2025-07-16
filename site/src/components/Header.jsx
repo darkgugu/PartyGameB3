@@ -5,6 +5,7 @@ import { Currency } from './Currency'
 import Modal from 'react-modal'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useUser } from '../context/UserContext'
 
 export const Header = () => {
 	const customStyles = {
@@ -22,18 +23,21 @@ export const Header = () => {
 	const [modalIsOpen, setModalIsOpen] = useState(false)
 	const [modalType, setModalType] = useState('login')
 	const [email, setEmail] = useState('')
+	const [pseudo, setPseudo] = useState('')
 	const [password, setPassword] = useState('')
-	const [confirmPassword, setConfirmPassword] = useState('') // New for signup
+	const [confirmPassword, setConfirmPassword] = useState('')
 	const [error, setError] = useState(null)
 
 	const { user, login, loginWithGoogle, anonymousLogin, logout, register } =
-		useAuth() // Add `register` if it exists
+		useAuth()
+	const { userData, loading } = useUser()
 
-	function openModal(type) {
+	const openModal = (type) => {
 		setModalType(type)
 		setModalIsOpen(true)
 	}
-	function closeModal() {
+
+	const closeModal = () => {
 		setModalIsOpen(false)
 		setEmail('')
 		setPassword('')
@@ -58,7 +62,7 @@ export const Header = () => {
 			return
 		}
 		try {
-			await register(email, password) // Make sure `register` is in your `AuthContext`
+			await register(email, password, pseudo)
 			closeModal()
 		} catch (err) {
 			setError(err.message)
@@ -83,24 +87,31 @@ export const Header = () => {
 		}
 	}
 
+	if (loading) return null
+
 	return (
 		<div className="Header">
 			<Link to="/">
 				<div id="left-part">
-					<img id="logo" src={dice} alt="" />
+					<img id="logo" src={dice} alt="logo" />
 					<h1>Party Game B3</h1>
 				</div>
 			</Link>
+
 			<div id="right-part">
 				<Currency type="diamond" />
 				<Currency type="dollar" />
 
-				{user ? (
+				{user && userData ? (
 					<>
 						<p style={{ marginRight: '1rem' }}>
-							{user.isAnonymous
-								? 'Invité'
-								: user.email || 'Connecté'}
+							{user.isAnonymous ? (
+								'Invité'
+							) : (
+								<Link to={`/profile/${userData.pseudo}`}>
+									{userData.pseudo}
+								</Link>
+							)}
 						</p>
 						<button onClick={logout}>Déconnexion</button>
 					</>
@@ -127,7 +138,7 @@ export const Header = () => {
 				contentLabel="Authentication Modal"
 			>
 				{modalType === 'login' ? (
-					<div className={'modal'}>
+					<div className="modal">
 						<h2>Connexion à votre compte</h2>
 						<form onSubmit={handleLogin}>
 							<label htmlFor="email">Email</label>
@@ -164,9 +175,17 @@ export const Header = () => {
 						</div>
 					</div>
 				) : (
-					<div className={'modal'}>
+					<div className="modal">
 						<h2>Créer un compte</h2>
 						<form onSubmit={handleRegister}>
+							<label htmlFor="register-pseudo">Pseudo</label>
+							<input
+								type="text"
+								id="register-pseudo"
+								value={pseudo}
+								onChange={(e) => setPseudo(e.target.value)}
+								required
+							/>
 							<label htmlFor="register-email">Email</label>
 							<input
 								type="email"

@@ -9,6 +9,8 @@ import {
 	GoogleAuthProvider,
 	signInWithPopup,
 } from 'firebase/auth'
+import axios from 'axios'
+import { useNavigate } from 'react-router'
 
 const API_URL = process.env.REACT_APP_API_URL
 
@@ -18,6 +20,7 @@ export const useAuth = () => useContext(AuthContext)
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null)
 	const [loading, setLoading] = useState(true)
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -28,10 +31,38 @@ export const AuthProvider = ({ children }) => {
 	}, [])
 
 	// Auth methods
-	const login = (email, password) =>
-		signInWithEmailAndPassword(auth, email, password)
+	const login = (email, password) => {
+		return signInWithEmailAndPassword(auth, email, password).then(
+			async () => {
+				try {
+					const res = await axios.get(
+						`${process.env.REACT_APP_API_URL}/users/getByUID/${auth.currentUser.uid}`,
+					)
+					return res.data
+				} catch (error) {
+					console.error('Error fetching user:', error)
+				}
+			},
+		)
+	}
 
-	const register = async (email, password) => {
+	const register = async (email, password, pseudo) => {
+		// Verify email before creating user
+		const verifyEmailRes = await axios.post(`${API_URL}/verify/email`, {
+			email,
+		})
+		if (verifyEmailRes.status === 409) {
+			throw new Error('Email verification failed')
+		}
+
+		// Verify pseudo before creating user
+		const verifyPseudoRes = await axios.post(`${API_URL}/verify/pseudo`, {
+			pseudo,
+		})
+		if (verifyPseudoRes.status === 409) {
+			throw new Error('Pseudo verification failed')
+		}
+
 		// 1. Create user in Firebase
 		const userCredential = await createUserWithEmailAndPassword(
 			auth,
@@ -50,7 +81,7 @@ export const AuthProvider = ({ children }) => {
 			},
 			body: JSON.stringify({
 				idToken,
-				pseudo: email.split('@')[0], // basic pseudo fallback
+				pseudo: pseudo,
 				email: email,
 			}),
 		})
@@ -64,7 +95,10 @@ export const AuthProvider = ({ children }) => {
 		console.log('Backend registration:', data)
 	}
 
-	const logout = () => signOut(auth)
+	const logout = () => {
+		signOut(auth)
+		navigate('/')
+	}
 	const anonymousLogin = () => signInAnonymously(auth)
 	const loginWithGoogle = () => {
 		const provider = new GoogleAuthProvider()

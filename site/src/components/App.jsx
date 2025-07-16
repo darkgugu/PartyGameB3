@@ -2,6 +2,8 @@ import { BabylonScene } from './BabylonScene'
 import { Labyrinth } from './minigames/Labyrinth'
 import { Home } from './Home'
 import { CreateRoom } from './CreateRoom'
+import { Profile } from './Profile'
+import { Error404 } from './Error404'
 //import CreateGame from './CreateGame'
 import {
 	// eslint-disable-next-line no-unused-vars
@@ -10,12 +12,13 @@ import {
 	Route,
 	useLocation,
 } from 'react-router'
+import { ErrorProfile } from './ErrorProfile'
 
 export const App = () => {
 	const location = useLocation()
 
 	// Define routes where you want the background scene
-	const isMenuRoute = ['/', '/createRoom', '/joinRoom'].includes(
+	const isMenuRoute = ['/', '/createRoom', '/joinRoom', '/profile/'].includes(
 		location.pathname,
 	)
 
@@ -26,6 +29,9 @@ export const App = () => {
 				<Route path="/" element={<Home />} />
 				<Route path="/createRoom" element={<CreateRoom />} />
 				<Route path="/minigame/labyrinth" element={<Labyrinth />} />
+				<Route path="/profile/:pseudo" element={<Profile />} />
+				<Route path="/profile404" element={<ErrorProfile />} />
+				<Route path="*" element={<Error404 />} />
 			</Routes>
 		</div>
 	)
