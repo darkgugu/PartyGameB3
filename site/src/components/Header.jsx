@@ -5,7 +5,7 @@ import { Currency } from './Currency'
 import Modal from 'react-modal'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { useUser } from '../context/UserContext' // 🔥 use UserContext instead of local state
+import { useUser } from '../context/UserContext'
 
 export const Header = () => {
 	const customStyles = {
@@ -30,8 +30,7 @@ export const Header = () => {
 
 	const { user, login, loginWithGoogle, anonymousLogin, logout, register } =
 		useAuth()
-	// eslint-disable-next-line no-unused-vars
-	const { userData, loading } = useUser() // 👈 Use context instead of axios
+	const { userData } = useUser()
 
 	const openModal = (type) => {
 		setModalType(type)

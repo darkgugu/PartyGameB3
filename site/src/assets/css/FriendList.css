@@ -22,6 +22,39 @@
   cursor: pointer;
   font-size: 0.8rem;
 }
+.FriendList .header .search-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+.FriendList .header .friend-search-input {
+  flex: 1;
+  padding: 4px 6px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  font-size: 12px;
+  background: #fefefe;
+  color: #333;
+  width: 50%;
+}
+.FriendList .header .add-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 4px 6px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.FriendList .header .add-btn:hover {
+  background-color: #218838;
+}
+.FriendList .header .cancel-icon {
+  color: #c0392b;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
 .FriendList ul {
   list-style: none;
   margin: 0;

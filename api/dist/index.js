@@ -247,6 +247,35 @@ app.get('/relations/:id/friends', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+app.get('/relations/:id/blocked', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const blocked = await prisma.relations_Joueurs.findMany({
+            where: {
+                idJoueur1: Number(id),
+                relation: 'friend',
+            },
+            select: {
+                id: true,
+                joueur2: {
+                    select: {
+                        idUtilisateur: true,
+                        firebase_uid: true,
+                        pseudo: true,
+                    },
+                },
+            },
+        });
+        if (!blocked) {
+            return res.status(404).json({ error: 'No blocked users found' });
+        }
+        res.json(blocked);
+    }
+    catch (error) {
+        console.error('Error fetching blocked users:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 app.delete('/relations/:relationId/friends/', async (req, res) => {
     try {
         const { relationId } = req.params;
@@ -266,6 +295,74 @@ app.delete('/relations/:relationId/friends/', async (req, res) => {
     }
     catch (error) {
         console.error('Error deleting friend relation:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+app.post('/relations', async (req, res) => {
+    const { idJoueur1, idJoueur2, relation } = req.body;
+    if (!idJoueur1 || !idJoueur2 || !relation) {
+        return res.status(400).json({ error: 'Missing user IDs or relation type' });
+    }
+    try {
+        // Normalize input
+        const player1 = Number(idJoueur1);
+        const player2 = Number(idJoueur2);
+        // 1. Fetch existing relations between these two users (both directions)
+        const existing = await prisma.relations_Joueurs.findMany({
+            where: {
+                OR: [
+                    { idJoueur1: player1, idJoueur2: player2 },
+                    { idJoueur1: player2, idJoueur2: player1 },
+                ],
+            },
+        });
+        // Build reverse check and same-direction checks
+        const sameDirection = existing.find(r => r.idJoueur1 === player1 && r.idJoueur2 === player2);
+        const reverseDirection = existing.find(r => r.idJoueur1 === player2 && r.idJoueur2 === player1);
+        // ❌ 1. Prevent duplicate friend
+        if (relation === 'friend' && sameDirection?.relation === 'friend') {
+            return res.status(409).json({ error: 'Friend relation already exists' });
+        }
+        // ❌ 2. Prevent duplicate block
+        if (relation === 'blocked' && sameDirection?.relation === 'blocked') {
+            return res.status(409).json({ error: 'Block relation already exists' });
+        }
+        // ❌ 3. Prevent friend if player1 already blocked player2
+        if (relation === 'friend' && sameDirection?.relation === 'blocked') {
+            return res.status(403).json({ error: 'You have blocked this user' });
+        }
+        // ❌ 4. Prevent friend if player2 already blocked player1
+        if (relation === 'friend' && reverseDirection?.relation === 'blocked') {
+            return res.status(403).json({ error: 'This user has blocked you' });
+        }
+        // ✅ 5. If blocking and player1 has a friend relation — remove friend first
+        if (relation === 'blocked' && sameDirection?.relation === 'friend') {
+            await prisma.$transaction([
+                prisma.relations_Joueurs.delete({
+                    where: { id: sameDirection.id },
+                }),
+                prisma.relations_Joueurs.create({
+                    data: {
+                        idJoueur1: player1,
+                        idJoueur2: player2,
+                        relation: 'blocked',
+                    },
+                }),
+            ]);
+            return res.status(201).json({ message: 'Friend removed and user blocked' });
+        }
+        // ✅ Otherwise just create the relation
+        const newRelation = await prisma.relations_Joueurs.create({
+            data: {
+                idJoueur1: player1,
+                idJoueur2: player2,
+                relation,
+            },
+        });
+        res.status(201).json(newRelation);
+    }
+    catch (error) {
+        console.error('Error creating relation:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
