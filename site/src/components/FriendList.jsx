@@ -14,8 +14,6 @@ export const FriendList = () => {
 	const [friends, setFriends] = useState([])
 	const { userData } = useUser()
 
-	console.log('Friends Data:', friends)
-
 	useEffect(() => {
 		const userId = userData?.idUtilisateur
 		if (!userId) return
@@ -29,6 +27,21 @@ export const FriendList = () => {
 				console.error('Error fetching friends:', error)
 			})
 	}, [userData])
+
+	const handleDeleteFriend = (relationId) => {
+		axios
+			.delete(
+				`${process.env.REACT_APP_API_URL}/relations/${relationId}/friends`,
+			)
+			.then(() => {
+				setFriends((prevFriends) =>
+					prevFriends.filter((friend) => friend.id !== relationId),
+				)
+			})
+			.catch((error) => {
+				console.error('Error deleting friend:', error)
+			})
+	}
 
 	return (
 		<div className="FriendList">
@@ -45,10 +58,15 @@ export const FriendList = () => {
 								icon={faCircleSolid}
 								className={friend.online ? 'online' : 'offline'}
 							/>
-							<FontAwesomeIcon
-								icon={faEllipsisV}
-								className="menu-icon"
-							/>
+							<button
+								className="menu-button"
+								onClick={() => handleDeleteFriend(friend.id)}
+							>
+								<FontAwesomeIcon
+									icon={faEllipsisV}
+									className="menu-icon"
+								/>
+							</button>
 						</div>
 					</li>
 				))}

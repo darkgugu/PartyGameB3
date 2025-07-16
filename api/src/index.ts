@@ -57,9 +57,9 @@ app.post('/users', async (req, res) => {
 				firebase_uid: '',
 				points_succes: 0,
 				avatar: '',
+				birthdate: null, // Optional field
 				country: null, // Optional field
 				about: null, // Optional field
-				age: null, // Optional field
 			},
 		})
 		res.status(201).json(newUser)
@@ -78,7 +78,7 @@ app.put('/users/:uid', async (req, res) => {
 		avatar,
 		country,
 		about,
-		age,
+		birthdate,
 		points_succes,
 		email,
 	} = req.body
@@ -93,7 +93,7 @@ app.put('/users/:uid', async (req, res) => {
 				avatar,
 				country,
 				about,
-				age,
+				birthdate,
 				points_succes,
 				email,
 			},
@@ -268,6 +268,7 @@ app.get('/relations/:id/friends', async (req: any, res: any) => {
 				relation: 'friend',
 			},
 			select: {
+				id: true,
 				joueur2: {
 					select: {
 						idUtilisateur: true,
@@ -289,6 +290,32 @@ app.get('/relations/:id/friends', async (req: any, res: any) => {
 		res.status(500).json({ error: 'Internal server error' })
 	}
 })
+
+app.delete('/relations/:relationId/friends/', async (req: any, res: any) => {
+	try {
+		const { relationId } = req.params;
+
+		if (!relationId) {
+			return res.status(400).json({ error: 'Missing relation ID' });
+		}
+		
+		const deletedRelations = await prisma.relations_Joueurs.deleteMany({
+			where: {
+				id: Number(relationId),
+				relation: 'friend',
+			}
+		});
+
+		if (deletedRelations.count === 0) {
+			return res.status(404).json({ error: 'Friend relation not found' });
+		}
+
+		res.json({ message: 'Friend relation deleted' });
+	} catch (error) {
+		console.error('Error deleting friend relation:', error);
+		res.status(500).json({ error: 'Internal server error' });
+	}
+});
 
 // Get all game sessions
 /* app.get('/game-sessions', async (_, res) => {
