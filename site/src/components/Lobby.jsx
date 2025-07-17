@@ -7,8 +7,7 @@ import { useNavigate } from 'react-router'
 import { connectToColyseus, disconnectFromColyseus } from '../colyseus'
 
 export const Lobby = () => {
-	const COLYSEUS_URL =
-		process.env.REACT_APP_COLYSEUS_URL || 'ws://localhost:2567'
+	const COLYSEUS_URL = process.env.REACT_APP_COLYSEUS_URL
 	const [rooms, setRooms] = useState([])
 	const { user } = useAuth()
 	const navigate = useNavigate()
