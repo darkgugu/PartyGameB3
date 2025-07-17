@@ -1,7 +1,6 @@
 import { Link } from 'react-router'
 import '../assets/css/Header.css'
 import dice from '../assets/images/dice.png'
-import { Currency } from './Currency'
 import Modal from 'react-modal'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
