@@ -258,6 +258,31 @@ app.get('/users/getByUID/:uid', async (req: any, res: any) => {
 	}
 })
 
+app.post('/users/byUIDs', async (req: any, res: any) => {
+	const { uids } = req.body;
+
+	if (!Array.isArray(uids) || uids.length === 0) {
+		return res.status(400).json({ error: 'Missing or invalid uids array' });
+	}
+
+	try {
+		const users = await prisma.utilisateur.findMany({
+			where: {
+				firebase_uid: { in: uids },
+			},
+		});
+		res.json(users);
+	} catch (error) {
+		console.error('Error fetching users by UIDs:', error);
+		res.status(500).json({ error: 'Internal server error' });
+	}
+});
+
+// Example request body:
+// {
+//   "uids": ["uid1", "uid2", "uid3"]
+// }
+
 app.get('/relations/:id/friends', async (req: any, res: any) => {
 	try {
 		const { id } = req.params

@@ -19,6 +19,15 @@ export const CreateRoom = () => {
 	const [maxClients, setMaxClients] = useState(5)
 	const [packChoices, setPackChoices] = useState([])
 	const [password, setPassword] = useState('')
+	const [minigames, setMinigames] = useState([])
+
+	useEffect(() => {
+		setMinigames([
+			{ name: 'Labyrinth', played: false },
+			{ name: 'Puzzle', played: false },
+			{ name: 'Quizz', played: false },
+		])
+	}, [])
 
 	const packs = [
 		{
@@ -51,6 +60,7 @@ export const CreateRoom = () => {
 		packChoices,
 		isPrivate,
 		password,
+		minigames,
 	}) => {
 		try {
 			const idToken = await user.getIdToken()
@@ -64,6 +74,7 @@ export const CreateRoom = () => {
 				password,
 				maxClients: maxClients,
 				idToken,
+				minigames,
 			}
 			await connectToColyseus('party', metadata)
 			// The redirect will happen in the useEffect above!
@@ -87,6 +98,7 @@ export const CreateRoom = () => {
 							packChoices,
 							isPrivate,
 							password: isPrivate ? password : undefined,
+							minigames,
 						})
 					}}
 				>
