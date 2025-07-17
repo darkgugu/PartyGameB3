@@ -1,43 +1,50 @@
 import React, { useEffect, useRef } from 'react'
 import * as BABYLON from '@babylonjs/core'
 import '@babylonjs/loaders'
+import { useColyseusRoom, useColyseusState } from '../../colyseus'
 
 export const Labyrinth = () => {
 	const canvasRef = useRef(null)
+	const room = useColyseusRoom()
+	const state = useColyseusState()
+	const remotePlayers = useRef({}) // sessionId -> mesh
 
 	useEffect(() => {
 		const canvas = canvasRef.current
-		if (!canvas) return
+		if (!canvas || !room || !state || !state.players) return
 
 		const engine = new BABYLON.Engine(canvas, true)
 		const scene = new BABYLON.Scene(engine)
 		scene.collisionsEnabled = true
 		scene.gravity = new BABYLON.Vector3(0, -0.5, 0)
 
-		// Lock pointer on click
-		canvas.addEventListener('click', () => {
-			if (document.pointerLockElement !== canvas) {
-				canvas.requestPointerLock()
-			}
-		})
+		// --- Helper for getting my state object
+		const myStatePlayer = state.players.get
+			? state.players.get(room.sessionId)
+			: state.players[room.sessionId]
+		const initialPos = myStatePlayer
+			? new BABYLON.Vector3(
+					myStatePlayer.x,
+					myStatePlayer.y,
+					myStatePlayer.z,
+				)
+			: new BABYLON.Vector3(-20, 0.4, 20)
 
-		// Player setup
+		// Local player mesh
 		const player = BABYLON.MeshBuilder.CreateBox(
 			'player',
 			{ height: 0.3, width: 0.3, depth: 0.3 },
 			scene,
 		)
-		player.position = new BABYLON.Vector3(-20, 0.4, 20)
+		player.position = initialPos.clone()
 		player.checkCollisions = true
 		player.ellipsoid = new BABYLON.Vector3(0.2, 0.6, 0.2)
-		player.ellipsoidOffset = new BABYLON.Vector3(0, 0.4, 0) // Collider center above bottom
-
-		// Color the player
+		player.ellipsoidOffset = new BABYLON.Vector3(0, 0.4, 0)
 		const material = new BABYLON.StandardMaterial('playerMat', scene)
 		material.diffuseColor = new BABYLON.Color3(1.0, 0.2, 0.7)
 		player.material = material
 
-		// Camera setup
+		// Camera follows player
 		const camera = new BABYLON.FreeCamera(
 			'tpsCamera',
 			player.position.add(new BABYLON.Vector3(0, 2, -5)),
@@ -58,9 +65,7 @@ export const Labyrinth = () => {
 				yaw += deltaX * sensitivity
 			}
 		}
-
 		window.addEventListener('mousemove', onMouseMove)
-
 		document.addEventListener('pointerlockchange', () => {
 			isPointerLocked = document.pointerLockElement === canvas
 		})
@@ -76,7 +81,7 @@ export const Labyrinth = () => {
 			(e) => (inputMap[e.key.toLowerCase()] = false),
 		)
 
-		// Load labyrinth
+		// Load labyrinth mesh
 		BABYLON.SceneLoader.ImportMesh(
 			null,
 			'/assets/',
@@ -101,28 +106,69 @@ export const Labyrinth = () => {
 		)
 		ground.position.y = 0
 		ground.checkCollisions = true
-
-		// Color the ground
 		const groundMaterial = new BABYLON.StandardMaterial('groundMat', scene)
-		groundMaterial.diffuseColor = new BABYLON.Color3(0.6, 0.4, 0.2) // Light brown color
+		groundMaterial.diffuseColor = new BABYLON.Color3(0.6, 0.4, 0.2)
 		ground.material = groundMaterial
 
-		// Light
+		// Lighting
 		new BABYLON.HemisphericLight(
 			'light',
 			new BABYLON.Vector3(0, 1, 0),
 			scene,
 		)
 
-		// Game loop
+		// --- REMOTE PLAYERS LOGIC ---
+		remotePlayers.current = {} // Clear on mount
+
+		const addRemotePlayer = (sessionId) => {
+			if (sessionId === room.sessionId) return // skip self
+			if (remotePlayers.current[sessionId]) return
+			const mesh = BABYLON.MeshBuilder.CreateBox(
+				'remotePlayer',
+				{ height: 0.3, width: 0.3, depth: 0.3 },
+				scene,
+			)
+			const mat = new BABYLON.StandardMaterial('remoteMat', scene)
+			mat.diffuseColor = new BABYLON.Color3(0.2, 0.5, 1.0)
+			mesh.material = mat
+			remotePlayers.current[sessionId] = mesh
+		}
+		const removeRemotePlayer = (sessionId) => {
+			const mesh = remotePlayers.current[sessionId]
+			if (mesh) {
+				mesh.dispose()
+				delete remotePlayers.current[sessionId]
+			}
+		}
+
+		let cleanupFns = []
+		if (state.players) {
+			// -- (1) Add ALL remote players at mount --
+			// MapSchema: use for...of or forEach for all
+			state.players.forEach?.((playerObj, sessionId) => {
+				if (sessionId !== room.sessionId) addRemotePlayer(sessionId)
+			})
+			// -- (2) Add listeners for live join/leave --
+			state.players.onAdd = (playerObj, sessionId) => {
+				if (sessionId !== room.sessionId) addRemotePlayer(sessionId)
+			}
+			state.players.onRemove = (playerObj, sessionId) => {
+				if (sessionId !== room.sessionId) removeRemotePlayer(sessionId)
+			}
+			cleanupFns.push(() => {
+				state.players.onAdd = undefined
+				state.players.onRemove = undefined
+			})
+		}
+
+		// -------- MAIN GAME LOOP --------
 		scene.onBeforeRenderObservable.add(() => {
 			const delta = engine.getDeltaTime() / 1000
 			const speed = 4
 
-			// Apply rotation
+			// Move local player only with input
 			player.rotation.y = yaw
 
-			// Local movement directions
 			let moveDirection = BABYLON.Vector3.Zero()
 			const forward = new BABYLON.Vector3(
 				Math.sin(player.rotation.y),
@@ -145,7 +191,6 @@ export const Labyrinth = () => {
 				player.moveWithCollisions(moveDirection)
 			}
 
-			// Apply gravity
 			player.moveWithCollisions(scene.gravity.scale(delta))
 
 			// Camera follows behind player smoothly
@@ -161,9 +206,31 @@ export const Labyrinth = () => {
 				desiredCamPos,
 				0.1,
 			)
-
-			// Look at the player
 			camera.setTarget(player.position.add(new BABYLON.Vector3(0, 1, 0)))
+
+			// -- SEND my position/rotation to server --
+			if (room && room.connection) {
+				room.send('move', {
+					x: player.position.x,
+					y: player.position.y,
+					z: player.position.z,
+					rotation: player.rotation.y,
+				})
+			}
+
+			// -- UPDATE remote players --
+			if (state.players) {
+				state.players.forEach?.((playerObj, sessionId) => {
+					if (sessionId === room.sessionId) return // skip self!
+					const mesh = remotePlayers.current[sessionId]
+					if (mesh && playerObj) {
+						mesh.position.x = playerObj.x
+						mesh.position.y = playerObj.y
+						mesh.position.z = playerObj.z
+						mesh.rotation.y = playerObj.rotation
+					}
+				})
+			}
 		})
 
 		engine.runRenderLoop(() => scene.render())
@@ -174,8 +241,14 @@ export const Labyrinth = () => {
 			window.removeEventListener('mousemove', onMouseMove)
 			scene.dispose()
 			engine.dispose()
+			Object.values(remotePlayers.current).forEach((mesh) =>
+				mesh.dispose(),
+			)
+			remotePlayers.current = {}
+			cleanupFns.forEach((fn) => fn())
 		}
-	}, [])
+		// NOTE: depend on state.players, not just state!
+	}, [room, state.players])
 
 	return (
 		<canvas

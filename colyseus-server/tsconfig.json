@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                       // Modern JS output
+    "module": "CommonJS",                     // For Node.js compatibility
+    "moduleResolution": "node",
+    "lib": ["ES2020", "DOM"],                 // Include DOM types if needed (e.g. WebSocket)
+    "outDir": "dist",                         // Output directory for compiled JS
+    "rootDir": "./",                          // Project root
+    "strict": true,                           // Enable all strict type-checking options
+    "esModuleInterop": true,                  // Allow default imports from CommonJS modules
+    "skipLibCheck": true,                     // Skip type checks for declaration files
+    "forceConsistentCasingInFileNames": true,  // Enforce consistent casing
+    //"target": "es6",
+    //"module": "commonjs",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

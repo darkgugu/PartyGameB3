@@ -12,6 +12,9 @@ import {
 	Route,
 	useLocation,
 } from 'react-router'
+
+import { Room } from './Room'
+import { JoinRoom } from './JoinRoom'
 import { ErrorProfile } from './ErrorProfile'
 
 export const App = () => {
@@ -23,13 +26,18 @@ export const App = () => {
 	)
 
 	return (
-		<div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+		<div
+			id="app"
+			style={{ width: '100vw', height: '100vh', position: 'relative' }}
+		>
 			{isMenuRoute && <BabylonScene />}
 			<Routes>
 				<Route path="/" element={<Home />} />
 				<Route path="/createRoom" element={<CreateRoom />} />
+				<Route path="/joinRoom" element={<JoinRoom />} />
 				<Route path="/minigame/labyrinth" element={<Labyrinth />} />
-				<Route path="/profile/:pseudo" element={<Profile />} />
+				<Route path="/room/:roomId" element={<Room />} />
+        <Route path="/profile/:pseudo" element={<Profile />} />
 				<Route path="/profile404" element={<ErrorProfile />} />
 				<Route path="*" element={<Error404 />} />
 			</Routes>

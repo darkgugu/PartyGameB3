@@ -4,13 +4,13 @@ import { PrismaClient } from '@prisma/client'
 import { verifyIdToken } from './firebaseAdmin'
 import express from 'express'
 import cors from 'cors'
+import axios from 'axios'
 
 
 const app = express()
 const prisma = new PrismaClient()
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || []
-console.log('Allowed Origins:', process.env.ALLOWED_ORIGINS);
 
 const corsOptions = {
 	origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
@@ -447,40 +447,57 @@ app.post('/relations', async (req: any, res: any) => {
 	}
 })
 
+app.post('/rooms', async (req, res): Promise<any> => {
+	const { idToken, roomType, roomName, maxClients, customRules } = req.body
 
-
-
-// Get all game sessions
-/* app.get('/game-sessions', async (_, res) => {
-	try {
-		const sessions = await prisma.session.findMany({
-			include: {
-				players: true,
-			},
-		})
-		res.json(sessions)
-	} catch (error) {
-		res.status(500).json({ error: 'Error fetching game sessions' })
+	if (!idToken || !roomType) {
+		return res.status(400).json({ error: 'Missing required fields' })
 	}
-}) */
 
-// Add a score to a user in a game session
-/* app.post('/scores', async (req, res) => {
-	const { userId, gameSessionId, score, miniGameId } = req.body
 	try {
-		const newScore = await prisma.score.create({
-			data: {
-				userId,
-				gameSessionId,
-				miniGameId,
-				value: score,
-			},
+		// 1. Verify Firebase token
+		const decoded = await verifyIdToken(idToken)
+		const firebase_uid = decoded.uid
+		const pseudo = decoded.name || decoded.email || "Anonymous"
+
+
+		console.log("Max clients :", maxClients)
+		// 2. Prepare metadata
+		const metadata = {
+			roomName,
+			createdBy: firebase_uid,
+			creatorName: pseudo,
+			customRules,
+			maxClients
+		}
+
+		// 3. Create room via Colyseus matchmaking API
+		const COLYSEUS_URL = process.env.COLYSEUS_URL || "https://partygameb3-production-40fb.up.railway.app"
+		const response = await axios.post(`${COLYSEUS_URL}/matchmake/create/${roomType}`, {
+			metadata,
+			maxClients,
 		})
-		res.status(201).json(newScore)
+
+		const room = response.data.room
+
+		console.log("Response :", response.data)
+
+		return res.status(201).json({
+			roomId: room.roomId,
+			joinOptions: {
+				// You can include any info you want the frontend to send to Colyseus during `join`
+				idToken, // For onAuth()
+			}
+		})
 	} catch (error) {
-		res.status(400).json({ error: 'Could not add score' })
+		if (axios.isAxiosError(error)) {
+			console.error("Room creation error:", error.response?.data || error.message)
+		} else {
+			console.error("Room creation error:", error)
+		}
+		return res.status(500).json({ error: "Failed to create room" })
 	}
-}) */
+})
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {

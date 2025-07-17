@@ -19,12 +19,20 @@ export const useAuth = () => useContext(AuthContext)
 
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null)
+	const [idToken, setIdToken] = useState(null) // 🆕 added
 	const [loading, setLoading] = useState(true)
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, (user) => {
+		// ✅ use onAuthStateChanged to set user and fetch idToken
+		const unsubscribe = onAuthStateChanged(auth, async (user) => {
 			setUser(user)
+			if (user) {
+				const token = await user.getIdToken()
+				setIdToken(token) // 🆕 store token in state
+			} else {
+				setIdToken(null)
+			}
 			setLoading(false)
 		})
 		return unsubscribe
@@ -69,11 +77,8 @@ export const AuthProvider = ({ children }) => {
 			email,
 			password,
 		)
-
-		// 2. Get Firebase ID token
 		const idToken = await userCredential.user.getIdToken()
 
-		// 3. Call your backend /register route
 		const response = await fetch(`${API_URL}/register`, {
 			method: 'POST',
 			headers: {
@@ -105,8 +110,10 @@ export const AuthProvider = ({ children }) => {
 		return signInWithPopup(auth, provider)
 	}
 
+	// ✅ Expose idToken in context value
 	const value = {
 		user,
+		idToken,
 		login,
 		register,
 		logout,
