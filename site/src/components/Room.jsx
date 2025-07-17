@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+import '../assets/css/Room.css'
+import React, { useState, useEffect } from 'react'
 import {
 	useColyseusRoom,
 	useColyseusState,
@@ -7,19 +8,20 @@ import {
 import { useNavigate, useParams } from 'react-router'
 
 export const Room = () => {
-	const { id } = useParams() // /room/:id
+	const { id } = useParams()
 	const navigate = useNavigate()
 	const room = useColyseusRoom()
 	const state = useColyseusState()
+	const [playerList, setPlayerList] = useState([])
 
-	// Join the room by ID if not joined
+	// Join the room if not already joined
 	useEffect(() => {
 		if (!room && id) {
 			connectToColyseus('party', { roomId: id })
 		}
 	}, [room, id])
 
-	// Redirect to minigame if phase changes
+	// Navigate to minigame if phase changes
 	useEffect(() => {
 		if (
 			state?.phase === 'minigame' &&
@@ -29,48 +31,80 @@ export const Room = () => {
 		}
 	}, [state?.phase, state?.currentMinigame, navigate])
 
-	if (!room || !state) return <div>Joining room...</div>
+	// Sync player list from MapSchema
+	useEffect(() => {
+		if (!state?.players) return
 
-	console.log('Room :', room)
-	console.log('Room state:', room.state)
+		const updatePlayerList = () => {
+			const playersArray = Array.from(state.players.entries()).map(
+				([sessionId, player]) => ({
+					sessionId,
+					name: player.name,
+					uid: player.uid,
+					score: player.score,
+					x: player.x,
+					y: player.y,
+					z: player.z,
+					rotation: player.rotation,
+				}),
+			)
+			while (playersArray.length < state.maxPlayers) {
+				playersArray.push(null)
+			}
+			setPlayerList(playersArray)
+		}
+
+		updatePlayerList()
+
+		state.players.onAdd = updatePlayerList
+		state.players.onRemove = updatePlayerList
+		state.players.onChange = updatePlayerList
+
+		return () => {
+			state.players.onAdd = () => {}
+			state.players.onRemove = () => {}
+			state.players.onChange = () => {}
+		}
+	}, [state?.players])
+
+	if (!room || !state) return <div>Joining room...</div>
 
 	const mySessionId = room.sessionId
 	const ownerId = state.ownerId
-	console.log('Owner ID:', ownerId)
-	console.log('State.phase:', state.phase)
-
-	const players = state.players
-		? Object.entries(state.players).map(([sessionId, player]) => ({
-				...player,
-				sessionId,
-			}))
-		: []
 
 	const handleStartGame = () => {
 		room?.send('startGame', { minigame: 'labyrinth' })
 	}
 
 	return (
-		<div style={{ maxWidth: 400, margin: '40px auto' }}>
+		<div className="Room">
 			<h2>Waiting Room</h2>
-			<ul>
-				{players.map((player) => (
-					<li key={player.sessionId}>
-						{player.name}
-						{player.sessionId === ownerId ? ' (owner)' : ''}
-						{player.sessionId === mySessionId ? ' (you)' : ''}
-					</li>
-				))}
+
+			<ul className="player-list">
+				{playerList.map((player, index) =>
+					!player ? (
+						<li key={`empty-${index}`} className="player-item">
+							{index + 1}/{state.maxPlayers} Waiting for
+							players...
+						</li>
+					) : (
+						<li key={player.sessionId} className="player-item">
+							{player.name}
+							{player.sessionId === ownerId ? ' (owner)' : ''}
+							{player.sessionId === mySessionId ? ' (you)' : ''}
+						</li>
+					),
+				)}
 			</ul>
-			{mySessionId === ownerId && (
+
+			{mySessionId === ownerId ? (
 				<button
 					style={{ marginTop: 20, padding: '12px 32px' }}
 					onClick={handleStartGame}
 				>
 					Start Labyrinth Minigame
 				</button>
-			)}
-			{mySessionId !== ownerId && (
+			) : (
 				<p style={{ marginTop: 20 }}>
 					Waiting for the owner to start the game...
 				</p>

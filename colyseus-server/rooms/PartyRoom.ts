@@ -1,6 +1,7 @@
 import { Room, Client } from "colyseus";
 import { Schema, MapSchema, type } from "@colyseus/schema";
 import { admin } from "../firebaseAdmin"; // adjust path as needed
+import { ArraySchema } from "@colyseus/schema";
 
 // --- Player schema with position/rotation ---
 class Player extends Schema {
@@ -20,6 +21,13 @@ class PartyRoomState extends Schema {
   @type("string") currentMinigame = "";
   @type({ map: Player }) players = new MapSchema<Player>();
   @type("string") ownerId = ""; // sessionId of the room creator
+  @type("string") roomName = "Nom de la salle";
+  @type("number") maxPlayers = 4; // default max players
+  @type("string") roomType = "Type de salle";
+  @type("string") map = "Nom de la carte";
+  @type([ "string" ]) pack = new ArraySchema<string>();
+  @type("boolean") isPrivate = false;
+  @type("string") password = "Password de la salle";
 }
 
 export class PartyRoom extends Room<PartyRoomState> {
@@ -28,8 +36,29 @@ export class PartyRoom extends Room<PartyRoomState> {
 
   onCreate(options: any) {
     console.log("Room created!");
+    console.log("Options:", options);
     this.setState(new PartyRoomState());
     this.maxClients = options.maxClients || 4;
+
+    this.setMetadata({
+      roomName: options.roomName || "Salle sans nom",
+      maxClients: options.maxClients || 4,
+      customRules: options.customRules || {},
+      roomType: options.roomType || "Party",
+      map: options.map || "Default Map",
+      pack: options.pack || [],
+      isPrivate: options.isPrivate || false,
+      password: options.password || "defaultPassword",
+    });
+
+    this.state.roomName = options.roomName || "Salle sans nom";
+    this.state.maxPlayers = options.maxClients || 4;
+    this.state.roomType = options.roomType || "Party";
+    this.state.map = options.map || "Default Map";
+    this.state.pack = options.pack || [];
+    this.state.isPrivate = options.isPrivate || false;
+    this.state.password = options.password || "defaultPassword";
+    
 
     // Owner starts the game
     this.onMessage("startGame", (client, data) => {

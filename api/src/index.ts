@@ -447,7 +447,7 @@ app.post('/relations', async (req: any, res: any) => {
 	}
 })
 
-app.post('/rooms', async (req, res): Promise<any> => {
+/* app.post('/rooms', async (req, res): Promise<any> => {
 	const { idToken, roomType, roomName, maxClients, customRules } = req.body
 
 	if (!idToken || !roomType) {
@@ -497,7 +497,9 @@ app.post('/rooms', async (req, res): Promise<any> => {
 		}
 		return res.status(500).json({ error: "Failed to create room" })
 	}
-})
+}) */
+
+
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
