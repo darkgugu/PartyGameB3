@@ -124,7 +124,6 @@ app.post('/register', (0, cors_1.default)(corsOptions), async (req, res) => {
         return res.status(401).json({ error: 'Invalid token or internal error' });
     }
 });
-      
 app.post('/verify/email', async (req, res) => {
     const { email } = req.body;
     if (!email) {
@@ -305,11 +304,10 @@ app.post('/relations', async (req, res) => {
         return res.status(400).json({ error: 'Missing user IDs or relation type' });
     }
     try {
-        // Normalize input
         const player1 = Number(idJoueur1);
         const player2 = Number(idJoueur2);
-        // 1. Fetch existing relations between these two users (both directions)
-        const existing = await prisma.relations_Joueurs.findMany({
+        // 1. Get existing relations in both directions
+        const existingRelations = await prisma.relations_Joueurs.findMany({
             where: {
                 OR: [
                     { idJoueur1: player1, idJoueur2: player2 },
@@ -317,42 +315,52 @@ app.post('/relations', async (req, res) => {
                 ],
             },
         });
-        // Build reverse check and same-direction checks
-        const sameDirection = existing.find(r => r.idJoueur1 === player1 && r.idJoueur2 === player2);
-        const reverseDirection = existing.find(r => r.idJoueur1 === player2 && r.idJoueur2 === player1);
-        // ❌ 1. Prevent duplicate friend
-        if (relation === 'friend' && sameDirection?.relation === 'friend') {
-            return res.status(409).json({ error: 'Friend relation already exists' });
+        const forward = existingRelations.find(r => r.idJoueur1 === player1 && r.idJoueur2 === player2);
+        const reverse = existingRelations.find(r => r.idJoueur1 === player2 && r.idJoueur2 === player1);
+        // ─── CONFLICT CASES ────────────────────────────────
+        // Prevent duplicate friend
+        if (relation === 'friend' && forward?.relation === 'friend') {
+            return res.status(409).json({ error: 'You are already friends with this user.' });
         }
-        // ❌ 2. Prevent duplicate block
-        if (relation === 'blocked' && sameDirection?.relation === 'blocked') {
-            return res.status(409).json({ error: 'Block relation already exists' });
+        // Prevent duplicate block
+        if (relation === 'blocked' && forward?.relation === 'blocked') {
+            return res.status(409).json({ error: 'You have already blocked this user.' });
         }
-        // ❌ 3. Prevent friend if player1 already blocked player2
-        if (relation === 'friend' && sameDirection?.relation === 'blocked') {
-            return res.status(403).json({ error: 'You have blocked this user' });
+        // Prevent friend if player1 blocked player2
+        if (relation === 'friend' && forward?.relation === 'blocked') {
+            return res.status(403).json({ error: 'You have blocked this user.' });
         }
-        // ❌ 4. Prevent friend if player2 already blocked player1
-        if (relation === 'friend' && reverseDirection?.relation === 'blocked') {
-            return res.status(403).json({ error: 'This user has blocked you' });
+        // Prevent friend if player2 blocked player1
+        if (relation === 'friend' && reverse?.relation === 'blocked') {
+            return res.status(403).json({ error: 'This user has blocked you.' });
         }
-        // ✅ 5. If blocking and player1 has a friend relation — remove friend first
-        if (relation === 'blocked' && sameDirection?.relation === 'friend') {
-            await prisma.$transaction([
-                prisma.relations_Joueurs.delete({
-                    where: { id: sameDirection.id },
-                }),
-                prisma.relations_Joueurs.create({
-                    data: {
-                        idJoueur1: player1,
-                        idJoueur2: player2,
-                        relation: 'blocked',
-                    },
-                }),
-            ]);
-            return res.status(201).json({ message: 'Friend removed and user blocked' });
+        // ─── SPECIAL CASE: BLOCK + UNFRIEND BOTH WAYS ──────
+        if (relation === 'blocked') {
+            const deletions = [];
+            // Remove friend from player1 → player2
+            if (forward?.relation === 'friend') {
+                deletions.push(prisma.relations_Joueurs.delete({
+                    where: { id: forward.id },
+                }));
+            }
+            // Remove friend from player2 → player1
+            if (reverse?.relation === 'friend') {
+                deletions.push(prisma.relations_Joueurs.delete({
+                    where: { id: reverse.id },
+                }));
+            }
+            // Add the block relation
+            deletions.push(prisma.relations_Joueurs.create({
+                data: {
+                    idJoueur1: player1,
+                    idJoueur2: player2,
+                    relation: 'blocked',
+                },
+            }));
+            const [_, __, blockedRelation] = await prisma.$transaction(deletions);
+            return res.status(201).json({ message: 'Friendship(s) removed and user blocked.', relation: blockedRelation });
         }
-        // ✅ Otherwise just create the relation
+        // ─── DEFAULT CREATION ──────────────────────────────
         const newRelation = await prisma.relations_Joueurs.create({
             data: {
                 idJoueur1: player1,
@@ -367,23 +375,10 @@ app.post('/relations', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
-
 app.post('/rooms', async (req, res) => {
     const { idToken, roomType, roomName, maxClients, customRules } = req.body;
     if (!idToken || !roomType) {
         return res.status(400).json({ error: 'Missing required fields' });
-// Get all game sessions
-/* app.get('/game-sessions', async (_, res) => {
-    try {
-        const sessions = await prisma.session.findMany({
-            include: {
-                players: true,
-            },
-        })
-        res.json(sessions)
-    } catch (error) {
-        res.status(500).json({ error: 'Error fetching game sessions' })
     }
     try {
         // 1. Verify Firebase token
