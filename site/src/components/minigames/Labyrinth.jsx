@@ -248,7 +248,7 @@ export const Labyrinth = () => {
 			cleanupFns.forEach((fn) => fn())
 		}
 		// NOTE: depend on state.players, not just state!
-	}, [room, state.players])
+	}, [room, state, state.players])
 
 	return (
 		<canvas
