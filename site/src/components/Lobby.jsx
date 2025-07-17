@@ -101,17 +101,19 @@ export const Lobby = () => {
 
 	return (
 		<div className="Lobby">
-			<h2>Available Rooms</h2>
-			<ul>
-				{rooms.map((room) => (
-					<li key={room.roomId}>
-						{room.metadata?.roomName || room.roomId} -{' '}
-						{room.clients}/{room.maxClients}
-						<button onClick={join(room.roomId)}>Join</button>
-						<Link to={`/room/${room.roomId}`}></Link>
-					</li>
-				))}
-			</ul>
+			<div className="lobby-content">
+				<h2 className="lobby-title">Available Rooms</h2>
+				<ul className="room-list">
+					{rooms.map((room) => (
+						<li key={room.roomId}>
+							{room.metadata?.roomName || room.roomId} -{' '}
+							{room.clients}/{room.maxClients}
+							<button onClick={join(room.roomId)}>Join</button>
+							<Link to={`/room/${room.roomId}`}></Link>
+						</li>
+					))}
+				</ul>
+			</div>
 		</div>
 	)
 }

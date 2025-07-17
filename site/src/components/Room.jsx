@@ -1,80 +1,87 @@
-import React, { useEffect } from 'react'
+import '../assets/css/Room.css'
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router'
 import {
 	useColyseusRoom,
 	useColyseusState,
 	connectToColyseus,
 } from '../colyseus'
-import { useNavigate, useParams } from 'react-router'
+
+// Screens
+import LobbyScreen from './RoomFlow/LobbyScreen'
+import RoundIntroScreen from './RoomFlow/RoundIntroScreen'
+import MinigameView from './RoomFlow/MinigameView'
+import GameOverScreen from './RoomFlow/GameOverScreen'
 
 export const Room = () => {
-	const { id } = useParams() // /room/:id
-	const navigate = useNavigate()
+	const { id } = useParams()
 	const room = useColyseusRoom()
 	const state = useColyseusState()
 
-	// Join the room by ID if not joined
+	const [playerList, setPlayerList] = useState([])
+
 	useEffect(() => {
 		if (!room && id) {
 			connectToColyseus('party', { roomId: id })
 		}
 	}, [room, id])
 
-	// Redirect to minigame if phase changes
-	useEffect(() => {
-		if (
-			state?.phase === 'minigame' &&
-			state?.currentMinigame === 'labyrinth'
-		) {
-			navigate('/minigame/labyrinth')
-		}
-	}, [state?.phase, state?.currentMinigame, navigate])
-
 	if (!room || !state) return <div>Joining room...</div>
-
-	console.log('Room :', room)
-	console.log('Room state:', room.state)
 
 	const mySessionId = room.sessionId
 	const ownerId = state.ownerId
-	console.log('Owner ID:', ownerId)
-	console.log('State.phase:', state.phase)
+	const phase = state.phase
 
-	const players = state.players
-		? Object.entries(state.players).map(([sessionId, player]) => ({
-				...player,
-				sessionId,
-			}))
-		: []
+	let screen
 
-	const handleStartGame = () => {
-		room?.send('startGame', { minigame: 'labyrinth' })
+	switch (phase) {
+		case 'lobby':
+			screen = (
+				<LobbyScreen
+					room={room}
+					state={state}
+					mySessionId={mySessionId}
+					ownerId={ownerId}
+					playerList={playerList}
+					setPlayerList={setPlayerList}
+				/>
+			)
+			break
+
+		case 'round_intro':
+			screen = (
+				<RoundIntroScreen
+					room={room}
+					state={state}
+					playerList={playerList}
+				/>
+			)
+			break
+
+		case 'minigame':
+			screen = (
+				<MinigameView
+					room={room}
+					state={state}
+					playerList={playerList}
+				/>
+			)
+			break
+
+		case 'end':
+			screen = (
+				<GameOverScreen
+					room={room}
+					state={state}
+					playerList={playerList}
+				/>
+			)
+			break
+
+		default:
+			screen = <div>Unknown game phase: {phase}</div>
+			break
 	}
 
-	return (
-		<div style={{ maxWidth: 400, margin: '40px auto' }}>
-			<h2>Waiting Room</h2>
-			<ul>
-				{players.map((player) => (
-					<li key={player.sessionId}>
-						{player.name}
-						{player.sessionId === ownerId ? ' (owner)' : ''}
-						{player.sessionId === mySessionId ? ' (you)' : ''}
-					</li>
-				))}
-			</ul>
-			{mySessionId === ownerId && (
-				<button
-					style={{ marginTop: 20, padding: '12px 32px' }}
-					onClick={handleStartGame}
-				>
-					Start Labyrinth Minigame
-				</button>
-			)}
-			{mySessionId !== ownerId && (
-				<p style={{ marginTop: 20 }}>
-					Waiting for the owner to start the game...
-				</p>
-			)}
-		</div>
-	)
+	return <div className="Room">{screen}</div>
 }

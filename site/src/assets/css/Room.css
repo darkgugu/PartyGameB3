@@ -1,1 +1,31 @@
-/*# sourceMappingURL=Room.css.map */
+.Room {
+  padding-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.Room .player-list {
+  width: 100%;
+  max-width: 400px;
+  margin-top: 30px;
+  padding: 0;
+  list-style: none;
+  background: #f8f8f8;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.Room .player-item {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 1.1rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s;
+}
+.Room .player-item:last-child {
+  border-bottom: none;
+}
+.Room .player-item:hover {
+  background: #eaeaea;
+}/*# sourceMappingURL=Room.css.map */

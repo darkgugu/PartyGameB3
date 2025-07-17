@@ -3,16 +3,31 @@ import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router'
 import { useColyseusRoom, connectToColyseus } from '../colyseus'
 import { useEffect, useState } from 'react'
+import { useUser } from '../context/UserContext'
 
 export const CreateRoom = () => {
 	const navigate = useNavigate()
 	const { user } = useAuth()
+	const { userData } = useUser()
 	const room = useColyseusRoom()
 
 	const [roomType, setRoomType] = useState('classique')
 	const [mapChoice, setMapChoice] = useState('forest')
 	const [isPrivate, setIsPrivate] = useState(false)
 	const [showPassword, setShowPassword] = useState(false)
+	const [roomName, setRoomName] = useState('')
+	const [maxClients, setMaxClients] = useState(5)
+	const [packChoices, setPackChoices] = useState([])
+	const [password, setPassword] = useState('')
+	const [minigames, setMinigames] = useState([])
+
+	useEffect(() => {
+		setMinigames([
+			{ name: 'Labyrinth', played: false },
+			{ name: 'Puzzle', played: false },
+			{ name: 'Quizz', played: false },
+		])
+	}, [])
 
 	const packs = [
 		{
@@ -37,15 +52,29 @@ export const CreateRoom = () => {
 		}
 	}, [room, navigate])
 
-	const handleCreateRoom = async () => {
+	const handleCreateRoom = async ({
+		roomName,
+		maxClients,
+		roomType,
+		mapChoice,
+		packChoices,
+		isPrivate,
+		password,
+		minigames,
+	}) => {
 		try {
 			const idToken = await user.getIdToken()
 			const metadata = {
-				roomName: 'Test Room',
-				creatorName: user.displayName || user.email || 'Anonymous',
-				customRules: {},
-				maxClients: 4,
+				roomName: roomName,
+				creatorName: userData.pseudo,
+				roomType,
+				mapChoice,
+				packChoices,
+				isPrivate,
+				password,
+				maxClients: maxClients,
 				idToken,
+				minigames,
 			}
 			await connectToColyseus('party', metadata)
 			// The redirect will happen in the useEffect above!
@@ -61,7 +90,16 @@ export const CreateRoom = () => {
 				<form
 					onSubmit={(e) => {
 						e.preventDefault()
-						handleCreateRoom()
+						handleCreateRoom({
+							roomName,
+							maxClients,
+							roomType,
+							mapChoice,
+							packChoices,
+							isPrivate,
+							password: isPrivate ? password : undefined,
+							minigames,
+						})
 					}}
 				>
 					<div className="form-content">
@@ -79,12 +117,21 @@ export const CreateRoom = () => {
 							)}
 						</div>
 						<div className="inputs">
-							<input type="text" id="room-name" />
+							<input
+								type="text"
+								id="room-name"
+								value={roomName}
+								onChange={(e) => setRoomName(e.target.value)}
+							/>
 							<input
 								type="number"
 								id="max-clients"
 								min="1"
 								max="8"
+								value={maxClients}
+								onChange={(e) =>
+									setMaxClients(Number(e.target.value))
+								}
 							/>
 							<select
 								id="room-type"
@@ -109,7 +156,18 @@ export const CreateRoom = () => {
 									</select>
 								</>
 							)}
-							<select id="pack-choice" multiple>
+							<select
+								id="pack-choice"
+								multiple
+								value={packChoices}
+								onChange={(e) =>
+									setPackChoices(
+										Array.from(
+											e.target.selectedOptions,
+										).map((opt) => opt.value),
+									)
+								}
+							>
 								{packs.map((pack, idx) => (
 									<option key={idx} value={pack.name}>
 										{pack.name}
@@ -119,6 +177,7 @@ export const CreateRoom = () => {
 							<input
 								type="checkbox"
 								id="private-room"
+								checked={isPrivate}
 								onChange={(e) => setIsPrivate(e.target.checked)}
 							/>
 							<div className="password-input">
@@ -131,6 +190,10 @@ export const CreateRoom = () => {
 													: 'password'
 											}
 											id="password"
+											value={password}
+											onChange={(e) =>
+												setPassword(e.target.value)
+											}
 										/>
 										<button
 											className="toggle-password"
