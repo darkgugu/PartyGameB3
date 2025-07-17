@@ -9,4 +9,4 @@ export const {
 	disconnectFromColyseus,
 	useColyseusRoom,
 	useColyseusState,
-} = colyseus(process.env.REACT_APP_COLYSEUS_URL || 'ws://localhost:2567')
+} = colyseus(process.env.REACT_APP_COLYSEUS_URL)
