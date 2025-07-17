@@ -99,8 +99,9 @@ export const Header = () => {
 			</Link>
 
 			<div id="right-part">
-				<Currency type="diamond" />
-				<Currency type="dollar" />
+				{/* 				<Currency type="diamond" />
+				<Currency type="dollar" /> */}
+				<button id="shop">Boutique</button>
 
 				{user && userData ? (
 					<>
@@ -117,7 +118,6 @@ export const Header = () => {
 					</>
 				) : (
 					<>
-						<button id="shop">Boutique</button>
 						<button id="login" onClick={() => openModal('login')}>
 							Connexion
 						</button>
