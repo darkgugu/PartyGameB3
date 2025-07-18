@@ -1,10 +1,10 @@
 // src/components/RoomFlow/MinigameView.jsx
 import { Labyrinth } from '../minigames/Labyrinth'
 
-const MinigameView = ({ state }) => {
+const MinigameView = ({ state, room }) => {
 	switch (state.currentMinigame) {
 		case 'labyrinth':
-			return <Labyrinth />
+			return <Labyrinth room={room} state={state} />
 		default:
 			return <div>Unknown minigame</div>
 	}
