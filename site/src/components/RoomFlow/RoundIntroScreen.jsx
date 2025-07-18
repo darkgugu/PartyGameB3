@@ -34,7 +34,9 @@ const RoundIntroScreen = ({ room, state, mySessionId }) => {
 				{players.map((player) => (
 					<li
 						key={player.sessionId}
-						className={player.isReady ? 'ready' : 'not-ready'}
+						className={`${
+							player.isReady ? 'ready' : 'not-ready'
+						}${player.sessionId === mySessionId ? ' self' : ''}`}
 						onClick={
 							player.sessionId === mySessionId
 								? handleToggleReady

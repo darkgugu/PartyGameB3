@@ -95,7 +95,6 @@
   margin: 0 20px;
   border-radius: 15px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
 }
 .Room .RoundIntroScreen ul li .avatar {
   width: 90px;
@@ -112,4 +111,8 @@
 }
 .Room .RoundIntroScreen ul li.not-ready {
   background: #ffb3b3;
+}
+.Room .RoundIntroScreen ul li.self {
+  cursor: pointer;
+  border: 2px solid #007bff;
 }/*# sourceMappingURL=Room.css.map */
