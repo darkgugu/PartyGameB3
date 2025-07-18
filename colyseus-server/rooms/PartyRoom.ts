@@ -44,7 +44,7 @@ class PartyRoomState extends Schema {
 
 export class PartyRoom extends Room<PartyRoomState> {
   // (Optional) track last move times for anti-spam (not required for basic use)
-  // private lastMoveTime: { [sessionId: string]: number } = {};
+  private lastMoveTime: { [sessionId: string]: number } = {};
 
   onCreate(options: any) {
     console.log("Room created!");
@@ -137,9 +137,9 @@ export class PartyRoom extends Room<PartyRoomState> {
       if (!player) return;
 
       // (Optional) anti-spam rate-limiting (uncomment if needed)
-      // const now = Date.now();
-      // if (this.lastMoveTime[client.sessionId] && now - this.lastMoveTime[client.sessionId] < 30) return;
-      // this.lastMoveTime[client.sessionId] = now;
+      const now = Date.now();
+      if (this.lastMoveTime[client.sessionId] && now - this.lastMoveTime[client.sessionId] < 30) return;
+      this.lastMoveTime[client.sessionId] = now;
 
       // Defensive assignment
       if (typeof data.x === "number") player.x = data.x;

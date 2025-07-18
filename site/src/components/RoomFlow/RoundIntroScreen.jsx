@@ -22,13 +22,14 @@ const RoundIntroScreen = ({ room, state, mySessionId }) => {
 		},
 	)
 
+	console.log(players.every((player) => player.isReady))
+
 	return (
 		<div className="RoundIntroScreen">
 			<h2>
 				Round {state.roundCounter}/{state.minigames.length}
 			</h2>
 			<p>Next Minigame: {state.currentMinigame}</p>
-			<p>Waiting for players to be ready...</p>
 
 			<ul className="player-list">
 				{players.map((player) => (
@@ -53,6 +54,20 @@ const RoundIntroScreen = ({ room, state, mySessionId }) => {
 					</li>
 				))}
 			</ul>
+			{players.every((player) => player.isReady) ? (
+				<button
+					style={{ marginTop: 20, padding: '12px 32px' }}
+					onClick={() =>
+						room.send('startGameTest', { minigame: 'labyrinth' })
+					}
+				>
+					Démarrer la partie !
+				</button>
+			) : (
+				<p style={{ marginTop: 20 }}>
+					Tous les joueurs doivent être prêts pour démarrer la partie.
+				</p>
+			)}
 		</div>
 	)
 }

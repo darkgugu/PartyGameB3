@@ -5,6 +5,23 @@
   align-items: center;
   justify-content: center;
 }
+.Room button {
+  margin-top: 24px;
+  padding: 12px 28px;
+  font-size: 1.08rem;
+  color: #222;
+  background: #ff7e5f;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.Room button:hover {
+  transform: scale(1.05);
+}
 .Room .LobbyScreen {
   display: flex;
   flex-direction: column;
@@ -34,25 +51,6 @@
 }
 .Room .LobbyScreen .player-item:hover {
   background: #eaeaea;
-}
-.Room .LobbyScreen button {
-  margin-top: 24px;
-  padding: 12px 28px;
-  font-size: 1.08rem;
-  color: #222;
-  background: linear-gradient(90deg, #ff7e5f 0%, #feb47b 100%);
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  transition: background 0.2s, color 0.2s, border 0.2s;
-}
-.Room .LobbyScreen button:hover {
-  background: linear-gradient(90deg, #feb47b 0%, #ff7e5f 100%);
-  color: #fff;
-  border-color: #feb47b;
 }
 .Room .RoundIntroScreen {
   display: flex;
