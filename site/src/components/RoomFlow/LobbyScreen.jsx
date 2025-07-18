@@ -79,6 +79,7 @@ const LobbyScreen = ({
 	}, [state.players, state.maxPlayers, setPlayerList])
 
 	const handleStartGame = () => {
+		//setPlayerList(playerList.filter((player) => player !== null))
 		room?.send('startGame', { minigame: 'labyrinth' })
 	}
 
