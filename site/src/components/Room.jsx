@@ -26,6 +26,49 @@ export const Room = () => {
 		}
 	}, [room, id])
 
+	useEffect(() => {
+		if (!state?.players) return
+
+		const updatePlayerList = () => {
+			console.log('Updating playerList...')
+			const playersArray = Array.from(state.players.entries()).map(
+				([sessionId, player]) => {
+					player.onChange = () => updatePlayerList()
+
+					return {
+						sessionId,
+						name: player.name,
+						uid: player.uid,
+						score: player.score,
+						x: player.x,
+						y: player.y,
+						z: player.z,
+						rotation: player.rotation,
+						isReady: player.isReady,
+						pseudo: player.pseudo,
+						avatar: player.avatar,
+					}
+				},
+			)
+			setPlayerList(playersArray.filter(Boolean))
+		}
+
+		// Initial population
+		updatePlayerList()
+
+		state.players.onAdd = (player, sessionId) => {
+			player.onChange = () => updatePlayerList()
+			updatePlayerList()
+		}
+		state.players.onRemove = updatePlayerList
+
+		return () => {
+			// Cleanup: remove listeners
+			state.players.onAdd = () => {}
+			state.players.onRemove = () => {}
+		}
+	}, [state?.players, state?.maxPlayers, state?.players?.isReady])
+
 	if (!room || !state) return <div>Joining room...</div>
 
 	const mySessionId = room.sessionId
@@ -54,6 +97,8 @@ export const Room = () => {
 					room={room}
 					state={state}
 					playerList={playerList}
+					mySessionId={mySessionId}
+					setPlayerList={setPlayerList}
 				/>
 			)
 			break

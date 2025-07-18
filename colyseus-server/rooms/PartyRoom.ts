@@ -2,6 +2,7 @@ import { Room, Client } from "colyseus";
 import { Schema, MapSchema, type } from "@colyseus/schema";
 import { admin } from "../firebaseAdmin"; // adjust path as needed
 import { ArraySchema } from "@colyseus/schema";
+import axios from 'axios'
 
 // --- Player schema with position/rotation ---
 class Player extends Schema {
@@ -13,6 +14,9 @@ class Player extends Schema {
   @type("number") y = 0.4;
   @type("number") z = 20;
   @type("number") rotation = 0;
+  @type("boolean") isReady = false;
+  @type("string") pseudo = "";
+  @type("string") avatar = "";
 }
 
 // --- Minigames schema ---
@@ -40,7 +44,7 @@ class PartyRoomState extends Schema {
 
 export class PartyRoom extends Room<PartyRoomState> {
   // (Optional) track last move times for anti-spam (not required for basic use)
-  // private lastMoveTime: { [sessionId: string]: number } = {};
+  private lastMoveTime: { [sessionId: string]: number } = {};
 
   onCreate(options: any) {
     console.log("Room created!");
@@ -111,7 +115,13 @@ export class PartyRoom extends Room<PartyRoomState> {
       );
     });
 
-
+    this.onMessage('toggleReady', (client) => {
+      const player = this.state.players.get(client.sessionId);
+      if (player) {
+        player.isReady = !player.isReady;
+        console.log(`${player.name} is now ${player.isReady ? 'ready' : 'not ready'}`);
+      }
+    });
 
     // Owner starts the game
     this.onMessage("startGameTest", (client, data) => {
@@ -127,9 +137,9 @@ export class PartyRoom extends Room<PartyRoomState> {
       if (!player) return;
 
       // (Optional) anti-spam rate-limiting (uncomment if needed)
-      // const now = Date.now();
-      // if (this.lastMoveTime[client.sessionId] && now - this.lastMoveTime[client.sessionId] < 30) return;
-      // this.lastMoveTime[client.sessionId] = now;
+      const now = Date.now();
+      if (this.lastMoveTime[client.sessionId] && now - this.lastMoveTime[client.sessionId] < 30) return;
+      this.lastMoveTime[client.sessionId] = now;
 
       // Defensive assignment
       if (typeof data.x === "number") player.x = data.x;
@@ -139,24 +149,37 @@ export class PartyRoom extends Room<PartyRoomState> {
     });
   }
 
-  onJoin(client: Client) {
-    console.log("Client joined:", client.userData);
-    const player = new Player();
-    player.name = client.userData?.name || "Anonymous";
-    player.uid = client.userData?.uid || "unknown";
-    player.score = 0;
-    player.x = -20;
-    player.y = 0.4;
-    player.z = 20;
-    player.rotation = 0;
+onJoin = async (client: Client, options: any) => {
+  console.log('Client joined:', client.userData)
 
-    this.state.players.set(client.sessionId, player);
+  const player = new Player()
+  player.name = client.userData?.name || 'Anonymous'
+  player.uid = client.userData?.uid || 'unknown'
+  player.score = 0
+  player.x = -20
+  player.y = 0.4
+  player.z = 20
+  player.rotation = 0
 
-    // Assign owner if first in room
-    if (!this.state.ownerId) {
-      this.state.ownerId = client.sessionId;
-    }
+  // Fetch additional user info from external API
+  try {
+    const res = await axios.get(`${process.env.API_URL}/users/getByUID/${player.uid}`)
+
+    const userData = res.data
+    player.pseudo = userData.pseudo || player.name
+    player.avatar = userData.avatar || ''
+  } catch (err) {
+    console.error('Failed to fetch user profile:', err)
   }
+
+  this.state.players.set(client.sessionId, player)
+
+  // Assign owner if first in room
+  if (!this.state.ownerId) {
+    this.state.ownerId = client.sessionId
+  }
+}
+
 
   onLeave(client: Client) {
     this.state.players.delete(client.sessionId);

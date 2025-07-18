@@ -3,9 +3,32 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
-.Room .player-list {
-  width: 100%;
+.Room button {
+  margin-top: 24px;
+  padding: 12px 28px;
+  font-size: 1.08rem;
+  color: #222;
+  background: #ff7e5f;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.Room button:hover {
+  transform: scale(1.05);
+}
+.Room .LobbyScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.Room .LobbyScreen .player-list {
+  width: 15vw;
   max-width: 400px;
   margin-top: 30px;
   padding: 0;
@@ -14,7 +37,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
-.Room .player-item {
+.Room .LobbyScreen .player-item {
   padding: 16px 24px;
   border-bottom: 1px solid #e0e0e0;
   font-size: 1.1rem;
@@ -23,9 +46,71 @@
   align-items: center;
   transition: background 0.2s;
 }
-.Room .player-item:last-child {
+.Room .LobbyScreen .player-item:last-child {
   border-bottom: none;
 }
-.Room .player-item:hover {
+.Room .LobbyScreen .player-item:hover {
   background: #eaeaea;
+}
+.Room .RoundIntroScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #f9f6f2;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  padding: 32px 40px;
+  margin-top: 40px;
+  min-width: 320px;
+  max-width: 480px;
+}
+.Room .RoundIntroScreen h2 {
+  margin-bottom: 20px;
+  font-size: 1.7rem;
+  color: #ff7e5f;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.Room .RoundIntroScreen p {
+  margin-bottom: 16px;
+  font-size: 1.15rem;
+  color: #555;
+}
+.Room .RoundIntroScreen ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 14px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.Room .RoundIntroScreen ul li {
+  padding: 10px 18px;
+  font-size: 1.08rem;
+  color: #333;
+  transition: background 0.2s;
+  margin: 0 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.Room .RoundIntroScreen ul li .avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+}
+.Room .RoundIntroScreen ul li p {
+  margin: 5px 0;
+  font-size: 1rem;
+  color: #444;
+}
+.Room .RoundIntroScreen ul li.ready {
+  background: #a9f3ba;
+}
+.Room .RoundIntroScreen ul li.not-ready {
+  background: #ffb3b3;
+}
+.Room .RoundIntroScreen ul li.self {
+  cursor: pointer;
+  border: 2px solid #007bff;
 }/*# sourceMappingURL=Room.css.map */
