@@ -13,6 +13,7 @@ class Player extends Schema {
   @type("number") y = 0.4;
   @type("number") z = 20;
   @type("number") rotation = 0;
+  @type("boolean") isReady = false;
 }
 
 // --- Minigames schema ---
@@ -111,7 +112,13 @@ export class PartyRoom extends Room<PartyRoomState> {
       );
     });
 
-
+    this.onMessage('toggleReady', (client) => {
+      const player = this.state.players.get(client.sessionId);
+      if (player) {
+        player.isReady = !player.isReady;
+        console.log(`${player.name} is now ${player.isReady ? 'ready' : 'not ready'}`);
+      }
+    });
 
     // Owner starts the game
     this.onMessage("startGameTest", (client, data) => {

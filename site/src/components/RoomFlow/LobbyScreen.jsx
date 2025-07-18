@@ -23,6 +23,7 @@ const LobbyScreen = ({
 					y: player.y,
 					z: player.z,
 					rotation: player.rotation,
+					isReady: player.isReady,
 					pseudo: '',
 					avatar: '',
 				}),
@@ -78,11 +79,11 @@ const LobbyScreen = ({
 	}, [state.players, state.maxPlayers, setPlayerList])
 
 	const handleStartGame = () => {
-		room?.send('startGameTest', { minigame: 'labyrinth' })
+		room?.send('startGame', { minigame: 'labyrinth' })
 	}
 
 	return (
-		<div className="Room">
+		<div className="LobbyScreen">
 			<h2>Waiting Room</h2>
 			<ul className="player-list">
 				{playerList.map((player, index) =>
@@ -105,7 +106,7 @@ const LobbyScreen = ({
 					style={{ marginTop: 20, padding: '12px 32px' }}
 					onClick={handleStartGame}
 				>
-					Start Labyrinth Minigame
+					Démarrer la partie
 				</button>
 			) : (
 				<p style={{ marginTop: 20 }}>

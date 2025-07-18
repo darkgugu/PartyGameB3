@@ -54,6 +54,7 @@ export const Room = () => {
 					room={room}
 					state={state}
 					playerList={playerList}
+					mySessionId={mySessionId}
 				/>
 			)
 			break
