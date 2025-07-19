@@ -48,6 +48,7 @@ export const CreateRoom = () => {
 	useEffect(() => {
 		// When room is joined, redirect
 		if (room) {
+			console.log(room)
 			navigate(`/room/${room.roomId}`)
 		}
 	}, [room, navigate])
