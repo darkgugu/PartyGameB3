@@ -1,15 +1,23 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as BABYLON from '@babylonjs/core'
 import '@babylonjs/loaders'
+import { Chronometer } from './utils/Chronometer'
 
 export const Labyrinth = ({ room, state }) => {
 	const canvasRef = useRef(null)
 	const inputMap = useRef({})
 	const playerRef = useRef(null)
 	const remotePlayers = useRef({})
+	const lastPlayerPos = useRef(null)
+
+	const [timeUp, setTimeUp] = useState(false)
+	const [finished, setFinished] = useState(false)
+	const [finishTime, setFinishTime] = useState(null)
 
 	useEffect(() => {
 		if (!room || !state) return
+
+		const startTime = performance.now() / 1000
 
 		const canvas = canvasRef.current
 		if (!canvas) return
@@ -36,12 +44,83 @@ export const Labyrinth = ({ room, state }) => {
 		groundMat.diffuseColor = new BABYLON.Color3(0.9, 0.8, 0.6)
 		ground.material = groundMat
 
+		const backWall = BABYLON.MeshBuilder.CreateBox(
+			'backWall',
+			{ width: 0.5, height: 1.3, depth: 2.4 },
+			scene,
+		)
+		backWall.position = new BABYLON.Vector3(-20, 0, 19)
+		backWall.checkCollisions = true
+		const backWallMat = new BABYLON.StandardMaterial('backWallMat', scene)
+		backWallMat.diffuseColor = new BABYLON.Color3(0.8, 0.4, 0.2)
+		backWallMat.alpha = 0.5
+		backWall.material = backWallMat
+
+		const finishZone = BABYLON.MeshBuilder.CreateGround(
+			'finishZone',
+			{
+				width: 0.5,
+				height: 1.5,
+			},
+			scene,
+		)
+		finishZone.position = new BABYLON.Vector3(-15, 0.01, 18.8)
+
+		// Set how many squares you want per axis
+		const squaresX = 4 // e.g. 2 columns across width
+		const squaresY = 10 // e.g. 6 rows along height
+
+		const texWidth = 256
+		const texHeight = texWidth * (squaresY / squaresX) // maintain square cells
+
+		const texture = new BABYLON.DynamicTexture(
+			'checkerTex',
+			{ width: texWidth, height: texHeight },
+			scene,
+			false,
+		)
+		const ctx = texture.getContext()
+
+		const squareWidth = texWidth / squaresX
+		const squareHeight = texHeight / squaresY
+
+		for (let y = 0; y < squaresY; y++) {
+			for (let x = 0; x < squaresX; x++) {
+				ctx.fillStyle = (x + y) % 2 === 0 ? '#FFFFFF' : '#000000'
+				ctx.fillRect(
+					x * squareWidth,
+					y * squareHeight,
+					squareWidth,
+					squareHeight,
+				)
+			}
+		}
+		texture.update()
+
+		// Apply to material
+		const finishMat = new BABYLON.StandardMaterial('finishMat', scene)
+		finishMat.diffuseTexture = texture
+		finishMat.specularColor = BABYLON.Color3.Black()
+		finishMat.emissiveColor = new BABYLON.Color3(1, 1, 1)
+		finishZone.material = finishMat
+
+		const finishedPlayers = new Set()
+
+		const hasCrossedFinishLine = (prevPos, currentPos, finishX) => {
+			if (!prevPos) return false
+			return (
+				(prevPos.x < finishX && currentPos.x >= finishX) ||
+				(prevPos.x > finishX && currentPos.x <= finishX)
+			)
+		}
+
 		const player = BABYLON.MeshBuilder.CreateBox(
 			'player',
 			{ width: 0.4, height: 0.4, depth: 0.4 },
 			scene,
 		)
-		player.position = new BABYLON.Vector3(0, 0.5, 0)
+		player.position = new BABYLON.Vector3(-19, 0.5, 18.75)
+		player.rotation = new BABYLON.Vector3(0, Math.PI / 2, 0)
 		player.checkCollisions = true
 		player.ellipsoid = new BABYLON.Vector3(0.2, 0.2, 0.2)
 		player.ellipsoidOffset = new BABYLON.Vector3(0, 0, 0)
@@ -98,9 +177,31 @@ export const Labyrinth = ({ room, state }) => {
 
 		scene.onBeforeRenderObservable.add(() => {
 			const dt = engine.getDeltaTime() / 1000
-			const speed = 4
-			const turnSpeed = 2.5
+			const speed = 5
+			const turnSpeed = 4
 			const player = playerRef.current
+
+			const playerPos = player.position
+			const finishX = -15 // your finish line X position
+
+			if (
+				!finishedPlayers.has(room.sessionId) &&
+				hasCrossedFinishLine(lastPlayerPos.current, playerPos, finishX)
+			) {
+				const elapsed =
+					60 - Math.floor(performance.now() / 1000 - startTime)
+				setFinished(true)
+				setFinishTime(elapsed)
+				finishedPlayers.add(room.sessionId)
+
+				// Notify Chronometer
+				window.dispatchEvent(
+					new CustomEvent('player-finished', { detail: elapsed }),
+				)
+			}
+
+			// Update last position
+			lastPlayerPos.current = playerPos.clone()
 
 			// Rotation
 			if (inputMap.current['q'] || inputMap.current['a'])
@@ -202,10 +303,45 @@ export const Labyrinth = ({ room, state }) => {
 		})
 	}, [state?.players])
 
+	useEffect(() => {
+		if (finished) {
+			room.send('finished', {
+				time: 60 - finishTime,
+			})
+		}
+	}, [finishTime, finished, room])
+
+	const messageStyle = {
+		position: 'absolute',
+		top: '50%',
+		left: '50%',
+		transform: 'translate(-50%, -50%)',
+		background: 'rgba(0,0,0,0.8)',
+		color: 'white',
+		padding: '20px 30px',
+		fontSize: 24,
+		borderRadius: 10,
+		zIndex: 10,
+	}
+
 	return (
-		<canvas
-			ref={canvasRef}
-			style={{ width: '100vw', height: '100vh', display: 'block' }}
-		/>
+		<>
+			<Chronometer duration={60} onTimeout={() => setTimeUp(true)} />
+			{finished && (
+				<div style={messageStyle}>
+					🎉 Congratulations! You finished in {60 - finishTime}{' '}
+					seconds.
+				</div>
+			)}
+			{timeUp && !finished && (
+				<div style={messageStyle}>
+					❌ Time’s up! You did not finish.
+				</div>
+			)}
+			<canvas
+				ref={canvasRef}
+				style={{ width: '100vw', height: '100vh', display: 'block' }}
+			/>
+		</>
 	)
 }
