@@ -36,12 +36,73 @@ export const Labyrinth = ({ room, state }) => {
 		groundMat.diffuseColor = new BABYLON.Color3(0.9, 0.8, 0.6)
 		ground.material = groundMat
 
+		const backWall = BABYLON.MeshBuilder.CreateBox(
+			'backWall',
+			{ width: 0.5, height: 1.3, depth: 2.4 },
+			scene,
+		)
+		backWall.position = new BABYLON.Vector3(-20, 0, 19)
+		backWall.checkCollisions = true
+		const backWallMat = new BABYLON.StandardMaterial('backWallMat', scene)
+		backWallMat.diffuseColor = new BABYLON.Color3(0.8, 0.4, 0.2)
+		backWallMat.alpha = 0.5
+		backWall.material = backWallMat
+
+		const finishZone = BABYLON.MeshBuilder.CreateGround(
+			'finishZone',
+			{
+				width: 0.5,
+				height: 1.5,
+			},
+			scene,
+		)
+		finishZone.position = new BABYLON.Vector3(-15, 0.01, 18.8)
+
+		// Set how many squares you want per axis
+		const squaresX = 4 // e.g. 2 columns across width
+		const squaresY = 10 // e.g. 6 rows along height
+
+		const texWidth = 256
+		const texHeight = texWidth * (squaresY / squaresX) // maintain square cells
+
+		const texture = new BABYLON.DynamicTexture(
+			'checkerTex',
+			{ width: texWidth, height: texHeight },
+			scene,
+			false,
+		)
+		const ctx = texture.getContext()
+
+		const squareWidth = texWidth / squaresX
+		const squareHeight = texHeight / squaresY
+
+		for (let y = 0; y < squaresY; y++) {
+			for (let x = 0; x < squaresX; x++) {
+				ctx.fillStyle = (x + y) % 2 === 0 ? '#FFFFFF' : '#000000'
+				ctx.fillRect(
+					x * squareWidth,
+					y * squareHeight,
+					squareWidth,
+					squareHeight,
+				)
+			}
+		}
+		texture.update()
+
+		// Apply to material
+		const finishMat = new BABYLON.StandardMaterial('finishMat', scene)
+		finishMat.diffuseTexture = texture
+		finishMat.specularColor = BABYLON.Color3.Black()
+		finishMat.emissiveColor = new BABYLON.Color3(1, 1, 1)
+		finishZone.material = finishMat
+
 		const player = BABYLON.MeshBuilder.CreateBox(
 			'player',
 			{ width: 0.4, height: 0.4, depth: 0.4 },
 			scene,
 		)
-		player.position = new BABYLON.Vector3(0, 0.5, 0)
+		player.position = new BABYLON.Vector3(-19, 0.5, 18.75)
+		player.rotation = new BABYLON.Vector3(0, Math.PI / 2, 0)
 		player.checkCollisions = true
 		player.ellipsoid = new BABYLON.Vector3(0.2, 0.2, 0.2)
 		player.ellipsoidOffset = new BABYLON.Vector3(0, 0, 0)
