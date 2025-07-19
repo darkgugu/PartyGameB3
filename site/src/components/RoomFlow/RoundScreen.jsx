@@ -1,4 +1,4 @@
-const RoundIntroScreen = ({ room, state, mySessionId }) => {
+const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 	const handleToggleReady = () => {
 		console.log('Toggling ready state for', mySessionId)
 		room.send('toggleReady')
@@ -31,6 +31,27 @@ const RoundIntroScreen = ({ room, state, mySessionId }) => {
 			</h2>
 			<p>Next Minigame: {state.currentMinigame}</p>
 
+			<table>
+				<thead>
+					<tr>
+						<th>Classement</th>
+						<th>Joueur</th>
+						<th>Score</th>
+					</tr>
+				</thead>
+				<tbody>
+					{players
+						.sort((a, b) => b.score - a.score)
+						.map((player, index) => (
+							<tr key={player.sessionId}>
+								<td>{index + 1}</td>
+								<td>{player.pseudo}</td>
+								<td>{player.score}</td>
+							</tr>
+						))}
+				</tbody>
+			</table>
+
 			<ul className="player-list">
 				{players.map((player) => (
 					<li
@@ -55,14 +76,20 @@ const RoundIntroScreen = ({ room, state, mySessionId }) => {
 				))}
 			</ul>
 			{players.every((player) => player.isReady) ? (
-				<button
-					style={{ marginTop: 20, padding: '12px 32px' }}
-					onClick={() =>
-						room.send('startGameTest', { minigame: 'labyrinth' })
-					}
-				>
-					Démarrer la partie !
-				</button>
+				ownerId === mySessionId ? (
+					<button
+						style={{ marginTop: 20, padding: '12px 32px' }}
+						onClick={() =>
+							room.send('startGameTest', {
+								minigame: 'labyrinth',
+							})
+						}
+					>
+						Démarrer la partie !
+					</button>
+				) : (
+					<p>Tous les joueurs sont prêts, en attente de l'hôte...</p>
+				)
 			) : (
 				<p style={{ marginTop: 20 }}>
 					Tous les joueurs doivent être prêts pour démarrer la partie.
@@ -71,4 +98,4 @@ const RoundIntroScreen = ({ room, state, mySessionId }) => {
 		</div>
 	)
 }
-export default RoundIntroScreen
+export default RoundScreen
