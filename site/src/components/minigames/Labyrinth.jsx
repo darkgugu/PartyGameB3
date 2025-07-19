@@ -1,15 +1,23 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as BABYLON from '@babylonjs/core'
 import '@babylonjs/loaders'
+import { Chronometer } from './utils/Chronometer'
 
 export const Labyrinth = ({ room, state }) => {
 	const canvasRef = useRef(null)
 	const inputMap = useRef({})
 	const playerRef = useRef(null)
 	const remotePlayers = useRef({})
+	const lastPlayerPos = useRef(null)
+
+	const [timeUp, setTimeUp] = useState(false)
+	const [finished, setFinished] = useState(false)
+	const [finishTime, setFinishTime] = useState(null)
 
 	useEffect(() => {
 		if (!room || !state) return
+
+		const startTime = performance.now() / 1000
 
 		const canvas = canvasRef.current
 		if (!canvas) return
@@ -96,6 +104,16 @@ export const Labyrinth = ({ room, state }) => {
 		finishMat.emissiveColor = new BABYLON.Color3(1, 1, 1)
 		finishZone.material = finishMat
 
+		const finishedPlayers = new Set()
+
+		const hasCrossedFinishLine = (prevPos, currentPos, finishX) => {
+			if (!prevPos) return false
+			return (
+				(prevPos.x < finishX && currentPos.x >= finishX) ||
+				(prevPos.x > finishX && currentPos.x <= finishX)
+			)
+		}
+
 		const player = BABYLON.MeshBuilder.CreateBox(
 			'player',
 			{ width: 0.4, height: 0.4, depth: 0.4 },
@@ -159,9 +177,31 @@ export const Labyrinth = ({ room, state }) => {
 
 		scene.onBeforeRenderObservable.add(() => {
 			const dt = engine.getDeltaTime() / 1000
-			const speed = 4
-			const turnSpeed = 2.5
+			const speed = 5
+			const turnSpeed = 4
 			const player = playerRef.current
+
+			const playerPos = player.position
+			const finishX = -15 // your finish line X position
+
+			if (
+				!finishedPlayers.has(room.sessionId) &&
+				hasCrossedFinishLine(lastPlayerPos.current, playerPos, finishX)
+			) {
+				const elapsed =
+					60 - Math.floor(performance.now() / 1000 - startTime)
+				setFinished(true)
+				setFinishTime(elapsed)
+				finishedPlayers.add(room.sessionId)
+
+				// Notify Chronometer
+				window.dispatchEvent(
+					new CustomEvent('player-finished', { detail: elapsed }),
+				)
+			}
+
+			// Update last position
+			lastPlayerPos.current = playerPos.clone()
 
 			// Rotation
 			if (inputMap.current['q'] || inputMap.current['a'])
@@ -263,10 +303,37 @@ export const Labyrinth = ({ room, state }) => {
 		})
 	}, [state?.players])
 
+	const messageStyle = {
+		position: 'absolute',
+		top: '50%',
+		left: '50%',
+		transform: 'translate(-50%, -50%)',
+		background: 'rgba(0,0,0,0.8)',
+		color: 'white',
+		padding: '20px 30px',
+		fontSize: 24,
+		borderRadius: 10,
+		zIndex: 10,
+	}
+
 	return (
-		<canvas
-			ref={canvasRef}
-			style={{ width: '100vw', height: '100vh', display: 'block' }}
-		/>
+		<>
+			<Chronometer duration={60} onTimeout={() => setTimeUp(true)} />
+			{finished && (
+				<div style={messageStyle}>
+					🎉 Congratulations! You finished in {60 - finishTime}{' '}
+					seconds.
+				</div>
+			)}
+			{timeUp && !finished && (
+				<div style={messageStyle}>
+					❌ Time’s up! You did not finish.
+				</div>
+			)}
+			<canvas
+				ref={canvasRef}
+				style={{ width: '100vw', height: '100vh', display: 'block' }}
+			/>
+		</>
 	)
 }
