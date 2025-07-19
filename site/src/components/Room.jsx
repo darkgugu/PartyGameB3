@@ -9,9 +9,9 @@ import {
 
 // Screens
 import LobbyScreen from './RoomFlow/LobbyScreen'
-import RoundIntroScreen from './RoomFlow/RoundIntroScreen'
+import RoundScreen from './RoomFlow/RoundScreen'
 import MinigameView from './RoomFlow/MinigameView'
-import GameOverScreen from './RoomFlow/GameOverScreen'
+import EndGameScreen from './RoomFlow/EndGameScreen'
 
 export const Room = () => {
 	const { id } = useParams()
@@ -93,7 +93,7 @@ export const Room = () => {
 
 		case 'round_intro':
 			screen = (
-				<RoundIntroScreen
+				<RoundScreen
 					room={room}
 					state={state}
 					playerList={playerList}
@@ -116,7 +116,7 @@ export const Room = () => {
 
 		case 'end':
 			screen = (
-				<GameOverScreen
+				<EndGameScreen
 					room={room}
 					state={state}
 					playerList={playerList}

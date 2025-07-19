@@ -3,6 +3,7 @@ import { Schema, MapSchema, type } from "@colyseus/schema";
 import { admin } from "../firebaseAdmin"; // adjust path as needed
 import { ArraySchema } from "@colyseus/schema";
 import axios from 'axios'
+import e from "express";
 
 // --- Player schema with position/rotation ---
 class Player extends Schema {
@@ -164,7 +165,11 @@ export class PartyRoom extends Room<PartyRoomState> {
       const allFinished = Array.from(this.state.players.values()).every(p => p.hasFinished);
       if (allFinished) {
         this.state.roundCounter++;
-        this.state.phase = "round_intro";
+        if(this.state.roundCounter <= this.state.minigames.length) {
+          this.state.phase = "round_intro";
+        }else {
+          this.state.phase = "end";
+        }
         this.state.players.forEach(p => {
           p.hasFinished = false; // Reset for next round
           p.isReady = false; // Reset readiness

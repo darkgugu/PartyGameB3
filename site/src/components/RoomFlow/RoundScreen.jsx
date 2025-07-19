@@ -1,4 +1,4 @@
-const RoundIntroScreen = ({ room, state, mySessionId, ownerId }) => {
+const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 	const handleToggleReady = () => {
 		console.log('Toggling ready state for', mySessionId)
 		room.send('toggleReady')
@@ -31,7 +31,7 @@ const RoundIntroScreen = ({ room, state, mySessionId, ownerId }) => {
 			</h2>
 			<p>Next Minigame: {state.currentMinigame}</p>
 
-			<table className="scoreboard">
+			<table>
 				<thead>
 					<tr>
 						<th>Classement</th>
@@ -98,4 +98,4 @@ const RoundIntroScreen = ({ room, state, mySessionId, ownerId }) => {
 		</div>
 	)
 }
-export default RoundIntroScreen
+export default RoundScreen
