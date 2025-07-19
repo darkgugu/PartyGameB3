@@ -15,6 +15,7 @@ class Player extends Schema {
   @type("number") z = 20;
   @type("number") rotation = 0;
   @type("boolean") isReady = false;
+  @type("boolean") hasFinished = false;
   @type("string") pseudo = "";
   @type("string") avatar = "";
 }
@@ -147,39 +148,74 @@ export class PartyRoom extends Room<PartyRoomState> {
       if (typeof data.z === "number") player.z = data.z;
       if (typeof data.rotation === "number") player.rotation = data.rotation;
     });
+
+    this.onMessage("finished", (client, data) => {
+      const player = this.state.players.get(client.sessionId);
+      if (!player) return;
+
+      switch (this.state.currentMinigame) {
+        case "labyrinth":
+          player.score += this.labyrinthScore(data?.time || 0);
+          break;
+      }
+      player.hasFinished = true;
+
+      // Check if all players have finished
+      const allFinished = Array.from(this.state.players.values()).every(p => p.hasFinished);
+      if (allFinished) {
+        this.state.roundCounter++;
+        this.state.phase = "round_intro";
+        this.state.players.forEach(p => {
+          p.hasFinished = false; // Reset for next round
+          p.isReady = false; // Reset readiness
+        });
+        console.log("All players finished. Phase set to round_intro.");
+      }
+
+      console.log(`${player.pseudo} finished with time: ${data?.time || 0} seconds and score: ${this.labyrinthScore(data?.time || 0)}`);
+    })
   }
 
-onJoin = async (client: Client, options: any) => {
-  console.log('Client joined:', client.userData)
-
-  const player = new Player()
-  player.name = client.userData?.name || 'Anonymous'
-  player.uid = client.userData?.uid || 'unknown'
-  player.score = 0
-  player.x = -20
-  player.y = 0.4
-  player.z = 20
-  player.rotation = 0
-
-  // Fetch additional user info from external API
-  try {
-    const res = await axios.get(`${process.env.API_URL}/users/getByUID/${player.uid}`)
-
-    const userData = res.data
-    player.pseudo = userData.pseudo || player.name
-    player.avatar = userData.avatar || ''
-  } catch (err) {
-    console.error('Failed to fetch user profile:', err)
+  ///// SCORING FUNCTIONS /////
+  labyrinthScore = ( time: number) => {
+    time = 60 - time;
+    if (time > 50){
+      return 1000
+    }else {
+      return time * 20;
+    }
   }
 
-  this.state.players.set(client.sessionId, player)
+  onJoin = async (client: Client, options: any) => {
+    console.log('Client joined:', client.userData)
 
-  // Assign owner if first in room
-  if (!this.state.ownerId) {
-    this.state.ownerId = client.sessionId
+    const player = new Player()
+    player.name = client.userData?.name || 'Anonymous'
+    player.uid = client.userData?.uid || 'unknown'
+    player.score = 0
+    player.x = -20
+    player.y = 0.4
+    player.z = 20
+    player.rotation = 0
+
+    // Fetch additional user info from external API
+    try {
+      const res = await axios.get(`${process.env.API_URL}/users/getByUID/${player.uid}`)
+
+      const userData = res.data
+      player.pseudo = userData.pseudo || player.name
+      player.avatar = userData.avatar || ''
+    } catch (err) {
+      console.error('Failed to fetch user profile:', err)
+    }
+
+    this.state.players.set(client.sessionId, player)
+
+    // Assign owner if first in room
+    if (!this.state.ownerId) {
+      this.state.ownerId = client.sessionId
+    }
   }
-}
-
 
   onLeave(client: Client) {
     this.state.players.delete(client.sessionId);
@@ -193,19 +229,19 @@ onJoin = async (client: Client, options: any) => {
   }
 
   async onAuth(client: Client, options: any, req: any) {
-    const idToken = options.idToken;
-    if (!idToken) throw new Error("Missing idToken");
-    try {
-      const decodedToken = await admin.auth().verifyIdToken(idToken);
-      client.userData = {
-        uid: decodedToken.uid,
-        name: decodedToken.name || decodedToken.email || "Anonymous",
-        email: decodedToken.email,
-      };
-      return true;
-    } catch (err) {
-      console.error("Authentication failed:", err);
-      throw new Error("Unauthorized");
-    }
+  const idToken = options.idToken;
+  if (!idToken) throw new Error("Missing idToken");
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    client.userData = {
+      uid: decodedToken.uid,
+      name: decodedToken.name || decodedToken.email || "Anonymous",
+      email: decodedToken.email,
+    };
+    return true;
+  } catch (err) {
+    console.error("Authentication failed:", err);
+    throw new Error("Unauthorized");
+  }
   }
 }

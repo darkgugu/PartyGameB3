@@ -99,6 +99,7 @@ export const Room = () => {
 					playerList={playerList}
 					mySessionId={mySessionId}
 					setPlayerList={setPlayerList}
+					ownerId={ownerId}
 				/>
 			)
 			break

@@ -113,4 +113,47 @@
 .Room .RoundIntroScreen ul li.self {
   cursor: pointer;
   border: 2px solid #007bff;
+}
+.Room .RoundIntroScreen table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+.Room .RoundIntroScreen table th, .Room .RoundIntroScreen table td {
+  padding: 14px 18px;
+  text-align: center;
+  font-size: 1.08rem;
+}
+.Room .RoundIntroScreen table th {
+  background: #ff7e5f;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #f9f6f2;
+}
+.Room .RoundIntroScreen table tr:nth-child(1) td {
+  background: #ffd700;
+  color: #333;
+}
+.Room .RoundIntroScreen table tr:nth-child(2) td {
+  background: #c0c0c0;
+  color: #333;
+}
+.Room .RoundIntroScreen table tr:nth-child(3) td {
+  background: #cd7f32;
+  color: #333;
+}
+.Room .RoundIntroScreen table tr:nth-child(even):not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)) {
+  background: #f8f8f8;
+}
+.Room .RoundIntroScreen table td {
+  color: #333;
+  border-bottom: 1px solid #ececec;
+}
+.Room .RoundIntroScreen table tr:last-child td {
+  border-bottom: none;
 }/*# sourceMappingURL=Room.css.map */

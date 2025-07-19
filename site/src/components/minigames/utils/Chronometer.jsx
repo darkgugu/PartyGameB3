@@ -29,6 +29,7 @@ export const Chronometer = ({ startSeconds = 60, onTimeout }) => {
 		}, 1000)
 
 		return () => clearInterval(intervalRef.current)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [startSeconds])
 
 	return (

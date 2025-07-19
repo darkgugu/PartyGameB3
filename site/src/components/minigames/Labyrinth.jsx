@@ -303,6 +303,14 @@ export const Labyrinth = ({ room, state }) => {
 		})
 	}, [state?.players])
 
+	useEffect(() => {
+		if (finished) {
+			room.send('finished', {
+				time: 60 - finishTime,
+			})
+		}
+	}, [finishTime, finished, room])
+
 	const messageStyle = {
 		position: 'absolute',
 		top: '50%',
