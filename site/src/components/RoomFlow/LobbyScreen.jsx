@@ -1,4 +1,3 @@
-import { disconnectFromColyseus } from '../../colyseus'
 import { LeaveRoomButton } from '../LeaveRoomButton'
 
 const LobbyScreen = ({
