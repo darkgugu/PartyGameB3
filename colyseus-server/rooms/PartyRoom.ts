@@ -42,6 +42,7 @@ class PartyRoomState extends Schema {
   @type("string") password = "Password de la salle";
   @type([ Minigames ]) minigames = new ArraySchema<Minigames>();
   @type("number") roundCounter = 0;
+  @type("number") rounds = 0;
 }
 
 export class PartyRoom extends Room<PartyRoomState> {
@@ -75,6 +76,7 @@ export class PartyRoom extends Room<PartyRoomState> {
       isPrivate: options.isPrivate || false,
       password: options.password || "defaultPassword",
       minigames: options.minigames || [],
+      rounds: options.rounds || 3,
     });
 
     this.state.roomName = options.roomName || "Salle sans nom";
@@ -85,6 +87,7 @@ export class PartyRoom extends Room<PartyRoomState> {
     this.state.isPrivate = options.isPrivate || false;
     this.state.password = options.password || "defaultPassword";
     this.state.minigames = parsedMinigames;
+    this.state.rounds = options.rounds || 3;
 
 
     // Owner starts the game

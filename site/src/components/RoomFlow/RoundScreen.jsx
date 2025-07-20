@@ -29,7 +29,7 @@ const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 	return (
 		<div className="RoundIntroScreen">
 			<h2>
-				Round {state.roundCounter}/{state.minigames.length}
+				Round {state.roundCounter}/{state.rounds}
 			</h2>
 			<p>Next Minigame: {state.currentMinigame}</p>
 

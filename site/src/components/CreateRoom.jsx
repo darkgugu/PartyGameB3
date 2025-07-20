@@ -21,6 +21,7 @@ export const CreateRoom = () => {
 	const [packChoices, setPackChoices] = useState([])
 	const [password, setPassword] = useState('')
 	const [minigames, setMinigames] = useState([])
+	const [rounds, setRounds] = useState(1)
 
 	useEffect(() => {
 		setMinigames([
@@ -62,6 +63,7 @@ export const CreateRoom = () => {
 		isPrivate,
 		password,
 		minigames,
+		rounds,
 	}) => {
 		try {
 			const idToken = await user.getIdToken()
@@ -76,6 +78,7 @@ export const CreateRoom = () => {
 				maxClients,
 				idToken,
 				minigames,
+				rounds,
 			}
 
 			// Step 1: Create room on Colyseus server
@@ -107,6 +110,7 @@ export const CreateRoom = () => {
 							isPrivate,
 							password: isPrivate ? password : undefined,
 							minigames,
+							rounds,
 						})
 					}}
 				>
@@ -119,6 +123,7 @@ export const CreateRoom = () => {
 								<label htmlFor="map-choice">Map :</label>
 							)}
 							<label htmlFor="pack-choice">Pack :</label>
+							<label htmlFor="rounds">Nombre de manches :</label>
 							<label htmlFor="private-room">Private Room :</label>
 							{isPrivate && (
 								<label htmlFor="password">Password :</label>
@@ -185,6 +190,17 @@ export const CreateRoom = () => {
 									</option>
 								))}
 							</select>
+
+							<input
+								type="number"
+								id="rounds"
+								min="1"
+								max="10"
+								value={rounds}
+								onChange={(e) =>
+									setRounds(Number(e.target.value))
+								}
+							/>
 
 							<input
 								type="checkbox"
