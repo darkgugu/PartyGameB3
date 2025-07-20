@@ -1,5 +1,5 @@
 .CreateRoom {
-    padding-top: 50px;
+    padding-top: 70px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -12,7 +12,7 @@
         width: 40%;
         margin: 10px 0;
         padding: 10px;
-        border-radius: 5px;
+        border-radius: 30px;
         background: linear-gradient(135deg, #73BA9B 80%, #5fa88a 100%);
         box-shadow: 0 2px 8px rgba(115, 186, 155, 0.15);
 
@@ -39,13 +39,14 @@
             
                 input,
                 select,
-                input[type="checkbox"] {
+                input[type="checkbox"],
+                .arrow-input {
                     margin-bottom: 8px;
                     display: block;
                     padding: 6px 10px;
-                    border: 1px solid #c2e3d3;
-                    border-radius: 3px;
-                    background: #fff;
+                    border: none;
+                    border-radius: 30px;
+                    background: #36a568;
                     font-size: 1rem;
                     color: #234d36;
                     outline: none;
@@ -92,6 +93,66 @@
                         &:hover {
                             background: #317a5a;
                         }
+                    }
+                }
+
+                .disabled-tooltip{
+                    position: relative;
+                    display: inline-block;
+                    min-height: 38px;
+                    padding: 6px 10px;
+                }
+
+                .disabled-tooltip .tooltip-text {
+                    visibility: hidden;
+                    width: 220px;
+                    background-color: #234d36;
+                    color: #fff;
+                    text-align: center;
+                    border-radius: 6px;
+                    padding: 5px 0;
+                    position: absolute;
+                    z-index: 1;
+                    top: -5px;
+                    left: 100%;
+                }
+
+                .disabled-tooltip .tooltip-text::after {
+                    content: "";
+                    position: absolute;
+                    top: 50%;
+                    right: 100%;
+                    margin-top: -5px;
+                    border-width: 5px;
+                    border-style: solid;
+                    border-color: transparent black transparent transparent;
+                }
+                .disabled-tooltip:hover .tooltip-text {
+                    visibility: visible;
+                }
+
+                .arrow-input{
+                    display: flex;
+                    align-items: center;
+                    position: relative;
+                    background: none;
+
+                    .arrow {
+                        cursor: pointer;
+                        width: 30px;
+                        height: 30px;
+                        color: #163324;
+                    }
+
+                    .left{
+                        transform: rotate(180deg);
+                    }
+
+                    .arrow-number {
+                        width: 25px;
+                        text-align: center;
+                        font-size: 1rem;
+                        color: #234d36;
                     }
                 }
             }
