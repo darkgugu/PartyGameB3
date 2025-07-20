@@ -22,6 +22,15 @@
 .Room button:hover {
   transform: scale(1.05);
 }
+.Room .leave-room-button {
+  background: #ff4d4d;
+  color: #fff;
+  padding: 8px 18px;
+  font-size: 0.92rem;
+}
+.Room .leave-room-button:hover {
+  background: #ff1a1a;
+}
 .Room table {
   width: 100%;
   border-collapse: collapse;

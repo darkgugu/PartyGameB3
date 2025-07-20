@@ -1,3 +1,5 @@
+import { LeaveRoomButton } from '../LeaveRoomButton'
+
 const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 	const handleToggleReady = () => {
 		console.log('Toggling ready state for', mySessionId)
@@ -85,7 +87,7 @@ const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 							})
 						}
 					>
-						Démarrer la partie !
+						Lancer le jeu !
 					</button>
 				) : (
 					<p>Tous les joueurs sont prêts, en attente de l'hôte...</p>
@@ -95,6 +97,7 @@ const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 					Tous les joueurs doivent être prêts pour démarrer la partie.
 				</p>
 			)}
+			<LeaveRoomButton />
 		</div>
 	)
 }

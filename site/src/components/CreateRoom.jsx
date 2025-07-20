@@ -1,11 +1,7 @@
 import '../assets/css/CreateRoom.css'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router'
-import {
-	useColyseusRoom,
-	joinColyseusRoomById,
-	createColyseusRoom,
-} from '../colyseus'
+import { useColyseusRoom, createColyseusRoom } from '../colyseus'
 import { useEffect, useState } from 'react'
 import { useUser } from '../context/UserContext'
 //import { createColyseusRoom } from '../utils/createColyseusRoom'

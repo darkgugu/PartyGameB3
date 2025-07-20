@@ -1,3 +1,6 @@
+import { disconnectFromColyseus } from '../../colyseus'
+import { LeaveRoomButton } from '../LeaveRoomButton'
+
 const LobbyScreen = ({
 	room,
 	state,
@@ -42,6 +45,7 @@ const LobbyScreen = ({
 					Waiting for the owner to start the game...
 				</p>
 			)}
+			<LeaveRoomButton />
 		</div>
 	)
 }
