@@ -91,7 +91,7 @@ export const Header = () => {
 
 	return (
 		<div className="Header">
-			<Link to="/" onClick={() => disconnectFromColyseus()}>
+			<Link to="/" onClick={async () => await disconnectFromColyseus()}>
 				<div id="left-part">
 					<img id="logo" src={dice} alt="logo" />
 					<h1>Party Game B3</h1>
