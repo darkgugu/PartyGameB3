@@ -9,4 +9,6 @@ export const {
 	disconnectFromColyseus,
 	useColyseusRoom,
 	useColyseusState,
+	joinColyseusRoomById,
+	createColyseusRoom,
 } = colyseus(process.env.REACT_APP_COLYSEUS_URL || 'ws://localhost:2567')

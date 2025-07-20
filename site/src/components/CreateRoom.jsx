@@ -1,9 +1,14 @@
 import '../assets/css/CreateRoom.css'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router'
-import { useColyseusRoom, connectToColyseus } from '../colyseus'
+import {
+	useColyseusRoom,
+	joinColyseusRoomById,
+	createColyseusRoom,
+} from '../colyseus'
 import { useEffect, useState } from 'react'
 import { useUser } from '../context/UserContext'
+//import { createColyseusRoom } from '../utils/createColyseusRoom'
 
 export const CreateRoom = () => {
 	const navigate = useNavigate()
@@ -46,9 +51,8 @@ export const CreateRoom = () => {
 	]
 
 	useEffect(() => {
-		// When room is joined, redirect
 		if (room) {
-			console.log(room)
+			console.log('[CreateRoom] Joined room:', room.roomId)
 			navigate(`/room/${room.roomId}`)
 		}
 	}, [room, navigate])
@@ -66,21 +70,28 @@ export const CreateRoom = () => {
 		try {
 			const idToken = await user.getIdToken()
 			const metadata = {
-				roomName: roomName,
+				roomName,
 				creatorName: userData.pseudo,
 				roomType,
 				mapChoice,
 				packChoices,
 				isPrivate,
 				password,
-				maxClients: maxClients,
+				maxClients,
 				idToken,
 				minigames,
 			}
-			await connectToColyseus('party', metadata)
-			// The redirect will happen in the useEffect above!
+
+			// Step 1: Create room on Colyseus server
+			const newRoom = await createColyseusRoom('party', metadata)
+			console.log('[CreateRoom] Room created:', newRoom.roomId)
+
+			// Step 2: Join room by ID using our custom method
+			//await joinColyseusRoomById(newRoom.roomId, metadata)
+
+			// Step 3: navigation will be handled in useEffect when room updates
 		} catch (err) {
-			console.error('Error creating/joining room:', err)
+			console.error('Error creating or joining room:', err)
 		}
 	}
 
@@ -117,6 +128,7 @@ export const CreateRoom = () => {
 								<label htmlFor="password">Password :</label>
 							)}
 						</div>
+
 						<div className="inputs">
 							<input
 								type="text"
@@ -124,6 +136,7 @@ export const CreateRoom = () => {
 								value={roomName}
 								onChange={(e) => setRoomName(e.target.value)}
 							/>
+
 							<input
 								type="number"
 								id="max-clients"
@@ -134,6 +147,7 @@ export const CreateRoom = () => {
 									setMaxClients(Number(e.target.value))
 								}
 							/>
+
 							<select
 								id="room-type"
 								value={roomType}
@@ -142,21 +156,21 @@ export const CreateRoom = () => {
 								<option value="classique">Classique</option>
 								<option value="mini-jeux">Mini-Jeux</option>
 							</select>
+
 							{roomType === 'classique' && (
-								<>
-									<select
-										id="map-choice"
-										value={mapChoice}
-										onChange={(e) =>
-											setMapChoice(e.target.value)
-										}
-									>
-										<option value="forest">Forest</option>
-										<option value="desert">Desert</option>
-										<option value="city">City</option>
-									</select>
-								</>
+								<select
+									id="map-choice"
+									value={mapChoice}
+									onChange={(e) =>
+										setMapChoice(e.target.value)
+									}
+								>
+									<option value="forest">Forest</option>
+									<option value="desert">Desert</option>
+									<option value="city">City</option>
+								</select>
 							)}
+
 							<select
 								id="pack-choice"
 								multiple
@@ -175,12 +189,14 @@ export const CreateRoom = () => {
 									</option>
 								))}
 							</select>
+
 							<input
 								type="checkbox"
 								id="private-room"
 								checked={isPrivate}
 								onChange={(e) => setIsPrivate(e.target.checked)}
 							/>
+
 							<div className="password-input">
 								{isPrivate && (
 									<>

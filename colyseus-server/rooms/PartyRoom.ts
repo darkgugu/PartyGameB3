@@ -235,6 +235,7 @@ export class PartyRoom extends Room<PartyRoomState> {
 
   async onAuth(client: Client, options: any, req: any) {
   const idToken = options.idToken;
+  console.log(`[Colyseus server] Authenticating client ${client.userData?.name} with options: `, options);
   if (!idToken) throw new Error("Missing idToken");
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
