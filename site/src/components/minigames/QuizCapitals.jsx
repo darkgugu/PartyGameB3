@@ -8,6 +8,7 @@ export const QuizCapitals = ({ room, state }) => {
 	const [quizData, setQuizData] = useState([])
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
 	const [answers, setAnswers] = useState([])
+	const [hasFinished, setHasFinished] = useState(false)
 
 	const numberOfQuestions = 20
 
@@ -155,15 +156,20 @@ export const QuizCapitals = ({ room, state }) => {
 							))}
 						</ul>
 					</div>
-					<button
-						onClick={() => {
-							room.send('finished', {
-								score: calculateScore(answers),
-							})
-						}}
-					>
-						Quitter le minijeu
-					</button>
+					{!hasFinished ? (
+						<button
+							onClick={() => {
+								setHasFinished(true)
+								room.send('finished', {
+									score: calculateScore(answers),
+								})
+							}}
+						>
+							Quitter le minijeu
+						</button>
+					) : (
+						<p>Dans l'attente des autres joueurs...</p>
+					)}
 				</div>
 			)}
 		</div>
