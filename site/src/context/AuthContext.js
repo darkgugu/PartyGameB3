@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { auth } from '../firebase'
 import {
 	onAuthStateChanged,
@@ -39,19 +39,16 @@ export const AuthProvider = ({ children }) => {
 	}, [])
 
 	// Auth methods
-	const login = (email, password) => {
-		return signInWithEmailAndPassword(auth, email, password).then(
-			async () => {
-				try {
-					const res = await axios.get(
-						`${process.env.REACT_APP_API_URL}/users/getByUID/${auth.currentUser.uid}`,
-					)
-					return res.data
-				} catch (error) {
-					console.error('Error fetching user:', error)
-				}
-			},
-		)
+	const login = async (email, password) => {
+		await signInWithEmailAndPassword(auth, email, password)
+		try {
+			const res = await axios.get(
+				`${process.env.REACT_APP_API_URL}/users/getByUID/${auth.currentUser.uid}`,
+			)
+			return res.data
+		} catch (error) {
+			console.error('Error fetching user:', error)
+		}
 	}
 
 	const register = async (email, password, pseudo) => {
@@ -105,9 +102,57 @@ export const AuthProvider = ({ children }) => {
 		navigate('/')
 	}
 	const anonymousLogin = () => signInAnonymously(auth)
-	const loginWithGoogle = () => {
-		const provider = new GoogleAuthProvider()
-		return signInWithPopup(auth, provider)
+
+	const loginWithGoogle = async () => {
+		try {
+			const provider = new GoogleAuthProvider()
+			const result = await signInWithPopup(auth, provider)
+
+			const user = result.user
+			const idToken = await user.getIdToken()
+
+			// 1. Check if user exists in Railway backend
+			try {
+				await axios.get(`${API_URL}/users/getByUID/${user.uid}`)
+				// ✅ User already exists in your Railway database
+			} catch (err) {
+				if (err.response && err.response.status === 404) {
+					// ❌ Not found in DB — register in backend (Railway)
+					const registerPayload = {
+						idToken,
+						pseudo: user.email.split('@')[0],
+						email: user.email,
+					}
+
+					const response = await axios.post(
+						`${API_URL}/register`,
+						registerPayload,
+					)
+
+					if (!response.data) {
+						throw new Error(
+							'Failed to register Google user in backend',
+						)
+					}
+
+					console.log(
+						'[GoogleLogin] Successfully registered in backend:',
+						response.data,
+					)
+				} else {
+					console.error(
+						'[GoogleLogin] Unexpected error during user check:',
+						err,
+					)
+					throw err
+				}
+			}
+
+			return user
+		} catch (err) {
+			console.error('[GoogleLogin] Sign-in or registration error:', err)
+			throw err
+		}
 	}
 
 	// ✅ Expose idToken in context value

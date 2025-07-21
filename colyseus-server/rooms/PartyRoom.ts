@@ -42,6 +42,8 @@ class PartyRoomState extends Schema {
   @type("string") password = "Password de la salle";
   @type([ Minigames ]) minigames = new ArraySchema<Minigames>();
   @type("number") roundCounter = 0;
+  @type("number") rounds = 0;
+  @type("string") quizSeed = ""
 }
 
 export class PartyRoom extends Room<PartyRoomState> {
@@ -49,6 +51,9 @@ export class PartyRoom extends Room<PartyRoomState> {
   private lastMoveTime: { [sessionId: string]: number } = {};
 
   onCreate(options: any) {
+    if (options.password) {
+      this.setPrivate();
+    }
     console.log("Room created!");
     console.log("Options:", options);
     this.setState(new PartyRoomState());
@@ -75,6 +80,7 @@ export class PartyRoom extends Room<PartyRoomState> {
       isPrivate: options.isPrivate || false,
       password: options.password || "defaultPassword",
       minigames: options.minigames || [],
+      rounds: options.rounds || 3,
     });
 
     this.state.roomName = options.roomName || "Salle sans nom";
@@ -85,10 +91,32 @@ export class PartyRoom extends Room<PartyRoomState> {
     this.state.isPrivate = options.isPrivate || false;
     this.state.password = options.password || "defaultPassword";
     this.state.minigames = parsedMinigames;
+    this.state.rounds = options.rounds || 3;
 
 
     // Owner starts the game
     this.onMessage("startGame", (client) => {
+      if (client.sessionId !== this.state.ownerId) return;
+
+      this.state.phase = "round_intro";
+      this.state.roundCounter++;
+
+      console.log(
+        "Game started. Phase:",
+        this.state.phase,
+      );
+    });
+
+    this.onMessage('toggleReady', (client) => {
+      const player = this.state.players.get(client.sessionId);
+      if (player) {
+        player.isReady = !player.isReady;
+        console.log(`${player.name} is now ${player.isReady ? 'ready' : 'not ready'}`);
+      }
+    });
+
+    // Owner starts the game
+    this.onMessage("startMinigame", (client, data) => {
       if (client.sessionId !== this.state.ownerId) return;
 
       // Filter unplayed minigames
@@ -104,32 +132,38 @@ export class PartyRoom extends Room<PartyRoomState> {
       if (selected) {
         this.state.currentMinigame = selected.name;
         selected.isPlayed = true;
-        this.state.roundCounter++;
       }
 
-      this.state.phase = "round_intro";
 
-      console.log(
-        "Game started. Phase:",
-        this.state.phase,
-        "Minigame:",
-        this.state.currentMinigame,
-      );
-    });
-
-    this.onMessage('toggleReady', (client) => {
-      const player = this.state.players.get(client.sessionId);
-      if (player) {
-        player.isReady = !player.isReady;
-        console.log(`${player.name} is now ${player.isReady ? 'ready' : 'not ready'}`);
-      }
-    });
-
-    // Owner starts the game
-    this.onMessage("startGameTest", (client, data) => {
-      if (client.sessionId !== this.state.ownerId) return;
       this.state.phase = "minigame";
-      this.state.currentMinigame = data?.minigame || "labyrinth";
+      //this.state.currentMinigame = data?.minigame || "labyrinth";
+      switch (this.state.currentMinigame) {
+        case "labyrinth":
+          break;
+        case "quizCapitals":
+          function getRandomQuizQuestion(): string {
+            const numbers = new Set<number>();
+            while (numbers.size < 4) {
+              numbers.add(Math.floor(Math.random() * 180) + 1);
+            }
+            return Array.from(numbers).join(".");
+          }
+
+          function getRandomQuizSeed(): string {
+            var seed = ""
+            for (let i = 0; i < 20; i++) {
+              seed += getRandomQuizQuestion();
+              if (i < 19) seed += "/";
+            }
+            return seed;
+          }
+
+          this.state.quizSeed = getRandomQuizSeed();
+          break;
+        default:
+          console.warn("Unknown minigame:", this.state.currentMinigame);
+          return;
+      }
       console.log("Game started. Phase:", this.state.phase, "Minigame:", this.state.currentMinigame);
     });
 
@@ -158,6 +192,9 @@ export class PartyRoom extends Room<PartyRoomState> {
         case "labyrinth":
           player.score += this.labyrinthScore(data?.time || 0);
           break;
+        case "quizCapitals":
+          player.score += data?.score || 0;
+          break;
       }
       player.hasFinished = true;
 
@@ -165,7 +202,7 @@ export class PartyRoom extends Room<PartyRoomState> {
       const allFinished = Array.from(this.state.players.values()).every(p => p.hasFinished);
       if (allFinished) {
         this.state.roundCounter++;
-        if(this.state.roundCounter <= this.state.minigames.length) {
+        if(this.state.roundCounter <= this.state.rounds) {
           this.state.phase = "round_intro";
         }else {
           this.state.phase = "end";
@@ -183,11 +220,11 @@ export class PartyRoom extends Room<PartyRoomState> {
 
   ///// SCORING FUNCTIONS /////
   labyrinthScore = ( time: number) => {
-    time = 60 - time;
-    if (time > 50){
+    time = 180 - time;
+    if (time > 100){
       return 1000
     }else {
-      return time * 20;
+      return time * 10;
     }
   }
 
@@ -235,6 +272,7 @@ export class PartyRoom extends Room<PartyRoomState> {
 
   async onAuth(client: Client, options: any, req: any) {
   const idToken = options.idToken;
+  console.log(`[Colyseus server] Authenticating client ${client.userData?.name} with options: `, options);
   if (!idToken) throw new Error("Missing idToken");
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);

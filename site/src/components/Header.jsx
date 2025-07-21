@@ -5,6 +5,7 @@ import Modal from 'react-modal'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useUser } from '../context/UserContext'
+import { disconnectFromColyseus } from '../colyseus'
 
 export const Header = () => {
 	const customStyles = {
@@ -90,7 +91,7 @@ export const Header = () => {
 
 	return (
 		<div className="Header">
-			<Link to="/">
+			<Link to="/" onClick={async () => await disconnectFromColyseus()}>
 				<div id="left-part">
 					<img id="logo" src={dice} alt="logo" />
 					<h1>Party Game B3</h1>
@@ -98,8 +99,6 @@ export const Header = () => {
 			</Link>
 
 			<div id="right-part">
-				{/* 				<Currency type="diamond" />
-				<Currency type="dollar" /> */}
 				<button id="shop">Boutique</button>
 
 				{user && userData ? (

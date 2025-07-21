@@ -64,7 +64,7 @@ export const Labyrinth = ({ room, state }) => {
 			},
 			scene,
 		)
-		finishZone.position = new BABYLON.Vector3(-15, 0.01, 18.8)
+		finishZone.position = new BABYLON.Vector3(-20.5, 0.01, 13)
 
 		// Set how many squares you want per axis
 		const squaresX = 4 // e.g. 2 columns across width
@@ -182,14 +182,14 @@ export const Labyrinth = ({ room, state }) => {
 			const player = playerRef.current
 
 			const playerPos = player.position
-			const finishX = -15 // your finish line X position
+			const finishX = -21 // your finish line X position
 
 			if (
 				!finishedPlayers.has(room.sessionId) &&
 				hasCrossedFinishLine(lastPlayerPos.current, playerPos, finishX)
 			) {
 				const elapsed =
-					60 - Math.floor(performance.now() / 1000 - startTime)
+					180 - Math.floor(performance.now() / 1000 - startTime)
 				setFinished(true)
 				setFinishTime(elapsed)
 				finishedPlayers.add(room.sessionId)
@@ -304,12 +304,17 @@ export const Labyrinth = ({ room, state }) => {
 	}, [state?.players])
 
 	useEffect(() => {
-		if (finished) {
+		if (finished && !timeUp) {
 			room.send('finished', {
-				time: 60 - finishTime,
+				time: 180 - finishTime,
 			})
 		}
-	}, [finishTime, finished, room])
+		if (timeUp && !finished) {
+			room.send('finished', {
+				time: 180,
+			})
+		}
+	}, [finishTime, finished, room, timeUp])
 
 	const messageStyle = {
 		position: 'absolute',
@@ -326,10 +331,10 @@ export const Labyrinth = ({ room, state }) => {
 
 	return (
 		<>
-			<Chronometer duration={60} onTimeout={() => setTimeUp(true)} />
+			<Chronometer duration={180} onTimeout={() => setTimeUp(true)} />
 			{finished && (
 				<div style={messageStyle}>
-					🎉 Congratulations! You finished in {60 - finishTime}{' '}
+					🎉 Congratulations! You finished in {180 - finishTime}{' '}
 					seconds.
 				</div>
 			)}

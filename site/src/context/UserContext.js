@@ -10,26 +10,40 @@ export const UserProvider = ({ children }) => {
 	const [loading, setLoading] = useState(true)
 
 	useEffect(() => {
-		const fetchUserData = async () => {
+		const fetchUserDataWithRetry = async (retries = 5, delay = 1000) => {
 			if (!user) {
 				setUserData(null)
 				setLoading(false)
 				return
 			}
 
-			try {
-				const res = await axios.get(
-					`${process.env.REACT_APP_API_URL}/users/getByUID/${user.uid}`,
-				)
-				setUserData(res.data)
-			} catch (err) {
-				console.error('Error fetching user data:', err)
-			} finally {
-				setLoading(false)
+			for (let attempt = 0; attempt < retries; attempt++) {
+				try {
+					const res = await axios.get(
+						`${process.env.REACT_APP_API_URL}/users/getByUID/${user.uid}`,
+					)
+					console.log('Fetched user data:', res.data)
+					setUserData(res.data)
+					setLoading(false)
+					return
+				} catch (err) {
+					if (attempt === retries - 1) {
+						console.error('User not found after retries:', err)
+						setUserData(null)
+						setLoading(false)
+					} else {
+						console.warn(
+							`[UserContext] Retry ${attempt + 1}/${retries} in ${
+								delay / 1000
+							}s...`,
+						)
+						await new Promise((r) => setTimeout(r, delay))
+					}
+				}
 			}
 		}
 
-		fetchUserData()
+		fetchUserDataWithRetry()
 	}, [user])
 
 	return (

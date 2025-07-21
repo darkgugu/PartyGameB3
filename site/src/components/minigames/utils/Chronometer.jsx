@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-export const Chronometer = ({ startSeconds = 60, onTimeout }) => {
+export const Chronometer = ({ startSeconds = 180, onTimeout }) => {
 	const displayRef = useRef(null)
 	const intervalRef = useRef(null)
 	const remainingTime = useRef(startSeconds)

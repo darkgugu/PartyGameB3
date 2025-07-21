@@ -4,7 +4,7 @@ import '../assets/css/Lobby.css'
 import { Link } from 'react-router'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router'
-import { connectToColyseus, disconnectFromColyseus } from '../colyseus'
+import { disconnectFromColyseus, joinColyseusRoomById } from '../colyseus'
 
 export const Lobby = () => {
 	const COLYSEUS_URL =
@@ -91,7 +91,10 @@ export const Lobby = () => {
 			// 2. Use your app-wide connectToColyseus for the party room
 			const idToken = await user.getIdToken()
 			await disconnectFromColyseus() // ensures use-colyseus context is clear
-			await connectToColyseus('party', { roomId, idToken })
+			console.log('[Lobby] Connecting to party room with : ', roomId)
+			await joinColyseusRoomById(roomId, {
+				idToken: idToken,
+			})
 			console.log(`[Lobby] Joined party room ${roomId}, navigating...`)
 			navigate(`/room/${roomId}`)
 		} catch (err) {
@@ -104,14 +107,18 @@ export const Lobby = () => {
 			<div className="lobby-content">
 				<h2 className="lobby-title">Available Rooms</h2>
 				<ul className="room-list">
-					{rooms.map((room) => (
-						<li key={room.roomId}>
-							{room.metadata?.roomName || room.roomId} -{' '}
-							{room.clients}/{room.maxClients}
-							<button onClick={join(room.roomId)}>Join</button>
-							<Link to={`/room/${room.roomId}`}></Link>
-						</li>
-					))}
+					{rooms.map((room) =>
+						room.clients !== room.maxClients ? (
+							<li key={room.roomId}>
+								{room.metadata?.roomName || room.roomId} -{' '}
+								{room.clients}/{room.maxClients}
+								<button onClick={join(room.roomId)}>
+									Join
+								</button>
+								<Link to={`/room/${room.roomId}`}></Link>
+							</li>
+						) : null,
+					)}
 				</ul>
 			</div>
 		</div>
