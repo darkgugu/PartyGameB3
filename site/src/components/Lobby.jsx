@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { Client } from 'colyseus.js'
 import '../assets/css/Lobby.css'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router'
 import { disconnectFromColyseus, joinColyseusRoomById } from '../colyseus'

@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import '../assets/css/Header.css'
 import dice from '../assets/images/dice.png'
 import Modal from 'react-modal'
