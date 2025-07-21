@@ -14,17 +14,24 @@ import MinigameView from './RoomFlow/MinigameView'
 import EndGameScreen from './RoomFlow/EndGameScreen'
 
 export const Room = () => {
-	const { id } = useParams()
+	const { roomId } = useParams()
 	const room = useColyseusRoom()
 	const state = useColyseusState()
 
 	const [playerList, setPlayerList] = useState([])
 
+	console.log('Room from room:', room)
+
 	useEffect(() => {
-		if (!room && id) {
-			connectToColyseus('party', { roomId: id })
+		console.log(
+			'BEFORE Room component mounted, connecting to room:',
+			roomId,
+		)
+		if (!room && roomId) {
+			console.log('AFTER Connecting to Colyseus room:', roomId)
+			connectToColyseus('party', { roomId })
 		}
-	}, [room, id])
+	}, [room, roomId])
 
 	useEffect(() => {
 		if (!state?.players) return
@@ -69,7 +76,8 @@ export const Room = () => {
 		}
 	}, [state?.players, state?.maxPlayers, state?.players?.isReady])
 
-	if (!room || !state) return <div>Joining room...</div>
+	if (!room || !state)
+		return <div style={{ paddingTop: '50px' }}>Joining room...</div>
 
 	const mySessionId = room.sessionId
 	const ownerId = state.ownerId

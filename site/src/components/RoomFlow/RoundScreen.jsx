@@ -1,3 +1,5 @@
+import { LeaveRoomButton } from '../LeaveRoomButton'
+
 const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 	const handleToggleReady = () => {
 		console.log('Toggling ready state for', mySessionId)
@@ -27,7 +29,7 @@ const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 	return (
 		<div className="RoundIntroScreen">
 			<h2>
-				Round {state.roundCounter}/{state.minigames.length}
+				Round {state.roundCounter}/{state.rounds}
 			</h2>
 			<p>Next Minigame: {state.currentMinigame}</p>
 
@@ -79,13 +81,9 @@ const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 				ownerId === mySessionId ? (
 					<button
 						style={{ marginTop: 20, padding: '12px 32px' }}
-						onClick={() =>
-							room.send('startGameTest', {
-								minigame: 'labyrinth',
-							})
-						}
+						onClick={() => room.send('startMinigame')}
 					>
-						Démarrer la partie !
+						Lancer le jeu !
 					</button>
 				) : (
 					<p>Tous les joueurs sont prêts, en attente de l'hôte...</p>
@@ -95,6 +93,7 @@ const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 					Tous les joueurs doivent être prêts pour démarrer la partie.
 				</p>
 			)}
+			<LeaveRoomButton />
 		</div>
 	)
 }

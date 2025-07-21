@@ -16,6 +16,7 @@ import {
 import { Room } from './Room'
 import { JoinRoom } from './JoinRoom'
 import { ErrorProfile } from './ErrorProfile'
+import { JoinRoomWithId } from './JoinRoomWithId'
 
 export const App = () => {
 	const location = useLocation()
@@ -35,9 +36,10 @@ export const App = () => {
 				<Route path="/" element={<Home />} />
 				<Route path="/createRoom" element={<CreateRoom />} />
 				<Route path="/joinRoom" element={<JoinRoom />} />
+				<Route path="/joinRoom/:roomId" element={<JoinRoomWithId />} />
 				<Route path="/minigame/labyrinth" element={<Labyrinth />} />
 				<Route path="/room/:roomId" element={<Room />} />
-        <Route path="/profile/:pseudo" element={<Profile />} />
+				<Route path="/profile/:pseudo" element={<Profile />} />
 				<Route path="/profile404" element={<ErrorProfile />} />
 				<Route path="*" element={<Error404 />} />
 			</Routes>
