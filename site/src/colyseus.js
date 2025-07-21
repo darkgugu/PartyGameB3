@@ -1,5 +1,5 @@
 // src/colyseus.js
-import { colyseus } from 'use-colyseus'
+import { colyseus } from '@darkgugu/use-colyseus'
 
 // If you use a Schema, you can pass it as a generic: colyseus<MySchema>(url)
 // For JS just do:

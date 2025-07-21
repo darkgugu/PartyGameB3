@@ -220,11 +220,11 @@ export class PartyRoom extends Room<PartyRoomState> {
 
   ///// SCORING FUNCTIONS /////
   labyrinthScore = ( time: number) => {
-    time = 60 - time;
-    if (time > 50){
+    time = 180 - time;
+    if (time > 100){
       return 1000
     }else {
-      return time * 20;
+      return time * 10;
     }
   }
 
