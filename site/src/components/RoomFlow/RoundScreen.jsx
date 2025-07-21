@@ -81,11 +81,7 @@ const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 				ownerId === mySessionId ? (
 					<button
 						style={{ marginTop: 20, padding: '12px 32px' }}
-						onClick={() =>
-							room.send('startMinigame', {
-								minigame: 'quizCapitals',
-							})
-						}
+						onClick={() => room.send('startMinigame')}
 					>
 						Lancer le jeu !
 					</button>

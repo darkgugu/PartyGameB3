@@ -12,7 +12,7 @@ const LobbyScreen = ({
 }) => {
 	const handleStartGame = () => {
 		//setPlayerList(playerList.filter((player) => player !== null))
-		room?.send('startGame', { minigame: 'quizCapitals' })
+		room?.send('startGame')
 	}
 
 	const handleCopyInviteLink = async (inviteLink) => {

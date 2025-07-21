@@ -98,29 +98,12 @@ export class PartyRoom extends Room<PartyRoomState> {
     this.onMessage("startGame", (client) => {
       if (client.sessionId !== this.state.ownerId) return;
 
-      // Filter unplayed minigames
-      const availableMinigames = this.state.minigames.filter(mg => !mg.isPlayed);
-
-      // Pick a random one (fallback if all are played)
-      const selected =
-        availableMinigames.length > 0
-          ? availableMinigames[Math.floor(Math.random() * availableMinigames.length)]
-          : this.state.minigames[Math.floor(Math.random() * this.state.minigames.length)];
-
-      // Set current minigame and mark it as played
-      if (selected) {
-        this.state.currentMinigame = selected.name;
-        selected.isPlayed = true;
-        this.state.roundCounter++;
-      }
-
       this.state.phase = "round_intro";
+      this.state.roundCounter++;
 
       console.log(
         "Game started. Phase:",
         this.state.phase,
-        "Minigame:",
-        this.state.currentMinigame,
       );
     });
 
@@ -135,8 +118,25 @@ export class PartyRoom extends Room<PartyRoomState> {
     // Owner starts the game
     this.onMessage("startMinigame", (client, data) => {
       if (client.sessionId !== this.state.ownerId) return;
+
+      // Filter unplayed minigames
+      const availableMinigames = this.state.minigames.filter(mg => !mg.isPlayed);
+
+      // Pick a random one (fallback if all are played)
+      const selected =
+        availableMinigames.length > 0
+          ? availableMinigames[Math.floor(Math.random() * availableMinigames.length)]
+          : this.state.minigames[Math.floor(Math.random() * this.state.minigames.length)];
+
+      // Set current minigame and mark it as played
+      if (selected) {
+        this.state.currentMinigame = selected.name;
+        selected.isPlayed = true;
+      }
+
+
       this.state.phase = "minigame";
-      this.state.currentMinigame = data?.minigame || "labyrinth";
+      //this.state.currentMinigame = data?.minigame || "labyrinth";
       switch (this.state.currentMinigame) {
         case "labyrinth":
           break;

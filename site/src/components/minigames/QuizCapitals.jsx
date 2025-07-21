@@ -64,7 +64,8 @@ export const QuizCapitals = ({ room, state }) => {
 											<span>{question.question}</span>
 										</div>
 										<span className="question-number">
-											Question N°{index + 1}
+											Question N°{index + 1}/
+											{quizData.length}
 										</span>
 									</div>
 

@@ -28,9 +28,8 @@ export const CreateRoom = () => {
 
 	useEffect(() => {
 		setMinigames([
-			{ name: 'Labyrinth', played: false },
-			{ name: 'Puzzle', played: false },
-			{ name: 'Quizz', played: false },
+			{ name: 'labyrinth', played: false },
+			{ name: 'quizCapitals', played: false },
 		])
 	}, [])
 
