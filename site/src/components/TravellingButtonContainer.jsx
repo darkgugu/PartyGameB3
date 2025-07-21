@@ -3,7 +3,7 @@ import { TravellingButton } from './TravellingButton'
 import React from 'react'
 import { Vector3 } from '@babylonjs/core'
 import { useBabylon } from '../context/BabylonProvider'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 
 export const TravellingButtonContainer = () => {
 	const { camera } = useBabylon()
