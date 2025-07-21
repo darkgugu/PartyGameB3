@@ -43,6 +43,7 @@ class PartyRoomState extends Schema {
   @type([ Minigames ]) minigames = new ArraySchema<Minigames>();
   @type("number") roundCounter = 0;
   @type("number") rounds = 0;
+  @type("string") quizSeed = ""
 }
 
 export class PartyRoom extends Room<PartyRoomState> {
@@ -132,10 +133,37 @@ export class PartyRoom extends Room<PartyRoomState> {
     });
 
     // Owner starts the game
-    this.onMessage("startGameTest", (client, data) => {
+    this.onMessage("startMinigame", (client, data) => {
       if (client.sessionId !== this.state.ownerId) return;
       this.state.phase = "minigame";
       this.state.currentMinigame = data?.minigame || "labyrinth";
+      switch (this.state.currentMinigame) {
+        case "labyrinth":
+          break;
+        case "quizCapitals":
+          function getRandomQuizQuestion(): string {
+            const numbers = new Set<number>();
+            while (numbers.size < 4) {
+              numbers.add(Math.floor(Math.random() * 180) + 1);
+            }
+            return Array.from(numbers).join(".");
+          }
+
+          function getRandomQuizSeed(): string {
+            var seed = ""
+            for (let i = 0; i < 20; i++) {
+              seed += getRandomQuizQuestion();
+              if (i < 19) seed += "/";
+            }
+            return seed;
+          }
+
+          this.state.quizSeed = getRandomQuizSeed();
+          break;
+        default:
+          console.warn("Unknown minigame:", this.state.currentMinigame);
+          return;
+      }
       console.log("Game started. Phase:", this.state.phase, "Minigame:", this.state.currentMinigame);
     });
 
@@ -163,6 +191,9 @@ export class PartyRoom extends Room<PartyRoomState> {
       switch (this.state.currentMinigame) {
         case "labyrinth":
           player.score += this.labyrinthScore(data?.time || 0);
+          break;
+        case "quizCapitals":
+          player.score += data?.score || 0;
           break;
       }
       player.hasFinished = true;

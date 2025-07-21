@@ -1,0 +1,95 @@
+.QuizCapitals{
+    .inactive-question {
+        display: none;
+    }
+
+    .active-question {
+        margin-top: 200px;
+        background-color: rgb(184, 201, 255);
+        width: 800px;
+        padding: 20px;
+        border-radius: 15px;
+
+        .question-header{
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2em;
+            background-color: darken($color: rgb(184, 201, 255), $amount: 10%);
+            border-radius: 15px;
+            padding: 10px;
+
+            span {
+                font-weight: bold;
+            }
+        }
+        
+        .choices {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+
+            .choice {
+                background-color: white;
+                padding: 10px;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: lightgray;
+                }
+            }
+        }
+    }
+
+    .results {
+        
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background-color: rgb(226, 245, 205);
+        width: 500px;
+        padding: 20px;
+        border-radius: 15px;
+        margin-top: 20px;
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .results-box {
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            &::-webkit-scrollbar {
+                display: none;
+            }
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        ul{
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+
+            li {
+                width: 100%;
+                list-style: none;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                border-radius: 15px;
+                &:hover {
+                    background-color: #e6f7d4;
+                }
+        }
+        }
+
+    }
+}
