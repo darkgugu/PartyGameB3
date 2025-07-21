@@ -39,7 +39,6 @@
             
                 input,
                 select,
-                input[type="checkbox"],
                 .arrow-input {
                     margin-bottom: 8px;
                     display: block;
@@ -96,14 +95,14 @@
                     }
                 }
 
-                .disabled-tooltip{
+                .disabled-tooltip, .info-tooltip{
                     position: relative;
                     display: inline-block;
                     min-height: 38px;
                     padding: 6px 10px;
                 }
 
-                .disabled-tooltip .tooltip-text {
+                .disabled-tooltip .tooltip-text, .info-tooltip .tooltip-text {
                     visibility: hidden;
                     width: 220px;
                     background-color: #234d36;
@@ -117,7 +116,7 @@
                     left: 100%;
                 }
 
-                .disabled-tooltip .tooltip-text::after {
+                .disabled-tooltip .tooltip-text::after, .info-tooltip .tooltip-text::after {
                     content: "";
                     position: absolute;
                     top: 50%;
@@ -127,7 +126,7 @@
                     border-style: solid;
                     border-color: transparent black transparent transparent;
                 }
-                .disabled-tooltip:hover .tooltip-text {
+                .disabled-tooltip:hover .tooltip-text, .info-tooltip:hover .tooltip-text {
                     visibility: visible;
                 }
 
@@ -155,6 +154,25 @@
                         color: #234d36;
                     }
                 }
+
+                .checkbox-with-info {
+                    display: flex;
+                    align-items: center;
+                    .info-icon {
+                        background: #234d36;
+                        color: #fff;
+                        border-radius: 50%;
+                        width: 20px;
+                        height: 20px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 0.8rem;
+                        cursor: pointer;
+                    }
+                }
+
+                
             }
         }
     }

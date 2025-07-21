@@ -111,7 +111,7 @@ export const CreateRoom = () => {
 							mapChoice,
 							packChoices,
 							isPrivate,
-							password: isPrivate ? password : undefined,
+							password,
 							minigames,
 							rounds,
 						})
@@ -128,9 +128,9 @@ export const CreateRoom = () => {
 								<label htmlFor="map-choice">Map :</label>
 							)}
 							<label htmlFor="rounds">Nombre de manches :</label>
-							<label htmlFor="private-room">Private Room :</label>
+							<label htmlFor="private-room">Salle privée :</label>
 							{isPrivate && (
-								<label htmlFor="password">Password :</label>
+								<label htmlFor="password">Mot de passe :</label>
 							)}
 							<label htmlFor="pack-choice">Pack :</label>
 						</div>
@@ -212,12 +212,24 @@ export const CreateRoom = () => {
 								/>
 							</div>
 
-							<input
-								type="checkbox"
-								id="private-room"
-								checked={isPrivate}
-								onChange={(e) => setIsPrivate(e.target.checked)}
-							/>
+							<div className="checkbox-with-info">
+								<input
+									type="checkbox"
+									id="private-room"
+									checked={isPrivate}
+									onChange={(e) =>
+										setIsPrivate(e.target.checked)
+									}
+								/>
+								<div className="info-tooltip">
+									<div className="info-icon">?</div>
+									<span className="tooltip-text">
+										Il est impossible de rejoindre une salle
+										privée depuis le menu, vous devrez
+										inviter les autres joueurs directement
+									</span>
+								</div>
+							</div>
 
 							<div className="password-input">
 								{isPrivate && (

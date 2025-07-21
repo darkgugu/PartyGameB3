@@ -50,6 +50,9 @@ export class PartyRoom extends Room<PartyRoomState> {
   private lastMoveTime: { [sessionId: string]: number } = {};
 
   onCreate(options: any) {
+    if (options.password) {
+      this.setPrivate();
+    }
     console.log("Room created!");
     console.log("Options:", options);
     this.setState(new PartyRoomState());
@@ -168,7 +171,7 @@ export class PartyRoom extends Room<PartyRoomState> {
       const allFinished = Array.from(this.state.players.values()).every(p => p.hasFinished);
       if (allFinished) {
         this.state.roundCounter++;
-        if(this.state.roundCounter <= this.state.minigames.length) {
+        if(this.state.roundCounter <= this.state.rounds) {
           this.state.phase = "round_intro";
         }else {
           this.state.phase = "end";

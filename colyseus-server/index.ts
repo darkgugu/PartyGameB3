@@ -15,7 +15,7 @@ const server = createServer(app);
 const gameServer = new Server({ server });
 
 gameServer.define("lobby", LobbyRoom);
-gameServer.define("party", PartyRoom).enableRealtimeListing();
+gameServer.define("party", PartyRoom).filterBy(['password']).enableRealtimeListing();
 gameServer.define("gameType2", MyRoom).enableRealtimeListing();
 gameServer.define("gameType3", MyRoom).enableRealtimeListing();
 

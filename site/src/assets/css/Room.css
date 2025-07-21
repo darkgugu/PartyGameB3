@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
 }
-.Room button {
+.Room button:not(.Toastify__close-button) {
   margin-top: 24px;
   padding: 12px 28px;
   font-size: 1.08rem;
@@ -19,17 +19,17 @@
   letter-spacing: 0.5px;
   transition: background 0.2s, color 0.2s, transform 0.2s;
 }
-.Room button:hover {
+.Room button:not(.Toastify__close-button):hover {
   transform: scale(1.05);
 }
 .Room .leave-room-button {
-  background: #ff4d4d;
-  color: #fff;
-  padding: 8px 18px;
-  font-size: 0.92rem;
+  background: #ff4d4d !important;
+  color: #fff !important;
+  padding: 8px 18px !important;
+  font-size: 0.92rem !important;
 }
 .Room .leave-room-button:hover {
-  background: #ff1a1a;
+  background: #ff1a1a !important;
 }
 .Room table {
   width: 100%;
@@ -103,6 +103,20 @@
 }
 .Room .LobbyScreen .player-item:hover {
   background: #eaeaea;
+}
+.Room .LobbyScreen .invite-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 360px;
+  height: 40px;
+  background: #ececec;
+  border-radius: 20px;
+  filter: blur(5px);
+}
+.Room .LobbyScreen .invite-link:hover {
+  filter: none;
+  transition: filter 0.2s;
 }
 .Room .RoundIntroScreen {
   display: flex;
