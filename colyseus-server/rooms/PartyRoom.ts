@@ -216,6 +216,7 @@ export class PartyRoom extends Room<PartyRoomState> {
 
       console.log(`${player.pseudo} finished with time: ${data?.time || 0} seconds and score: ${this.labyrinthScore(data?.time || 0)}`);
     })
+
   }
 
   ///// SCORING FUNCTIONS /////
@@ -272,7 +273,6 @@ export class PartyRoom extends Room<PartyRoomState> {
 
   async onAuth(client: Client, options: any, req: any) {
   const idToken = options.idToken;
-  console.log(`[Colyseus server] Authenticating client ${client.userData?.name} with options: `, options);
   if (!idToken) throw new Error("Missing idToken");
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);

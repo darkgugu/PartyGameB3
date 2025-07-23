@@ -66,7 +66,7 @@ const LobbyScreen = ({
 				</p>
 			)}
 			<LeaveRoomButton />
-			<FriendList />
+			<FriendList room={room} />
 		</div>
 	)
 }

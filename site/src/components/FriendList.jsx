@@ -13,8 +13,9 @@ import axios from 'axios'
 import { useUser } from '../context/UserContext'
 import { ToastContainer, toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
+import { useColyseusRoom } from '../colyseus'
 
-export const FriendList = () => {
+export const FriendList = ({ room }) => {
 	const [friends, setFriends] = useState([])
 	const [showSearch, setShowSearch] = useState(false)
 	const [searchInput, setSearchInput] = useState('')
@@ -108,10 +109,12 @@ export const FriendList = () => {
 		}
 	}
 
+	const handleInviteClick = async (friend) => {
+		if (!room) return
+	}
+
 	const openMenu = (e, friend) => {
 		e.stopPropagation() // Prevent click from closing the menu$
-		console.log('e :', e)
-		console.log('Opening menu for friend:', friend)
 		setMenuFriend(friend)
 		setActiveMenu(friend === activeMenu ? null : friend)
 	}
@@ -207,7 +210,9 @@ export const FriendList = () => {
 						>
 							<button>Profil</button>
 						</Link>
-						<button>Inviter</button>
+						<button onClick={() => handleInviteClick(menuFriend)}>
+							Inviter
+						</button>
 						<button
 							onClick={() => handleDeleteFriend(menuFriend.id)}
 						>
