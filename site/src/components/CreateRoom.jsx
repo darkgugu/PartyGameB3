@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { useUser } from '../context/UserContext'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FriendList } from './FriendList'
 
 //import { createColyseusRoom } from '../utils/createColyseusRoom'
 
@@ -282,6 +283,7 @@ export const CreateRoom = () => {
 					<button type="submit">Create Room</button>
 				</form>
 			</div>
+			<FriendList />
 		</div>
 	)
 }

@@ -1,6 +1,7 @@
 import { LeaveRoomButton } from '../LeaveRoomButton'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { FriendList } from '../FriendList'
 
 const LobbyScreen = ({
 	room,
@@ -68,6 +69,7 @@ const LobbyScreen = ({
 				</p>
 			)}
 			<LeaveRoomButton />
+			<FriendList />
 		</div>
 	)
 }

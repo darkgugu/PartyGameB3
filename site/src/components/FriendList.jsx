@@ -3,9 +3,9 @@ import 'react-toastify/dist/ReactToastify.css'
 
 import {
 	faPlus,
-	faEllipsisV,
 	faCircle as faCircleSolid,
 	faTimes,
+	faClose,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useState } from 'react'
@@ -19,6 +19,8 @@ export const FriendList = () => {
 	const [showSearch, setShowSearch] = useState(false)
 	const [searchInput, setSearchInput] = useState('')
 	const { userData } = useUser()
+	const [activeMenu, setActiveMenu] = useState(null) // Track which menu is open
+	const [menuFriend, setMenuFriend] = useState(null)
 
 	useEffect(() => {
 		const userId = userData?.idUtilisateur
@@ -106,50 +108,73 @@ export const FriendList = () => {
 		}
 	}
 
+	const openMenu = (e, friend) => {
+		e.stopPropagation() // Prevent click from closing the menu$
+		console.log('e :', e)
+		console.log('Opening menu for friend:', friend)
+		setMenuFriend(friend)
+		setActiveMenu(friend === activeMenu ? null : friend)
+	}
+
+	const closeMenu = () => {
+		setActiveMenu(null)
+	}
+
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (!event.target.closest('.menu-button') && activeMenu) {
+				closeMenu()
+			}
+		}
+
+		document.addEventListener('click', handleClickOutside)
+		return () => document.removeEventListener('click', handleClickOutside)
+	}, [activeMenu])
+
 	if (!userData) return null
 
 	return (
-		<div className="FriendList">
-			<ToastContainer position="bottom-right" autoClose={2500} />
-			<div className="header">
-				{!showSearch ? <span>Amis</span> : null}
-				{showSearch ? (
-					<div className="search-container">
-						<input
-							type="text"
-							placeholder="Entrez un pseudo..."
-							value={searchInput}
-							onChange={(e) => setSearchInput(e.target.value)}
-							onKeyDown={handleSearchKeyDown}
-							className="friend-search-input"
-						/>
-						<button onClick={handleAddFriend} className="add-btn">
-							Ajouter
-						</button>
+		<div className="FriendList" onClick={closeMenu}>
+			<div className="friendlist-container">
+				<ToastContainer position="bottom-right" autoClose={2500} />
+				<div className="header">
+					{!showSearch ? <span>Amis</span> : null}
+					{showSearch ? (
+						<div className="search-container">
+							<input
+								type="text"
+								placeholder="Entrez un pseudo..."
+								value={searchInput}
+								onChange={(e) => setSearchInput(e.target.value)}
+								onKeyDown={handleSearchKeyDown}
+								className="friend-search-input"
+							/>
+							<button
+								onClick={handleAddFriend}
+								className="add-btn"
+							>
+								Ajouter
+							</button>
+							<FontAwesomeIcon
+								icon={faTimes}
+								className="cancel-icon"
+								onClick={() => {
+									setShowSearch(false)
+									setSearchInput('')
+								}}
+							/>
+						</div>
+					) : (
 						<FontAwesomeIcon
-							icon={faTimes}
-							className="cancel-icon"
-							onClick={() => {
-								setShowSearch(false)
-								setSearchInput('')
-							}}
+							icon={faPlus}
+							className="add-icon"
+							onClick={() => setShowSearch(true)}
 						/>
-					</div>
-				) : (
-					<FontAwesomeIcon
-						icon={faPlus}
-						className="add-icon"
-						onClick={() => setShowSearch(true)}
-					/>
-				)}
-			</div>
-			<ul>
-				{friends.map((friend, index) => (
-					<Link
-						to={`/profile/${friend.joueur2.pseudo}`}
-						className="friend-name"
-					>
-						<li key={index}>
+					)}
+				</div>
+				<ul>
+					{friends.map((friend, index) => (
+						<li key={index} onClick={(e) => openMenu(e, friend)}>
 							<span>{friend.joueur2.pseudo}</span>
 							<div className="icons">
 								<FontAwesomeIcon
@@ -158,22 +183,40 @@ export const FriendList = () => {
 										friend.online ? 'online' : 'offline'
 									}
 								/>
-								<button
-									className="menu-button"
-									onClick={() =>
-										handleDeleteFriend(friend.id)
-									}
-								>
-									<FontAwesomeIcon
-										icon={faEllipsisV}
-										className="menu-icon"
-									/>
-								</button>
 							</div>
 						</li>
-					</Link>
-				))}
-			</ul>
+					))}
+				</ul>
+			</div>
+			{activeMenu && (
+				<div className="friendlist-container friendlist-menu">
+					<div className="menu-header header">
+						<span>
+							{menuFriend.joueur2.pseudo}
+							<FontAwesomeIcon
+								icon={faClose}
+								className="close-icon"
+								onClick={closeMenu}
+							/>
+						</span>
+					</div>
+					<div className="menu-content">
+						<Link
+							to={`/profile/${menuFriend.joueur2.pseudo}`}
+							className="friend-name"
+						>
+							<button>Profil</button>
+						</Link>
+						<button>Inviter</button>
+						<button
+							onClick={() => handleDeleteFriend(menuFriend.id)}
+						>
+							Supprimer
+						</button>
+						<button>Bloquer</button>
+					</div>
+				</div>
+			)}
 		</div>
 	)
 }

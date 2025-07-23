@@ -1,4 +1,4 @@
-.FriendList {
+.FriendList .friendlist-container {
   position: absolute;
   bottom: 20px;
   left: 20px;
@@ -8,7 +8,7 @@
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
-.FriendList .header {
+.FriendList .friendlist-container .header {
   background-color: #FE7A76;
   color: black;
   font-weight: bold;
@@ -18,17 +18,17 @@
   align-items: center;
   font-size: 14px;
 }
-.FriendList .header .add-icon {
+.FriendList .friendlist-container .header .add-icon {
   cursor: pointer;
   font-size: 0.8rem;
 }
-.FriendList .header .search-container {
+.FriendList .friendlist-container .header .search-container {
   display: flex;
   align-items: center;
   gap: 6px;
   width: 100%;
 }
-.FriendList .header .friend-search-input {
+.FriendList .friendlist-container .header .friend-search-input {
   flex: 1;
   padding: 4px 6px;
   border: 1px solid #aaa;
@@ -38,7 +38,7 @@
   color: #333;
   width: 50%;
 }
-.FriendList .header .add-btn {
+.FriendList .friendlist-container .header .add-btn {
   background-color: #28a745;
   color: white;
   border: none;
@@ -47,41 +47,41 @@
   border-radius: 4px;
   cursor: pointer;
 }
-.FriendList .header .add-btn:hover {
+.FriendList .friendlist-container .header .add-btn:hover {
   background-color: #218838;
 }
-.FriendList .header .cancel-icon {
+.FriendList .friendlist-container .header .cancel-icon {
   color: #c0392b;
   cursor: pointer;
   font-size: 0.8rem;
 }
-.FriendList ul {
+.FriendList .friendlist-container ul {
   list-style: none;
   margin: 0;
   padding: 0;
   max-height: 180px;
   overflow-y: auto;
 }
-.FriendList ul::-webkit-scrollbar {
+.FriendList .friendlist-container ul::-webkit-scrollbar {
   width: 6px;
 }
-.FriendList ul::-webkit-scrollbar-track {
+.FriendList .friendlist-container ul::-webkit-scrollbar-track {
   background: transparent;
   border-radius: 10px;
 }
-.FriendList ul::-webkit-scrollbar-thumb {
+.FriendList .friendlist-container ul::-webkit-scrollbar-thumb {
   background-color: #bbb;
   border-radius: 10px;
 }
-.FriendList ul::-webkit-scrollbar-thumb:hover {
+.FriendList .friendlist-container ul::-webkit-scrollbar-thumb:hover {
   background-color: #999;
 }
-.FriendList ul .friend-name {
+.FriendList .friendlist-container ul .friend-name {
   color: black;
   text-decoration: none;
   cursor: pointer;
 }
-.FriendList ul li {
+.FriendList .friendlist-container ul li {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -90,32 +90,71 @@
   border-top: 1px solid #ccc;
   font-size: 13px;
   height: 36px;
+  width: 160px;
 }
-.FriendList ul li:hover {
-  background-color: #e0e0e0;
+.FriendList .friendlist-container ul li span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+  display: block;
 }
-.FriendList ul li .icons {
+.FriendList .friendlist-container ul li:hover {
+  background-color: #A4D6BF;
+}
+.FriendList .friendlist-container ul li .icons {
   display: flex;
   align-items: center;
   gap: 6px;
 }
-.FriendList ul li .icons .online {
+.FriendList .friendlist-container ul li .icons .online {
   color: #00cc44;
   font-size: 0.5rem;
 }
-.FriendList ul li .icons .offline {
+.FriendList .friendlist-container ul li .icons .offline {
   color: #ff4444;
   font-size: 0.5rem;
 }
-.FriendList ul li .icons .menu-button {
+.FriendList .friendlist-container ul li .icons .menu-button {
   border: none;
   background: transparent;
   margin: 0;
   padding: 8px;
   cursor: pointer;
 }
-.FriendList ul li .icons .menu-button .menu-icon {
+.FriendList .friendlist-container ul li .icons .menu-button .menu-icon {
   font-size: 0.7rem;
   color: #555;
   cursor: pointer;
+}
+.FriendList .friendlist-menu {
+  width: auto;
+  height: 159px;
+  background-color: #f0f0f0;
+  position: absolute;
+  bottom: 20px;
+  left: 220px;
+}
+.FriendList .friendlist-menu .menu-header {
+  justify-content: center;
+}
+.FriendList .friendlist-menu button {
+  background: none;
+  border: none;
+  color: #333;
+  padding: 8px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+.FriendList .friendlist-menu button:hover {
+  background-color: #A4D6BF;
+}
+.FriendList .friendlist-menu .close-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  margin-left: 10px;
 }/*# sourceMappingURL=FriendList.css.map */
