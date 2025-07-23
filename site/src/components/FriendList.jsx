@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useUser } from '../context/UserContext'
 import { ToastContainer, toast } from 'react-toastify'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 
 export const FriendList = () => {
 	const [friends, setFriends] = useState([])

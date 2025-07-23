@@ -5,7 +5,7 @@ import { App } from './components/App'
 import { BabylonProvider } from './context/BabylonProvider'
 import { AuthProvider } from './context/AuthContext'
 import { Header } from './components/Header'
-import { BrowserRouter as Router } from 'react-router'
+import { BrowserRouter as Router } from 'react-router-dom'
 import { UserProvider } from './context/UserContext'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
