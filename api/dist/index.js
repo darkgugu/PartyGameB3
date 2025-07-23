@@ -9,8 +9,12 @@ const client_1 = require("@prisma/client");
 const firebaseAdmin_1 = require("./firebaseAdmin");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const http_1 = __importDefault(require("http"));
+const socket_io_1 = require("socket.io");
 const app = (0, express_1.default)();
 const prisma = new client_1.PrismaClient();
+// Set up HTTP server to integrate with Socket.IO
+const server = http_1.default.createServer(app);
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
 const corsOptions = {
     origin: (origin, callback) => {
@@ -23,9 +27,51 @@ const corsOptions = {
     },
     credentials: true,
 };
+// Set up Socket.IO
+const io = new socket_io_1.Server(server, {
+    cors: {
+        origin: allowedOrigins,
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
 app.use((0, cors_1.default)(corsOptions));
 app.options(/.*/, (0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
+// Socket.IO connection handling
+let connectedUsers = {}; // Mapping of userId to socketId
+io.on('connection', (socket) => {
+    console.log('A user connected:', socket.id);
+    // Register the user
+    socket.on('registerUser', (userId) => {
+        connectedUsers[userId] = socket.id;
+        console.log(`User ${userId} registered with socket ${socket.id}`);
+    });
+    // Handle sending invites
+    socket.on('sendInvite', (data) => {
+        const { inviterId, inviteeId, roomId } = data;
+        const inviteeSocketId = connectedUsers[inviteeId];
+        if (inviteeSocketId) {
+            // If invitee is online, send the invite to their socket
+            io.to(inviteeSocketId).emit('receiveInvite', { inviterId, inviteeId, roomId });
+            console.log(`Invite sent from ${inviterId} to ${inviteeId}`);
+        }
+        else {
+            console.log(`Invite failed. ${inviteeId} is not connected.`);
+        }
+    });
+    // Handle user disconnect
+    socket.on('disconnect', () => {
+        // Remove user from connected users list on disconnect
+        for (let userId in connectedUsers) {
+            if (connectedUsers[userId] === socket.id) {
+                delete connectedUsers[userId];
+                console.log(`User ${userId} disconnected`);
+                break;
+            }
+        }
+    });
+});
 // Health check
 app.get('/', (_, res) => { res.send('API is up and running 🚀'); });
 // Get all users
@@ -448,6 +494,6 @@ app.post('/relations', async (req, res) => {
     }
 }) */
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server running`);
 });

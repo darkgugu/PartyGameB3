@@ -13,7 +13,6 @@ import axios from 'axios'
 import { useUser } from '../context/UserContext'
 import { ToastContainer, toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
-import { useColyseusRoom } from '../colyseus'
 
 export const FriendList = ({ room }) => {
 	const [friends, setFriends] = useState([])

@@ -2,10 +2,12 @@ import { Link } from 'react-router-dom'
 import '../assets/css/Header.css'
 import dice from '../assets/images/dice.png'
 import Modal from 'react-modal'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useUser } from '../context/UserContext'
 import { disconnectFromColyseus } from '../colyseus'
+import { NotificationsCenter } from './NotificationsCenter'
+import io from 'socket.io-client'
 
 export const Header = () => {
 	const customStyles = {
@@ -27,10 +29,26 @@ export const Header = () => {
 	const [password, setPassword] = useState('')
 	const [confirmPassword, setConfirmPassword] = useState('')
 	const [error, setError] = useState(null)
+	const [notifications, setNotifications] = useState([])
 
 	const { user, login, loginWithGoogle, anonymousLogin, logout, register } =
 		useAuth()
 	const { userData, loading } = useUser()
+
+	const socket = io(
+		process.env.REACT_APP_SOCKET_URL || 'http://localhost:3001',
+	)
+
+	useEffect(() => {
+		if (userData) {
+			socket.emit('registerUser', userData.pseudo)
+			console.log(`User registered: ${userData.pseudo}`)
+		}
+		socket.on('receiveInvite', (data) => {
+			console.log('Received invite:', data)
+			setNotifications((prev) => [...prev, data]) // Store the invite notification
+		})
+	}, [socket])
 
 	const openModal = (type) => {
 		setModalType(type)
@@ -99,6 +117,7 @@ export const Header = () => {
 			</Link>
 
 			<div id="right-part">
+				<NotificationsCenter notifications={notifications} />
 				<button id="shop">Boutique</button>
 
 				{user && userData ? (
