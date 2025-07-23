@@ -25,7 +25,7 @@ export const CreateRoom = () => {
 	const [packChoices, setPackChoices] = useState([])
 	const [password, setPassword] = useState('')
 	const [minigames, setMinigames] = useState([])
-	const [rounds, setRounds] = useState(1)
+	const [rounds, setRounds] = useState(2)
 
 	useEffect(() => {
 		setMinigames([
@@ -280,7 +280,9 @@ export const CreateRoom = () => {
 						</div>
 					</div>
 
-					<button type="submit">Create Room</button>
+					<button type="submit" className="big-button">
+						Create Room
+					</button>
 				</form>
 			</div>
 			<FriendList />

@@ -57,10 +57,7 @@ const LobbyScreen = ({
 				{`${window.location.origin}/joinRoom/${room.roomId}`}
 			</div>
 			{mySessionId === ownerId ? (
-				<button
-					style={{ marginTop: 20, padding: '12px 32px' }}
-					onClick={handleStartGame}
-				>
+				<button className="big-button" onClick={handleStartGame}>
 					Démarrer la partie
 				</button>
 			) : (

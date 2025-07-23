@@ -6,7 +6,7 @@ export const LeaveRoomButton = () => {
 
 	return (
 		<button
-			className="leave-room-button"
+			className="big-button leave-room-button"
 			onClick={async () => {
 				await disconnectFromColyseus()
 				navigate('/')

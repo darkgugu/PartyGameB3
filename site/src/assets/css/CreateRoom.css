@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
 }
-.CreateRoom button {
+.CreateRoom .big-button {
   margin-top: 24px;
   padding: 12px 28px;
   font-size: 1.08rem;
@@ -18,7 +18,7 @@
   letter-spacing: 0.5px;
   transition: background 0.2s, color 0.2s, transform 0.2s;
 }
-.CreateRoom button:hover {
+.CreateRoom .big-button:hover {
   transform: scale(1.05);
 }
 .CreateRoom .room-settings {

@@ -80,7 +80,7 @@ const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 			{players.every((player) => player.isReady) ? (
 				ownerId === mySessionId ? (
 					<button
-						style={{ marginTop: 20, padding: '12px 32px' }}
+						className="big-button"
 						onClick={() => room.send('startMinigame')}
 					>
 						Lancer le jeu !
