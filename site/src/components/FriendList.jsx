@@ -119,7 +119,10 @@ export const FriendList = ({ room }) => {
 	}
 
 	const handleInviteClick = async (friend) => {
-		if (!room) return
+		if (!room) {
+			toast.error('Vous devez être dans une salle pour inviter un ami.')
+			return
+		}
 
 		if (!friend) {
 			toast.error('Une erreur est survenue lors de l’invitation.')
