@@ -7,7 +7,7 @@ import { joinColyseusRoomById } from '../colyseus'
 import { useNavigate } from 'react-router'
 import { ToastContainer, toast } from 'react-toastify'
 
-export const NotificationsCenter = ({ notifications }) => {
+export const NotificationsCenter = ({ notifications, setNotifications }) => {
 	const [open, setOpen] = useState(false)
 	const { user } = useAuth()
 	const navigate = useNavigate()
@@ -23,61 +23,86 @@ export const NotificationsCenter = ({ notifications }) => {
 		setOpen(false)
 	}
 
-	const denyInvitation = (index) => {
-		console.log('Invitation denied:', notifications[index])
-	}
-
-	console.log('Notifications:', notifications)
-
 	return (
 		<div className="NotificationsCenter" style={{ position: 'relative' }}>
 			<ToastContainer position="bottom-right" autoClose={2500} />
-			<FontAwesomeIcon icon={faBell} onClick={() => setOpen(!open)} />
-			{notifications && (
-				<>
+			<div className="bell-container">
+				<FontAwesomeIcon
+					className={
+						notifications.length > 0
+							? 'ringing notification-bell'
+							: 'notification-bell'
+					}
+					icon={faBell}
+					onClick={() => setOpen(!open)}
+				/>
+				{notifications.length > 0 && (
 					<span className="notification-count">
 						{notifications.length}
 					</span>
+				)}
+			</div>
+			{notifications && (
+				<>
 					{open && (
 						<div className="notification-dropdown">
 							<ul>
 								{notifications.length === 0 ? (
-									<li>No notifications</li>
+									<li>
+										<p>Pas de notifications</p>
+									</li>
 								) : (
 									notifications.map((notif, index) => (
 										<li key={index}>
-											<span
-												className="notification-close"
-												onClick={() => setOpen(false)}
-											>
-												<FontAwesomeIcon
-													icon={faClose}
-												/>
-											</span>
-											<p>
-												<span className="pseudo">
-													{notif.inviterId}
-												</span>{' '}
-												vous a invité à jouer !
-											</p>
-											<button
-												className="accept"
-												onClick={() =>
-													acceptInvitation(
-														notif.roomId,
-													)
-												}
-											>
-												Accepter
-											</button>
-											<button
-												className="decline"
-												onClick={() =>
-													denyInvitation(index)
-												}
-											>
-												Refuser
-											</button>
+											<div className="notification-content">
+												<p>
+													<span className="pseudo">
+														{notif.inviterId}
+													</span>{' '}
+													vous a invité à jouer !
+												</p>
+												<span
+													className="notification-close"
+													onClick={() =>
+														setNotifications(
+															notifications.filter(
+																(_, i) =>
+																	i !== index,
+															),
+														)
+													}
+												>
+													<FontAwesomeIcon
+														icon={faClose}
+													/>
+												</span>
+											</div>
+
+											<div>
+												<button
+													className="accept"
+													onClick={() =>
+														acceptInvitation(
+															notif.roomId,
+														)
+													}
+												>
+													Accepter
+												</button>
+												<button
+													className="decline"
+													onClick={() =>
+														setNotifications(
+															notifications.filter(
+																(_, i) =>
+																	i !== index,
+															),
+														)
+													}
+												>
+													Refuser
+												</button>
+											</div>
 										</li>
 									))
 								)}

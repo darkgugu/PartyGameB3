@@ -118,7 +118,10 @@ export const Header = () => {
 			</Link>
 
 			<div id="right-part">
-				<NotificationsCenter notifications={notifications} />
+				<NotificationsCenter
+					notifications={notifications}
+					setNotifications={setNotifications}
+				/>
 				<button id="shop">Boutique</button>
 
 				{user && userData ? (
