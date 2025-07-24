@@ -1,0 +1,71 @@
+.NotificationsCenter{
+    cursor: pointer;
+
+    .notification-dropdown{
+        cursor: default;
+
+        position: absolute;
+		top: 100%;
+		right: 0;
+		background: #A4D6BF;
+		border: 1px solid #ccc;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+		width: 350px;
+		z-index: 10;
+        border-radius: 15px;
+
+        ul{
+            list-style: none;
+			margin: 0;
+			padding: 0px;
+
+            li{
+                padding: 8px 0;
+				border-bottom: 1px solid darken(#73BA9B, 10%);
+
+                .notification-close{
+                    cursor: pointer;
+                    position: absolute;
+                    right: 10px;
+                    top: 10px;
+                }
+
+                p{
+                    margin: 0;
+                    padding: 8px;
+                }
+
+                &:last-child{
+                    border-bottom: none;
+                }
+
+                .pseudo{
+                    font-weight: bold;
+                    color: #234d36;
+                }
+
+                .accept{
+                    background-color: #28a745;
+                    color: white;
+                }
+
+                .decline{
+                    background-color: #dc3545;
+                    color: white;
+                }
+                .accept, .decline{
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    margin-left: 10px;
+                    font-size: 0.9rem;
+                    transition: background-color 0.2s;
+
+                    &:hover{
+                        opacity: 0.8;
+                    }
+                }
+            }
+        }
+    }
+}

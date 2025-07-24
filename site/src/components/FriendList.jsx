@@ -13,7 +13,7 @@ import axios from 'axios'
 import { useUser } from '../context/UserContext'
 import { ToastContainer, toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
-import { useColyseusRoom } from '../colyseus'
+import { useSocket } from '../context/SocketContext'
 
 export const FriendList = ({ room }) => {
 	const [friends, setFriends] = useState([])
@@ -22,6 +22,15 @@ export const FriendList = ({ room }) => {
 	const { userData } = useUser()
 	const [activeMenu, setActiveMenu] = useState(null) // Track which menu is open
 	const [menuFriend, setMenuFriend] = useState(null)
+
+	const { socket } = useSocket()
+
+	useEffect(() => {
+		if (!socket) return
+		return () => {
+			socket.off('receiveInvite')
+		}
+	}, [socket, userData])
 
 	useEffect(() => {
 		const userId = userData?.idUtilisateur
@@ -110,11 +119,26 @@ export const FriendList = ({ room }) => {
 	}
 
 	const handleInviteClick = async (friend) => {
-		if (!room) return
+		if (!room) {
+			toast.error('Vous devez être dans une salle pour inviter un ami.')
+			return
+		}
+
+		if (!friend) {
+			toast.error('Une erreur est survenue lors de l’invitation.')
+			return
+		}
+		console.log(room)
+		socket.emit('sendInvite', {
+			inviterId: userData.pseudo,
+			inviteeId: friend.joueur2.pseudo,
+			roomId: room.roomId,
+		})
+		toast.success(`Invitation envoyée à ${friend.joueur2.pseudo}.`)
 	}
 
 	const openMenu = (e, friend) => {
-		e.stopPropagation() // Prevent click from closing the menu$
+		e.stopPropagation() // Prevent click from closing the menu
 		setMenuFriend(friend)
 		setActiveMenu(friend === activeMenu ? null : friend)
 	}

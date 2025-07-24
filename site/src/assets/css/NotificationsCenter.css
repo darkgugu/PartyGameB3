@@ -1,0 +1,60 @@
+.NotificationsCenter {
+  cursor: pointer;
+}
+.NotificationsCenter .notification-dropdown {
+  cursor: default;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #A4D6BF;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  width: 350px;
+  z-index: 10;
+  border-radius: 15px;
+}
+.NotificationsCenter .notification-dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0px;
+}
+.NotificationsCenter .notification-dropdown ul li {
+  padding: 8px 0;
+  border-bottom: 1px solid rgb(82.5358851675, 167.4641148325, 130.3827751196);
+}
+.NotificationsCenter .notification-dropdown ul li .notification-close {
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+.NotificationsCenter .notification-dropdown ul li p {
+  margin: 0;
+  padding: 8px;
+}
+.NotificationsCenter .notification-dropdown ul li:last-child {
+  border-bottom: none;
+}
+.NotificationsCenter .notification-dropdown ul li .pseudo {
+  font-weight: bold;
+  color: #234d36;
+}
+.NotificationsCenter .notification-dropdown ul li .accept {
+  background-color: #28a745;
+  color: white;
+}
+.NotificationsCenter .notification-dropdown ul li .decline {
+  background-color: #dc3545;
+  color: white;
+}
+.NotificationsCenter .notification-dropdown ul li .accept, .NotificationsCenter .notification-dropdown ul li .decline {
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+.NotificationsCenter .notification-dropdown ul li .accept:hover, .NotificationsCenter .notification-dropdown ul li .decline:hover {
+  opacity: 0.8;
+}/*# sourceMappingURL=NotificationsCenter.css.map */
