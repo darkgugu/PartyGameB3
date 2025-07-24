@@ -17,7 +17,6 @@ import { Room } from './Room'
 import { JoinRoom } from './JoinRoom'
 import { ErrorProfile } from './ErrorProfile'
 import { JoinRoomWithId } from './JoinRoomWithId'
-import TestInviteComponent from './TestInviteComponent'
 
 export const App = () => {
 	const location = useLocation()
@@ -42,7 +41,6 @@ export const App = () => {
 				<Route path="/room/:roomId" element={<Room />} />
 				<Route path="/profile/:pseudo" element={<Profile />} />
 				<Route path="/profile404" element={<ErrorProfile />} />
-				<Route path="/test" element={<TestInviteComponent />} />
 				<Route path="*" element={<Error404 />} />
 			</Routes>
 		</div>

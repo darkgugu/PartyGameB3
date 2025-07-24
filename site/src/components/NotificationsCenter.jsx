@@ -4,10 +4,13 @@ import { faBell, faClose } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { joinColyseusRoomById } from '../colyseus'
+import { useNavigate } from 'react-router'
+import { ToastContainer, toast } from 'react-toastify'
 
 export const NotificationsCenter = ({ notifications }) => {
 	const [open, setOpen] = useState(false)
 	const { user } = useAuth()
+	const navigate = useNavigate()
 
 	const acceptInvitation = async (roomId) => {
 		const idToken = await user.getIdToken()
@@ -15,6 +18,9 @@ export const NotificationsCenter = ({ notifications }) => {
 		await joinColyseusRoomById(roomId, {
 			idToken: idToken,
 		})
+		navigate(`/room/${roomId}`)
+		toast.success('Invitation acceptée ! Vous avez rejoint la partie.')
+		setOpen(false)
 	}
 
 	const denyInvitation = (index) => {
@@ -25,6 +31,7 @@ export const NotificationsCenter = ({ notifications }) => {
 
 	return (
 		<div className="NotificationsCenter" style={{ position: 'relative' }}>
+			<ToastContainer position="bottom-right" autoClose={2500} />
 			<FontAwesomeIcon icon={faBell} onClick={() => setOpen(!open)} />
 			{notifications && (
 				<>

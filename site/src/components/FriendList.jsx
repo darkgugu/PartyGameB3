@@ -13,7 +13,7 @@ import axios from 'axios'
 import { useUser } from '../context/UserContext'
 import { ToastContainer, toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
-import io from 'socket.io-client'
+import { useSocket } from '../context/SocketContext'
 
 export const FriendList = ({ room }) => {
 	const [friends, setFriends] = useState([])
@@ -23,15 +23,10 @@ export const FriendList = ({ room }) => {
 	const [activeMenu, setActiveMenu] = useState(null) // Track which menu is open
 	const [menuFriend, setMenuFriend] = useState(null)
 
-	const socket = io(process.env.REACT_APP_API_URL || 'http://localhost:3001')
+	const { socket } = useSocket()
 
 	useEffect(() => {
-		// Register the user when they log in
-		if (userData) {
-			socket.emit('registerUser', userData.pseudo)
-		}
-
-		// Cleanup when the component unmounts
+		if (!socket) return
 		return () => {
 			socket.off('receiveInvite')
 		}

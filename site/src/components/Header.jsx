@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext'
 import { useUser } from '../context/UserContext'
 import { disconnectFromColyseus } from '../colyseus'
 import { NotificationsCenter } from './NotificationsCenter'
-import io from 'socket.io-client'
+import { useSocket } from '../context/SocketContext'
 
 export const Header = () => {
 	const customStyles = {
@@ -35,13 +35,11 @@ export const Header = () => {
 		useAuth()
 	const { userData, loading } = useUser()
 
-	const socket = io(process.env.REACT_APP_API_URL || 'http://localhost:3001')
+	const { socket } = useSocket()
 
 	useEffect(() => {
-		if (userData) {
-			socket.emit('registerUser', userData.pseudo)
-			console.log(`User registered: ${userData.pseudo}`)
-		}
+		if (!socket) return
+
 		socket.on('receiveInvite', (data) => {
 			console.log('Received invite:', data)
 			setNotifications((prev) => [...prev, data]) // Store the invite notification
