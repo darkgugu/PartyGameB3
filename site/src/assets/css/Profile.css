@@ -5,11 +5,101 @@
   align-items: center;
 }
 .Profile .infos, .Profile .stats {
-  width: 80%;
+  width: 85%;
   margin: 10px 0;
-  padding: 10px;
-  border-radius: 5px;
+  padding: 20px;
+  border-radius: 20px;
   background-color: #73BA9B;
+}
+.Profile .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(37, 46, 42, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.Profile .modal-overlay .modal-content {
+  background: #f7faf9;
+  border-radius: 20px;
+  padding: 32px 28px;
+  box-shadow: 0 6px 32px rgba(115, 186, 155, 0.25);
+  min-width: 320px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.Profile .modal-overlay button {
+  background: #73BA9B;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.Profile .modal-overlay button:hover {
+  background: rgb(82.5358851675, 167.4641148325, 130.3827751196);
+}
+.Profile .stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.Profile .stats .stats-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 20px;
+  text-align: center;
+  background-color: #252e2a;
+  padding: 10px;
+  border-radius: 10px;
+  width: 30%;
+}
+.Profile .stats ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.Profile .stats ul li {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: 0 20px;
+}
+.Profile .stats ul li .trophy {
+  background-color: #A4D6BF;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.Profile .stats ul li .trophy svg {
+  width: 50px;
+  height: 50px;
+  color: gold;
+}
+.Profile .stats ul li .success-name {
+  font-size: 1em;
+  font-weight: bold;
+  color: black;
+  text-align: center;
+  max-width: 200px;
 }
 .Profile .infos {
   display: flex;
@@ -62,7 +152,7 @@
   display: none;
 }
 .Profile .infos .content .content-infos .content-info:hover {
-  background-color: #62b28f;
+  background-color: rgb(97.9186602871, 177.5813397129, 142.7990430622);
 }
 .Profile .infos .content .content-infos .content-info:hover .edit-profile {
   display: inline-block;
@@ -125,22 +215,22 @@
   color: #fff;
 }
 .Profile .infos .modal-overlay button:first-child:hover, .Profile .infos .modal-overlay button:first-child:focus {
-  background-color: #ee695d;
+  background-color: rgb(238.1565217391, 104.7043478261, 93.0434782609);
   color: #fff;
   box-shadow: 0 2px 8px rgba(242, 139, 130, 0.18);
   outline: none;
 }
 .Profile .infos .modal-overlay button:first-child:active {
-  background-color: #eb4b3d;
+  background-color: rgb(234.7934782609, 74.6956521739, 60.7065217391);
 }
 .Profile .infos .modal-overlay button:hover, .Profile .infos .modal-overlay button:focus {
-  background-color: #58ad87;
+  background-color: rgb(87.6698564593, 172.5301435407, 135.4784688995);
   color: #fff;
   box-shadow: 0 2px 8px rgba(115, 186, 155, 0.18);
   outline: none;
 }
 .Profile .infos .modal-overlay button:active {
-  background-color: #4a9675;
+  background-color: rgb(74.1172248804, 150.3827751196, 117.0837320574);
 }
 .Profile .infos .modal-overlay button:disabled {
   background-color: #b2dfdb;
@@ -169,4 +259,28 @@
   color: #aaa;
   cursor: not-allowed;
   opacity: 0.7;
+}
+.Profile .profile-others {
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.Profile .profile-others .stats {
+  flex: 1;
+  background-color: #73BA9B;
+  color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  margin: 0 10px;
+  cursor: pointer;
+}
+.Profile .profile-others .stats:hover {
+  background-color: rgb(97.9186602871, 177.5813397129, 142.7990430622);
+}
+.Profile .profile-others .stats .stats-title {
+  font-size: 1em;
+  font-weight: bold;
+  margin-bottom: 10px;
 }/*# sourceMappingURL=Profile.css.map */

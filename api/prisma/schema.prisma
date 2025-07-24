@@ -21,11 +21,11 @@ model Utilisateur {
   country          String?
   about            String?
 
-  statistiques Statistique[]
-  succes       Succes[]
-  sessions     Joueurs_dans_Session[]
-  relations1   Relations_Joueurs[]    @relation("Relations1")
-  relations2   Relations_Joueurs[]    @relation("Relations2")
+  statistiques       Statistique[]
+  sessions           Joueurs_dans_Session[]
+  relations1         Relations_Joueurs[]    @relation("Relations1")
+  relations2         Relations_Joueurs[]    @relation("Relations2")
+  Joueurs_has_Succes Joueurs_has_Succes[]
 }
 
 model Statistique {
@@ -39,28 +39,42 @@ model Statistique {
 }
 
 model Relations_Joueurs {
-  id        Int    @id @default(autoincrement()) // 👈 new primary key
+  id        Int    @id @default(autoincrement())
   idJoueur1 Int
   idJoueur2 Int
   relation  String
 
-  joueur1 Utilisateur @relation("Relations1", fields: [idJoueur1], references: [idUtilisateur])
-  joueur2 Utilisateur @relation("Relations2", fields: [idJoueur2], references: [idUtilisateur])
+  joueur1 Utilisateur @relation("Relations1", fields: [idJoueur1], references: [idUtilisateur], map: "fk_relations_joueurs_joueur1")
+  joueur2 Utilisateur @relation("Relations2", fields: [idJoueur2], references: [idUtilisateur], map: "fk_relations_joueurs_joueur2")
 }
 
 model Succes {
-  idSucces      Int    @id @default(autoincrement())
-  idUtilisateur Int
-  nom           String
-  points        Int
+  idSucces    Int    @id @default(autoincrement())
+  nom         String
+  points      Int
+  description String
+  objectif    Int
+  image       String
 
-  utilisateur Utilisateur @relation(fields: [idUtilisateur], references: [idUtilisateur])
+  Joueurs_has_Succes Joueurs_has_Succes[]
+}
+
+model Joueurs_has_Succes {
+  idUtilisateur Int
+  idSucces      Int
+  progression   Int     @default(0)
+  obtenu        Boolean @default(false)
+
+  Utilisateur Utilisateur? @relation(fields: [idUtilisateur], references: [idUtilisateur])
+  Succes      Succes?      @relation(fields: [idSucces], references: [idSucces])
+
+  @@id([idUtilisateur, idSucces])
 }
 
 model Session {
   idsession Int      @id @default(autoincrement())
-  url       String
   date      DateTime
+  nom       String
 
   joueurs Joueurs_dans_Session[]
   jeux    Jeux_has_Session[]
@@ -69,9 +83,10 @@ model Session {
 model Joueurs_dans_Session {
   idUtilisateur Int
   idSession     Int
+  place         Int?
 
-  utilisateur Utilisateur @relation(fields: [idUtilisateur], references: [idUtilisateur])
-  session     Session     @relation(fields: [idSession], references: [idsession])
+  utilisateur Utilisateur @relation(fields: [idUtilisateur], references: [idUtilisateur], map: "fk_joueurs_dans_session_utilisateur")
+  session     Session     @relation(fields: [idSession], references: [idsession], map: "fk_joueurs_dans_session_session")
 
   @@id([idUtilisateur, idSession])
 }
@@ -79,18 +94,35 @@ model Joueurs_dans_Session {
 model Jeux {
   idJeux            Int    @id @default(autoincrement())
   nom               String
-  url               String
-  score_victoire    Int
+  slug              String @unique
   nombre_de_joueurs Int
-  format            String
 
   sessions Jeux_has_Session[]
+  pack     Pack_has_Jeux[]
+}
+
+model Pack {
+  idPack      Int    @id @default(autoincrement())
+  nom         String
+  description String
+  image       String
+
+  jeux Pack_has_Jeux[]
+}
+
+model Pack_has_Jeux {
+  idPack Int
+  idJeux Int
+
+  pack Pack @relation(fields: [idPack], references: [idPack])
+  jeu  Jeux @relation(fields: [idJeux], references: [idJeux])
+
+  @@id([idPack, idJeux])
 }
 
 model Jeux_has_Session {
   idJeux    Int
   idSession Int
-  gagnant   Int
 
   jeu     Jeux    @relation(fields: [idJeux], references: [idJeux])
   session Session @relation(fields: [idSession], references: [idsession])

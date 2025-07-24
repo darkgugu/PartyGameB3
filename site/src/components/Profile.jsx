@@ -3,7 +3,7 @@ import { useParams } from 'react-router'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencilAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPencilAlt, faTrophy } from '@fortawesome/free-solid-svg-icons'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router'
 
@@ -17,6 +17,16 @@ export const Profile = () => {
 	const [modalOpen, setModalOpen] = useState(false)
 	const [editField, setEditField] = useState(null)
 	const [editValue, setEditValue] = useState('')
+	const [success, setSuccess] = useState(null)
+	const [selectedSuccess, setSelectedSuccess] = useState(null)
+
+	const openSuccessModal = (success) => {
+		setSelectedSuccess(success)
+	}
+
+	const closeSuccessModal = () => {
+		setSelectedSuccess(null)
+	}
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -37,6 +47,22 @@ export const Profile = () => {
 		fetchUser()
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pseudo, authUser])
+
+	useEffect(() => {
+		if (!user) return
+		const fetchSuccess = async () => {
+			try {
+				const res = await axios.get(
+					`${process.env.REACT_APP_API_URL}/success/${user.idUtilisateur}`,
+				)
+				setSuccess(res.data)
+			} catch (error) {
+				console.error('Error fetching success:', error)
+				setSuccess(null)
+			}
+		}
+		fetchSuccess()
+	}, [user, authUser])
 
 	const dateFormat = (dateString) => {
 		const date = new Date(dateString)
@@ -184,7 +210,50 @@ export const Profile = () => {
 					</div>
 				)}
 			</div>
-			<div className="stats">STATS</div>
+
+			{selectedSuccess && (
+				<div className="modal-overlay" onClick={closeSuccessModal}>
+					<div
+						className="modal-content"
+						onClick={(e) => e.stopPropagation()}
+					>
+						<h3>{selectedSuccess.Succes.nom}</h3>
+						<p>{selectedSuccess.Succes.description}</p>
+						<button onClick={closeSuccessModal}>Fermer</button>
+					</div>
+				</div>
+			)}
+
+			<div className="stats">
+				<div className="stats-title">Succès</div>
+				{success && success.length > 0 ? (
+					<ul className="success-list">
+						{success.map((s, index) => (
+							<li
+								key={index}
+								className="success-item"
+								style={{ cursor: 'pointer' }}
+								onClick={() => openSuccessModal(s)}
+							>
+								<div className="trophy">
+									<FontAwesomeIcon icon={faTrophy} />
+								</div>
+								<span className="success-name">
+									{s.Succes.nom}
+								</span>
+							</li>
+						))}
+					</ul>
+				) : (
+					<p>Aucun succès débloqué.</p>
+				)}
+			</div>
+			<div className="stats">
+				<p className="stats-title">STATS</p>
+			</div>
+			<div className="stats">
+				<p className="stats-title">HISTORIQUE</p>
+			</div>
 		</div>
 	)
 }
