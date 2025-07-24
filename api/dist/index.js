@@ -54,7 +54,7 @@ io.on('connection', (socket) => {
         if (inviteeSocketId) {
             // If invitee is online, send the invite to their socket
             io.to(inviteeSocketId).emit('receiveInvite', { inviterId, inviteeId, roomId });
-            console.log(`Invite sent from ${inviterId} to ${inviteeId}`);
+            console.log(`//////////// Invite sent from ${inviterId} to ${inviteeId}`);
         }
         else {
             console.log(`Invite failed. ${inviteeId} is not connected.`);

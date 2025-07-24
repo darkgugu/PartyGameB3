@@ -20,15 +20,8 @@ export const Room = () => {
 
 	const [playerList, setPlayerList] = useState([])
 
-	console.log('Room from room:', room)
-
 	useEffect(() => {
-		console.log(
-			'BEFORE Room component mounted, connecting to room:',
-			roomId,
-		)
 		if (!room && roomId) {
-			console.log('AFTER Connecting to Colyseus room:', roomId)
 			connectToColyseus('party', { roomId })
 		}
 	}, [room, roomId])
@@ -37,7 +30,6 @@ export const Room = () => {
 		if (!state?.players) return
 
 		const updatePlayerList = () => {
-			console.log('Updating playerList...')
 			const playersArray = Array.from(state.players.entries()).map(
 				([sessionId, player]) => {
 					player.onChange = () => updatePlayerList()

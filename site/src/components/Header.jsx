@@ -35,9 +35,7 @@ export const Header = () => {
 		useAuth()
 	const { userData, loading } = useUser()
 
-	const socket = io(
-		process.env.REACT_APP_SOCKET_URL || 'http://localhost:3001',
-	)
+	const socket = io(process.env.REACT_APP_API_URL || 'http://localhost:3001')
 
 	useEffect(() => {
 		if (userData) {
@@ -48,7 +46,12 @@ export const Header = () => {
 			console.log('Received invite:', data)
 			setNotifications((prev) => [...prev, data]) // Store the invite notification
 		})
-	}, [socket])
+
+		// Cleanup when the component unmounts
+		return () => {
+			socket.off('receiveInvite')
+		}
+	}, [socket, userData])
 
 	const openModal = (type) => {
 		setModalType(type)

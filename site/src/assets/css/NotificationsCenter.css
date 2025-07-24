@@ -16,13 +16,26 @@
 .NotificationsCenter .notification-dropdown ul {
   list-style: none;
   margin: 0;
-  padding: 10px;
+  padding: 0px;
 }
 .NotificationsCenter .notification-dropdown ul li {
   padding: 8px 0;
   border-bottom: 1px solid rgb(82.5358851675, 167.4641148325, 130.3827751196);
 }
-.NotificationsCenter .notification-dropdown ul li span {
+.NotificationsCenter .notification-dropdown ul li .notification-close {
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+.NotificationsCenter .notification-dropdown ul li p {
+  margin: 0;
+  padding: 8px;
+}
+.NotificationsCenter .notification-dropdown ul li:last-child {
+  border-bottom: none;
+}
+.NotificationsCenter .notification-dropdown ul li .pseudo {
   font-weight: bold;
   color: #234d36;
 }
