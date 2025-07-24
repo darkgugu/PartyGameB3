@@ -28,7 +28,7 @@ const LobbyScreen = ({
 	return (
 		<div className="LobbyScreen">
 			<ToastContainer position="bottom-right" autoClose={2500} />
-			<h2>Waiting Room</h2>
+			<h2>Salle d'attente</h2>
 			<ul className="player-list">
 				{playerList.map((player, index) =>
 					!player ? (

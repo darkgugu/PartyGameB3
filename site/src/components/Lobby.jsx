@@ -105,7 +105,7 @@ export const Lobby = () => {
 	return (
 		<div className="Lobby">
 			<div className="lobby-content">
-				<h2 className="lobby-title">Available Rooms</h2>
+				<h2 className="lobby-title">Salles disponibles</h2>
 				<ul className="room-list">
 					{rooms.map((room) =>
 						room.clients !== room.maxClients ? (
@@ -113,7 +113,7 @@ export const Lobby = () => {
 								{room.metadata?.roomName || room.roomId} -{' '}
 								{room.clients}/{room.maxClients}
 								<button onClick={join(room.roomId)}>
-									Join
+									Rejoindre
 								</button>
 								<Link to={`/room/${room.roomId}`}></Link>
 							</li>

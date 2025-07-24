@@ -100,7 +100,7 @@ export const CreateRoom = () => {
 	return (
 		<div className="CreateRoom">
 			<div className="room-settings">
-				<h2>Create a New Room</h2>
+				<h2>Crééer une salle</h2>
 				<form
 					onSubmit={(e) => {
 						e.preventDefault()
