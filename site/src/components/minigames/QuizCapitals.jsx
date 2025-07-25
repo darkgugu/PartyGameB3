@@ -88,6 +88,7 @@ export const QuizCapitals = ({ room, state }) => {
 										))}
 									</div>
 									<button
+										className="big-button"
 										onClick={() => {
 											const selectedChoice =
 												document.querySelector(
@@ -159,6 +160,7 @@ export const QuizCapitals = ({ room, state }) => {
 					</div>
 					{!hasFinished ? (
 						<button
+							className="big-button"
 							onClick={() => {
 								setHasFinished(true)
 								room.send('finished', {

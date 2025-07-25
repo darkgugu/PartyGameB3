@@ -10,6 +10,7 @@ class Player extends Schema {
   @type("string") name = "";
   @type("string") uid = "";
   @type("number") score = 0;
+  @type("number") id = "";
 
   @type("number") x = -20;
   @type("number") y = 0.4;
@@ -101,6 +102,20 @@ export class PartyRoom extends Room<PartyRoomState> {
       this.state.phase = "round_intro";
       this.state.roundCounter++;
 
+      // Filter unplayed minigames
+      const availableMinigames = this.state.minigames.filter(mg => !mg.isPlayed);
+
+      // Pick a random one (fallback if all are played)
+      const selected =
+        availableMinigames.length > 0
+          ? availableMinigames[Math.floor(Math.random() * availableMinigames.length)]
+          : this.state.minigames[Math.floor(Math.random() * this.state.minigames.length)];
+
+      // Set current minigame and mark it as played
+      if (selected) {
+        this.state.currentMinigame = selected.name;
+        selected.isPlayed = true;
+      }
       console.log(
         "Game started. Phase:",
         this.state.phase,
@@ -118,23 +133,6 @@ export class PartyRoom extends Room<PartyRoomState> {
     // Owner starts the game
     this.onMessage("startMinigame", (client, data) => {
       if (client.sessionId !== this.state.ownerId) return;
-
-      // Filter unplayed minigames
-      const availableMinigames = this.state.minigames.filter(mg => !mg.isPlayed);
-
-      // Pick a random one (fallback if all are played)
-      const selected =
-        availableMinigames.length > 0
-          ? availableMinigames[Math.floor(Math.random() * availableMinigames.length)]
-          : this.state.minigames[Math.floor(Math.random() * this.state.minigames.length)];
-
-      // Set current minigame and mark it as played
-      if (selected) {
-        this.state.currentMinigame = selected.name;
-        selected.isPlayed = true;
-      }
-
-
       this.state.phase = "minigame";
       //this.state.currentMinigame = data?.minigame || "labyrinth";
       switch (this.state.currentMinigame) {
@@ -184,7 +182,7 @@ export class PartyRoom extends Room<PartyRoomState> {
       if (typeof data.rotation === "number") player.rotation = data.rotation;
     });
 
-    this.onMessage("finished", (client, data) => {
+    this.onMessage("finished", async (client, data) => {
       const player = this.state.players.get(client.sessionId);
       if (!player) return;
 
@@ -203,9 +201,40 @@ export class PartyRoom extends Room<PartyRoomState> {
       if (allFinished) {
         this.state.roundCounter++;
         if(this.state.roundCounter <= this.state.rounds) {
+          // Filter unplayed minigames
+          const availableMinigames = this.state.minigames.filter(mg => !mg.isPlayed);
+
+          // Pick a random one (fallback if all are played)
+          const selected =
+            availableMinigames.length > 0
+              ? availableMinigames[Math.floor(Math.random() * availableMinigames.length)]
+              : this.state.minigames[Math.floor(Math.random() * this.state.minigames.length)];
+
+          // Set current minigame and mark it as played
+          if (selected) {
+            this.state.currentMinigame = selected.name;
+            selected.isPlayed = true;
+          }
           this.state.phase = "round_intro";
         }else {
           this.state.phase = "end";
+          try {
+            await axios.post(
+              `${process.env.API_URL}/game/end`,
+              {
+                "nom": this.state.roomName,
+                "joueurs": Array.from(this.state.players.values())
+                  .sort((a, b) => b.score - a.score)
+                  .map((p, index) => ({
+                    idUtilisateur: p.id,
+                    place: index + 1,
+                  })),
+                "jeux": [1, 2],
+              },
+            )
+          } catch (error) {
+            console.error("Failed to send game end data:", error);
+          }
         }
         this.state.players.forEach(p => {
           p.hasFinished = false; // Reset for next round
@@ -216,6 +245,7 @@ export class PartyRoom extends Room<PartyRoomState> {
 
       console.log(`${player.pseudo} finished with time: ${data?.time || 0} seconds and score: ${this.labyrinthScore(data?.time || 0)}`);
     })
+
   }
 
   ///// SCORING FUNCTIONS /////
@@ -247,6 +277,7 @@ export class PartyRoom extends Room<PartyRoomState> {
       const userData = res.data
       player.pseudo = userData.pseudo || player.name
       player.avatar = userData.avatar || ''
+      player.id = userData.idUtilisateur || ''
     } catch (err) {
       console.error('Failed to fetch user profile:', err)
     }
@@ -272,7 +303,6 @@ export class PartyRoom extends Room<PartyRoomState> {
 
   async onAuth(client: Client, options: any, req: any) {
   const idToken = options.idToken;
-  console.log(`[Colyseus server] Authenticating client ${client.userData?.name} with options: `, options);
   if (!idToken) throw new Error("Missing idToken");
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);

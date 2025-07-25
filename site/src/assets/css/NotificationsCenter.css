@@ -1,0 +1,103 @@
+.NotificationsCenter {
+  cursor: pointer;
+  margin-right: 15px;
+}
+.NotificationsCenter .bell-container .notification-bell {
+  font-size: 1.5rem;
+  color: black;
+}
+.NotificationsCenter .bell-container .ringing {
+  color: #CCFBFE;
+  animation: bell-ring 0.6s infinite;
+}
+@keyframes bell-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-15deg);
+  }
+  40% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(-10deg);
+  }
+  80% {
+    transform: rotate(5deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+.NotificationsCenter .bell-container .notification-count {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background-color: #ff4d4d;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+.NotificationsCenter .notification-dropdown {
+  cursor: default;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #A4D6BF;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  width: 350px;
+  z-index: 10;
+  border-radius: 15px;
+}
+.NotificationsCenter .notification-dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0px;
+}
+.NotificationsCenter .notification-dropdown ul li {
+  padding: 8px 0;
+  border-bottom: 1px solid rgb(82.5358851675, 167.4641148325, 130.3827751196);
+}
+.NotificationsCenter .notification-dropdown ul li .notification-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.NotificationsCenter .notification-dropdown ul li .notification-content .pseudo {
+  font-weight: bold;
+  color: #234d36;
+}
+.NotificationsCenter .notification-dropdown ul li .notification-content .notification-close {
+  cursor: pointer;
+  margin-right: 10px;
+}
+.NotificationsCenter .notification-dropdown ul li p {
+  margin: 0;
+  padding: 8px;
+}
+.NotificationsCenter .notification-dropdown ul li:last-child {
+  border-bottom: none;
+}
+.NotificationsCenter .notification-dropdown ul li .accept {
+  background-color: #28a745;
+  color: white;
+}
+.NotificationsCenter .notification-dropdown ul li .decline {
+  background-color: #dc3545;
+  color: white;
+}
+.NotificationsCenter .notification-dropdown ul li .accept, .NotificationsCenter .notification-dropdown ul li .decline {
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+.NotificationsCenter .notification-dropdown ul li .accept:hover, .NotificationsCenter .notification-dropdown ul li .decline:hover {
+  opacity: 0.8;
+}/*# sourceMappingURL=NotificationsCenter.css.map */

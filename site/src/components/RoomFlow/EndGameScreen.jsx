@@ -1,5 +1,6 @@
-// src/components/RoomFlow/GameOverScreen.jsx
-const EndGameScreen = ({ state }) => {
+import { LeaveRoomButton } from '../LeaveRoomButton'
+
+const EndGameScreen = ({ state, room }) => {
 	const players = Array.from(state.players.entries()).map(
 		([sessionId, player]) => {
 			return {
@@ -40,6 +41,7 @@ const EndGameScreen = ({ state }) => {
 						))}
 				</tbody>
 			</table>
+			<LeaveRoomButton />
 		</div>
 	)
 }

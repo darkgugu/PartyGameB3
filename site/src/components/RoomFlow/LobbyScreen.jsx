@@ -1,6 +1,7 @@
 import { LeaveRoomButton } from '../LeaveRoomButton'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { FriendList } from '../FriendList'
 
 const LobbyScreen = ({
 	room,
@@ -27,7 +28,7 @@ const LobbyScreen = ({
 	return (
 		<div className="LobbyScreen">
 			<ToastContainer position="bottom-right" autoClose={2500} />
-			<h2>Waiting Room</h2>
+			<h2>Salle d'attente</h2>
 			<ul className="player-list">
 				{playerList.map((player, index) =>
 					!player ? (
@@ -38,8 +39,8 @@ const LobbyScreen = ({
 					) : (
 						<li key={player.sessionId} className="player-item">
 							{player.pseudo || player.name}
-							{player.sessionId === ownerId ? ' (owner)' : ''}
-							{player.sessionId === mySessionId ? ' (you)' : ''}
+							{player.sessionId === ownerId ? ' (hôte)' : ''}
+							{player.sessionId === mySessionId ? ' (vous)' : ''}
 						</li>
 					),
 				)}
@@ -56,10 +57,7 @@ const LobbyScreen = ({
 				{`${window.location.origin}/joinRoom/${room.roomId}`}
 			</div>
 			{mySessionId === ownerId ? (
-				<button
-					style={{ marginTop: 20, padding: '12px 32px' }}
-					onClick={handleStartGame}
-				>
+				<button className="big-button" onClick={handleStartGame}>
 					Démarrer la partie
 				</button>
 			) : (
@@ -68,6 +66,7 @@ const LobbyScreen = ({
 				</p>
 			)}
 			<LeaveRoomButton />
+			<FriendList room={room} />
 		</div>
 	)
 }

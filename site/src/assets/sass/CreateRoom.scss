@@ -4,7 +4,7 @@
     flex-direction: column;
     align-items: center;
 
-    button {
+    .big-button {
         margin-top: 24px;
         padding: 12px 28px;
         font-size: 1.08rem;
@@ -55,6 +55,8 @@
                     min-height: 38px; // Match input height
                     padding: 6px 10px; // Match input padding
                 }
+
+
             
                 input,
                 select,
@@ -70,6 +72,29 @@
                     outline: none;
                     transition: border-color 0.2s;
                     min-height: 38px; // Consistent height
+                }
+
+                select {
+                    width: 100%;
+                    padding: 6px 10px;
+                    border: none;
+                    border-radius: 15px;
+                    background: #36a568;
+                    font-size: 1rem;
+                    color: #234d36;
+                    outline: none;
+                    transition: border-color 0.2s;
+                    min-height: 38px; // Consistent height
+                    &::-webkit-scrollbar {
+                        display: none;
+                    }
+                    scrollbar-width: none;
+                    option:checked,
+                    option[selected] {
+                        background: #234d36;
+                        color: #fff;
+                        border-radius: 5px;
+                    }
                 }
             
                 input[type="checkbox"] {

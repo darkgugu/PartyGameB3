@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext'
 import { Header } from './components/Header'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { UserProvider } from './context/UserContext'
+import { SocketProvider } from './context/SocketContext'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
@@ -14,8 +15,10 @@ root.render(
 		<AuthProvider>
 			<BabylonProvider>
 				<UserProvider>
-					<Header />
-					<App></App>
+					<SocketProvider>
+						<Header />
+						<App></App>
+					</SocketProvider>
 				</UserProvider>
 			</BabylonProvider>
 		</AuthProvider>

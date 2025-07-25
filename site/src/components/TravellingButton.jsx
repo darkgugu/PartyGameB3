@@ -1,5 +1,4 @@
 import '../assets/css/TravellingButton.css'
-import React from 'react'
 import { useBabylon } from '../context/BabylonProvider'
 import { Animation } from '@babylonjs/core'
 import '../fonts/KronaOne-Regular.ttf'
