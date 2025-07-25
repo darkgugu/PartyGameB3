@@ -505,6 +505,53 @@ app.get('/games/:id', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+app.post('/game/end', async (req, res) => {
+    const { nom, joueurs, jeux } = req.body;
+    if (!nom || !joueurs || !jeux) {
+        return res.status(400).json({ message: "Missing nom, joueurs, or jeux data" });
+    }
+    try {
+        // 1. Create a new session (auto-incremented ID will be generated)
+        const session = await prisma.session.create({
+            data: {
+                date: new Date(), // Current date/time
+                nom: nom, // Game name (sent from client)
+            },
+        });
+        // 2. Assign players to the session with their respective `place` (ranking)
+        const playerAssignments = joueurs.map(async (player) => {
+            return prisma.joueurs_dans_Session.create({
+                data: {
+                    idUtilisateur: player.idUtilisateur, // Player ID
+                    idSession: session.idsession, // Newly created session ID
+                    place: player.place, // Player's ranking (place)
+                },
+            });
+        });
+        // Wait for all player assignments to complete
+        await Promise.all(playerAssignments);
+        // 3. Associate games with the session (i.e., the `Jeux_has_Session` table)
+        const gameAssociations = jeux.map(async (jeuId) => {
+            return prisma.jeux_has_Session.create({
+                data: {
+                    idJeux: jeuId, // Game ID
+                    idSession: session.idsession, // Newly created session ID
+                },
+            });
+        });
+        // Wait for all game associations to complete
+        await Promise.all(gameAssociations);
+        // Respond with the session ID and a success message
+        res.status(200).json({
+            message: "Game session created and results saved successfully!",
+            sessionId: session.idsession,
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
     console.log(`Server running`);

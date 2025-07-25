@@ -1,5 +1,4 @@
-// src/components/RoomFlow/GameOverScreen.jsx
-const EndGameScreen = ({ state }) => {
+const EndGameScreen = ({ state, room }) => {
 	const players = Array.from(state.players.entries()).map(
 		([sessionId, player]) => {
 			return {

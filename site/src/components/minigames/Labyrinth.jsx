@@ -49,7 +49,7 @@ export const Labyrinth = ({ room, state }) => {
 			{ width: 0.5, height: 1.3, depth: 2.4 },
 			scene,
 		)
-		backWall.position = new BABYLON.Vector3(-20, 0, 19)
+		backWall.position = new BABYLON.Vector3(-25, 0, 19)
 		backWall.checkCollisions = true
 		const backWallMat = new BABYLON.StandardMaterial('backWallMat', scene)
 		backWallMat.diffuseColor = new BABYLON.Color3(0.8, 0.4, 0.2)

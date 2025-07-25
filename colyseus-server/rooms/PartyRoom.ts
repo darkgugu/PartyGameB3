@@ -10,6 +10,7 @@ class Player extends Schema {
   @type("string") name = "";
   @type("string") uid = "";
   @type("number") score = 0;
+  @type("number") id = "";
 
   @type("number") x = -20;
   @type("number") y = 0.4;
@@ -184,7 +185,7 @@ export class PartyRoom extends Room<PartyRoomState> {
       if (typeof data.rotation === "number") player.rotation = data.rotation;
     });
 
-    this.onMessage("finished", (client, data) => {
+    this.onMessage("finished", async (client, data) => {
       const player = this.state.players.get(client.sessionId);
       if (!player) return;
 
@@ -206,6 +207,23 @@ export class PartyRoom extends Room<PartyRoomState> {
           this.state.phase = "round_intro";
         }else {
           this.state.phase = "end";
+          try {
+            await axios.post(
+              `${process.env.API_URL}/game/end`,
+              {
+                "nom": this.state.roomName,
+                "joueurs": Array.from(this.state.players.values())
+                  .sort((a, b) => b.score - a.score)
+                  .map((p, index) => ({
+                    idUtilisateur: p.id,
+                    place: index + 1,
+                  })),
+                "jeux": [1, 2],
+              },
+            )
+          } catch (error) {
+            console.error("Failed to send game end data:", error);
+          }
         }
         this.state.players.forEach(p => {
           p.hasFinished = false; // Reset for next round
@@ -248,6 +266,7 @@ export class PartyRoom extends Room<PartyRoomState> {
       const userData = res.data
       player.pseudo = userData.pseudo || player.name
       player.avatar = userData.avatar || ''
+      player.id = userData.idUtilisateur || ''
     } catch (err) {
       console.error('Failed to fetch user profile:', err)
     }
