@@ -39,8 +39,8 @@ const LobbyScreen = ({
 					) : (
 						<li key={player.sessionId} className="player-item">
 							{player.pseudo || player.name}
-							{player.sessionId === ownerId ? ' (owner)' : ''}
-							{player.sessionId === mySessionId ? ' (you)' : ''}
+							{player.sessionId === ownerId ? ' (hôte)' : ''}
+							{player.sessionId === mySessionId ? ' (vous)' : ''}
 						</li>
 					),
 				)}

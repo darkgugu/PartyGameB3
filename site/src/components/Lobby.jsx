@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router'
 import { disconnectFromColyseus, joinColyseusRoomById } from '../colyseus'
+import { toast } from 'react-toastify'
 
 export const Lobby = () => {
 	const COLYSEUS_URL =
@@ -17,7 +18,7 @@ export const Lobby = () => {
 
 	// Connect to LOBBY with a *dedicated* client, always fresh!
 	useEffect(() => {
-		console.log('[Lobby] Connecting to Colyseus lobby...')
+		//console.log('[Lobby] Connecting to Colyseus lobby...')
 		lobbyClient.current = new Client(COLYSEUS_URL)
 		let leaveTimeout
 
@@ -91,21 +92,34 @@ export const Lobby = () => {
 			// 2. Use your app-wide connectToColyseus for the party room
 			const idToken = await user.getIdToken()
 			await disconnectFromColyseus() // ensures use-colyseus context is clear
-			console.log('[Lobby] Connecting to party room with : ', roomId)
+			//console.log('[Lobby] Connecting to party room with : ', roomId)
 			await joinColyseusRoomById(roomId, {
 				idToken: idToken,
 			})
-			console.log(`[Lobby] Joined party room ${roomId}, navigating...`)
+			//console.log(`[Lobby] Joined party room ${roomId}, navigating...`)
 			navigate(`/room/${roomId}`)
 		} catch (err) {
 			console.error('[Lobby] Failed to join room:', err)
 		}
 	}
 
+	const handleFreeJoin = async (e) => {
+		e.preventDefault()
+		toast.error("Cette fonctionnalité n'est pas encore implémentée.")
+	}
+
 	return (
 		<div className="Lobby">
 			<div className="lobby-content">
 				<h2 className="lobby-title">Salles disponibles</h2>
+				<form className="searchbar" onSubmit={handleFreeJoin}>
+					<input
+						type="text"
+						name="roomCode"
+						placeholder="Rejoindre une salle par code..."
+					/>
+					<button type="submit">Rejoindre</button>
+				</form>
 				<ul className="room-list">
 					{rooms.map((room) =>
 						room.clients !== room.maxClients ? (

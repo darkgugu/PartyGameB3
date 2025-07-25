@@ -8,6 +8,7 @@ import { useUser } from '../context/UserContext'
 import { disconnectFromColyseus } from '../colyseus'
 import { NotificationsCenter } from './NotificationsCenter'
 import { useSocket } from '../context/SocketContext'
+import { ToastContainer, toast } from 'react-toastify'
 
 export const Header = () => {
 	const customStyles = {
@@ -109,153 +110,176 @@ export const Header = () => {
 	if (loading) return null
 
 	return (
-		<div className="Header">
-			<Link to="/" onClick={async () => await disconnectFromColyseus()}>
-				<div id="left-part">
-					<img id="logo" src={dice} alt="logo" />
-					<h1>Party Game B3</h1>
-				</div>
-			</Link>
-
-			<div id="right-part">
-				<NotificationsCenter
-					notifications={notifications}
-					setNotifications={setNotifications}
-				/>
-				<button id="shop">Boutique</button>
-
-				{user && userData ? (
-					<>
-						<p style={{ marginRight: '1rem' }}>
-							{user.isAnonymous ? (
-								'Invité'
-							) : (
-								<Link to={`/profile/${userData.pseudo}`}>
-									{userData.pseudo}
-								</Link>
-							)}
-						</p>
-						<button onClick={logout}>Déconnexion</button>
-					</>
-				) : (
-					<>
-						<button id="login" onClick={() => openModal('login')}>
-							Connexion
-						</button>
-						<button
-							id="register"
-							onClick={() => openModal('register')}
-						>
-							Inscription
-						</button>
-					</>
-				)}
-			</div>
-
-			<Modal
-				isOpen={modalIsOpen}
-				onRequestClose={closeModal}
-				style={customStyles}
-				contentLabel="Authentication Modal"
-			>
-				{modalType === 'login' ? (
-					<div className="modal">
-						<h2>Connexion à votre compte</h2>
-						<form onSubmit={handleLogin}>
-							<label htmlFor="email">Email</label>
-							<input
-								type="email"
-								id="email"
-								value={email}
-								onChange={(e) => setEmail(e.target.value)}
-								required
-							/>
-							<label htmlFor="password">Mot de passe</label>
-							<input
-								type="password"
-								id="password"
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-								required
-							/>
-							{error && <p className="error">{error}</p>}
-							<button type="submit">Se connecter</button>
-						</form>
-						<hr />
-						<div
-							className="connectProvider google"
-							onClick={handleGoogleLogin}
-						>
-							Se connecter avec Google
-						</div>
-						<div
-							className="connectProvider guest"
-							onClick={handleGuestLogin}
-						>
-							Se connecter en tant qu'invité
-						</div>
+		<>
+			{' '}
+			<ToastContainer position="bottom-right" autoClose={2500} />
+			<div className="Header">
+				<Link
+					to="/"
+					onClick={async () => await disconnectFromColyseus()}
+				>
+					<div id="left-part">
+						<img id="logo" src={dice} alt="logo" />
+						<h1>Party Game B3</h1>
 					</div>
-				) : (
-					<div className="modal">
-						<h2>Créer un compte</h2>
-						<form onSubmit={handleRegister}>
-							<label htmlFor="register-pseudo">Pseudo</label>
-							<input
-								type="text"
-								id="register-pseudo"
-								value={pseudo}
-								onChange={(e) => setPseudo(e.target.value)}
-								required
-							/>
-							<label htmlFor="register-email">Email</label>
-							<input
-								type="email"
-								id="register-email"
-								value={email}
-								onChange={(e) => setEmail(e.target.value)}
-								required
-							/>
-							<label htmlFor="register-password">
-								Mot de passe
-							</label>
-							<input
-								type="password"
-								id="register-password"
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-								required
-							/>
-							<label htmlFor="register-confirm-password">
-								Confirmez le mot de passe
-							</label>
-							<input
-								type="password"
-								id="register-confirm-password"
-								value={confirmPassword}
-								onChange={(e) =>
-									setConfirmPassword(e.target.value)
-								}
-								required
-							/>
-							{error && <p className="error">{error}</p>}
-							<button type="submit">S'inscrire</button>
+				</Link>
+
+				<div id="right-part">
+					<NotificationsCenter
+						notifications={notifications}
+						setNotifications={setNotifications}
+					/>
+					<button
+						id="shop"
+						onClick={() =>
+							toast.info(
+								"Coming soon! La boutique n'est pas encore implémentée.",
+							)
+						}
+					>
+						Boutique
+					</button>
+
+					{user && userData ? (
+						<>
+							<p style={{ marginRight: '1rem' }}>
+								{user.isAnonymous ? (
+									'Invité'
+								) : (
+									<Link to={`/profile/${userData.pseudo}`}>
+										{userData.pseudo}
+									</Link>
+								)}
+							</p>
+							<button onClick={logout}>Déconnexion</button>
+						</>
+					) : (
+						<>
+							<button
+								id="login"
+								onClick={() => openModal('login')}
+							>
+								Connexion
+							</button>
+							<button
+								id="register"
+								onClick={() => openModal('register')}
+							>
+								Inscription
+							</button>
+						</>
+					)}
+				</div>
+
+				<Modal
+					isOpen={modalIsOpen}
+					onRequestClose={closeModal}
+					style={customStyles}
+					contentLabel="Authentication Modal"
+				>
+					{modalType === 'login' ? (
+						<div className="modal">
+							<h2>Connexion à votre compte</h2>
+							<form onSubmit={handleLogin}>
+								<label htmlFor="email">Email</label>
+								<input
+									type="email"
+									id="email"
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+									required
+								/>
+								<label htmlFor="password">Mot de passe</label>
+								<input
+									type="password"
+									id="password"
+									value={password}
+									onChange={(e) =>
+										setPassword(e.target.value)
+									}
+									required
+								/>
+								{error && <p className="error">{error}</p>}
+								<button type="submit">Se connecter</button>
+							</form>
 							<hr />
 							<div
 								className="connectProvider google"
 								onClick={handleGoogleLogin}
 							>
-								Continuer avec Google
+								Se connecter avec Google
 							</div>
 							<div
 								className="connectProvider guest"
 								onClick={handleGuestLogin}
 							>
-								Continuer en tant qu'invité
+								Se connecter en tant qu'invité
 							</div>
-						</form>
-					</div>
-				)}
-			</Modal>
-		</div>
+						</div>
+					) : (
+						<div className="modal">
+							<h2>Créer un compte</h2>
+							<form onSubmit={handleRegister}>
+								<label htmlFor="register-pseudo">Pseudo</label>
+								<input
+									type="text"
+									id="register-pseudo"
+									value={pseudo}
+									onChange={(e) => setPseudo(e.target.value)}
+									required
+								/>
+								<label htmlFor="register-email">Email</label>
+								<input
+									type="email"
+									id="register-email"
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+									required
+								/>
+								<label htmlFor="register-password">
+									Mot de passe
+								</label>
+								<input
+									type="password"
+									id="register-password"
+									value={password}
+									onChange={(e) =>
+										setPassword(e.target.value)
+									}
+									required
+								/>
+								<label htmlFor="register-confirm-password">
+									Confirmez le mot de passe
+								</label>
+								<input
+									type="password"
+									id="register-confirm-password"
+									value={confirmPassword}
+									onChange={(e) =>
+										setConfirmPassword(e.target.value)
+									}
+									required
+								/>
+								{error && <p className="error">{error}</p>}
+								<button type="submit">S'inscrire</button>
+								<hr />
+								<div
+									className="connectProvider google"
+									onClick={handleGoogleLogin}
+								>
+									Continuer avec Google
+								</div>
+								<div
+									className="connectProvider guest"
+									onClick={handleGuestLogin}
+								>
+									Continuer en tant qu'invité
+								</div>
+							</form>
+						</div>
+					)}
+				</Modal>
+			</div>
+		</>
 	)
 }

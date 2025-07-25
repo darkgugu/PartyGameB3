@@ -1,4 +1,46 @@
 .Lobby{
+
+    button {
+        padding: 0.6rem 1.4rem;
+        margin-left: 15px;
+        background: #4299e1;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(66,153,225,0.08);
+        transition: background 0.2s, box-shadow 0.2s;
+
+        &:hover {
+            background: #2b6cb0;
+            box-shadow: 0 4px 16px rgba(66,153,225,0.16);
+        }
+    }
+
+    .searchbar {
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: center;
+
+        input {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #4a5568;
+            transition: border-color 0.2s;
+
+            &:focus {
+                border-color: #4299e1;
+                outline: none;
+            }
+        }
+    }
+
     .lobby-content {
         background: #fff;
         padding: 2rem;

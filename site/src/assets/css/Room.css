@@ -103,12 +103,13 @@
 }
 .Room .LobbyScreen .player-item:hover {
   background: #eaeaea;
+  border-radius: 5px;
 }
 .Room .LobbyScreen .invite-link {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 360px;
+  width: 450px;
   height: 40px;
   background: #ececec;
   border-radius: 20px;
