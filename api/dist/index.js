@@ -281,10 +281,6 @@ app.post('/users/byUIDs', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-// Example request body:
-// {
-//   "uids": ["uid1", "uid2", "uid3"]
-// }
 app.get('/relations/:id/friends', async (req, res) => {
     try {
         const { id } = req.params;
@@ -469,6 +465,43 @@ app.get('/success/:id', async (req, res) => {
     }
     catch (error) {
         console.error('Error fetching success:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+app.get('/games/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const games = await prisma.joueurs_dans_Session.findMany({
+            where: {
+                idUtilisateur: Number(id),
+            },
+            select: {
+                session: {
+                    select: {
+                        nom: true,
+                        date: true,
+                        jeux: true,
+                        joueurs: {
+                            select: {
+                                utilisateur: {
+                                    select: {
+                                        pseudo: true,
+                                    },
+                                },
+                                place: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        if (!games) {
+            return res.status(404).json({ error: 'No games found' });
+        }
+        res.json(games);
+    }
+    catch (error) {
+        console.error('Error fetching games:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

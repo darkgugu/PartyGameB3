@@ -3,6 +3,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-y: auto;
+  max-height: 95vh;
 }
 .Profile .infos, .Profile .stats {
   width: 85%;
@@ -49,6 +51,43 @@
 }
 .Profile .modal-overlay button:hover {
   background: rgb(82.5358851675, 167.4641148325, 130.3827751196);
+}
+.Profile .historique table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: #f7faf9;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(115, 186, 155, 0.1);
+}
+.Profile .historique table th, .Profile .historique table td {
+  padding: 14px 18px;
+  text-align: left;
+}
+.Profile .historique table th {
+  background: #252e2a;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.05em;
+  border-bottom: 2px solid #73BA9B;
+}
+.Profile .historique table tr {
+  transition: background 0.2s;
+}
+.Profile .historique table tr:nth-child(even) {
+  background: #e6f2ed;
+}
+.Profile .historique table tr:hover {
+  background: #b2dfdb;
+}
+.Profile .historique table td {
+  color: #252e2a;
+  font-size: 1em;
+  border-bottom: 1px solid #b2dfdb;
+}
+.Profile .historique table tr:last-child td {
+  border-bottom: none;
 }
 .Profile .stats {
   display: flex;
@@ -147,6 +186,7 @@
   align-items: center;
   border-radius: 10px;
   padding: 4px;
+  height: 40px;
 }
 .Profile .infos .content .content-infos .content-info .edit-profile {
   display: none;
@@ -259,28 +299,4 @@
   color: #aaa;
   cursor: not-allowed;
   opacity: 0.7;
-}
-.Profile .profile-others {
-  width: 80%;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-.Profile .profile-others .stats {
-  flex: 1;
-  background-color: #73BA9B;
-  color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  margin: 0 10px;
-  cursor: pointer;
-}
-.Profile .profile-others .stats:hover {
-  background-color: rgb(97.9186602871, 177.5813397129, 142.7990430622);
-}
-.Profile .profile-others .stats .stats-title {
-  font-size: 1em;
-  font-weight: bold;
-  margin-bottom: 10px;
 }/*# sourceMappingURL=Profile.css.map */

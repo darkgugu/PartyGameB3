@@ -4,6 +4,9 @@
     flex-direction: column;
     align-items: center;
 
+    overflow-y: auto;
+    max-height: 95vh;
+
     .infos, .stats {
         width: 85%;
         margin: 10px 0;
@@ -51,6 +54,55 @@
 
             &:hover {
                 background: darken(#73BA9B, 10%);
+            }
+        }
+    }
+    
+
+    .historique {
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #f7faf9;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(115, 186, 155, 0.10);
+
+            th, td {
+            padding: 14px 18px;
+            text-align: left;
+            }
+
+            th {
+            background: #252e2a;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.05em;
+            border-bottom: 2px solid #73BA9B;
+            }
+
+            tr {
+            transition: background 0.2s;
+            }
+
+            tr:nth-child(even) {
+            background: #e6f2ed;
+            }
+
+            tr:hover {
+            background: #b2dfdb;
+            }
+
+            td {
+            color: #252e2a;
+            font-size: 1em;
+            border-bottom: 1px solid #b2dfdb;
+            }
+
+            tr:last-child td {
+            border-bottom: none;
             }
         }
     }
@@ -165,6 +217,7 @@
                     align-items: center;
                     border-radius: 10px;
                     padding: 4px;
+                    height: 40px;
 
                     .edit-profile{
                         display: none;
@@ -290,34 +343,6 @@
                     cursor: not-allowed;
                     opacity: 0.7;
                 }
-            }
-        }
-    }
-
-    .profile-others {
-        width: 80%;
-        display: flex;
-        justify-content: space-between;
-        margin-top: 20px;
-
-        .stats {
-            flex: 1;
-            background-color: #73BA9B;
-            color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 0 10px;
-            cursor: pointer;
-
-            &:hover {
-                background-color: darken(#73BA9B, 5%);
-            }
-
-            .stats-title {
-                font-size: 1em;
-                font-weight: bold;
-                margin-bottom: 10px;
             }
         }
     }
