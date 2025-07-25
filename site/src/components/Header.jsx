@@ -151,7 +151,7 @@ export const Header = () => {
 				>
 					<div id="left-part">
 						<img id="logo" src={dice} alt="logo" />
-						<h1>Party Game B3</h1>
+						<h1>PartyWeb</h1>
 					</div>
 				</Link>
 

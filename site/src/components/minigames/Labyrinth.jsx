@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import * as BABYLON from '@babylonjs/core'
 import '@babylonjs/loaders'
 import { Chronometer } from './utils/Chronometer'
+import MusicPlayer from '../MusicPlayer'
 
 export const Labyrinth = ({ room, state }) => {
 	const canvasRef = useRef(null)
@@ -347,6 +348,7 @@ export const Labyrinth = ({ room, state }) => {
 				ref={canvasRef}
 				style={{ width: '100vw', height: '100vh', display: 'block' }}
 			/>
+			<MusicPlayer isGameActive={true} track="labyrinth" />
 		</>
 	)
 }

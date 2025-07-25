@@ -85,6 +85,8 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        overflow-y: auto;
+        max-height: 90vh;
 
         overflow-y: auto;
         max-height: 90vh;
@@ -125,6 +127,7 @@
             align-items: center;
             width: 450px;
             height: 40px;
+            min-height: 40px;
             background: #ececec;
             border-radius: 20px;
             filter: blur(5px);
