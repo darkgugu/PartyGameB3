@@ -98,6 +98,7 @@ export const Header = () => {
 		}
 	}
 
+	// eslint-disable-next-line no-unused-vars
 	const handleGuestLogin = async () => {
 		try {
 			await anonymousLogin()
