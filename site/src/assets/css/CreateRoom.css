@@ -69,7 +69,7 @@
   min-height: 38px;
 }
 .CreateRoom .room-settings form .form-content select {
-  width: 75%;
+  width: 100%;
   padding: 6px 10px;
   border: none;
   border-radius: 15px;

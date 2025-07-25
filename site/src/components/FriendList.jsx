@@ -3,6 +3,7 @@ import 'react-toastify/dist/ReactToastify.css'
 
 import {
 	faPlus,
+	// eslint-disable-next-line no-unused-vars
 	faCircle as faCircleSolid,
 	faTimes,
 	faClose,
@@ -203,14 +204,14 @@ export const FriendList = ({ room }) => {
 					{friends.map((friend, index) => (
 						<li key={index} onClick={(e) => openMenu(e, friend)}>
 							<span>{friend.joueur2.pseudo}</span>
-							<div className="icons">
+							{/* 							<div className="icons">
 								<FontAwesomeIcon
 									icon={faCircleSolid}
 									className={
 										friend.online ? 'online' : 'offline'
 									}
 								/>
-							</div>
+							</div> */}
 						</li>
 					))}
 				</ul>

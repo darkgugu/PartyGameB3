@@ -22,8 +22,12 @@ export const App = () => {
 	const location = useLocation()
 
 	// Define routes where you want the background scene
-	const isMenuRoute = ['/', '/createRoom', '/joinRoom', '/profile/'].includes(
-		location.pathname,
+	const isMenuRoute = ['/', '/createRoom', '/joinRoom', '/profile'].some(
+		(route) =>
+			route === location.pathname ||
+			(route === '/profile' &&
+				location.pathname.startsWith('/profile/')) ||
+			location.pathname.startsWith('/room/'),
 	)
 
 	return (
