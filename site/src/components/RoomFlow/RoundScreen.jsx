@@ -31,7 +31,7 @@ const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 			<h2>
 				Round {state.roundCounter}/{state.rounds}
 			</h2>
-			<p>Next Minigame: {state.currentMinigame}</p>
+			<p>Mini-jeu suivant: {state.currentMinigame}</p>
 
 			<table>
 				<thead>
@@ -80,7 +80,7 @@ const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 			{players.every((player) => player.isReady) ? (
 				ownerId === mySessionId ? (
 					<button
-						style={{ marginTop: 20, padding: '12px 32px' }}
+						className="big-button"
 						onClick={() => room.send('startMinigame')}
 					>
 						Lancer le jeu !

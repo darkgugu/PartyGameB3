@@ -5,12 +5,20 @@ import { verifyIdToken } from './firebaseAdmin'
 import express from 'express'
 import cors from 'cors'
 import axios from 'axios'
+import http from 'http'
+import { Server as SocketIOServer } from 'socket.io'
 
 
 const app = express()
 const prisma = new PrismaClient()
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || []
+
+// Set up HTTP server to integrate with Socket.IO
+const server = http.createServer(app)
+
+
+const allowedOrigins = 
+process.env.ALLOWED_ORIGINS?.split(',') || []
 
 const corsOptions = {
 	origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
@@ -23,11 +31,61 @@ const corsOptions = {
     credentials: true,
   }
 
+  // Set up Socket.IO
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+})
+
 app.use(cors(corsOptions))
 
 app.options(/.*/, cors(corsOptions))
 
 app.use(express.json())
+
+
+// Socket.IO connection handling
+let connectedUsers: { [userId: string]: string } = {}  // Mapping of userId to socketId
+
+io.on('connection', (socket) => {
+	console.log('A user connected:', socket.id)
+
+	// Register the user
+	socket.on('registerUser', (userId) => {
+		connectedUsers[userId] = socket.id
+		console.log(`User ${userId} registered with socket ${socket.id}`)
+	})
+
+	// Handle sending invites
+	socket.on('sendInvite', (data) => {
+		const { inviterId, inviteeId, roomId } = data
+		const inviteeSocketId = connectedUsers[inviteeId]
+
+		if (inviteeSocketId) {
+			// If invitee is online, send the invite to their socket
+			io.to(inviteeSocketId).emit('receiveInvite', { inviterId, inviteeId, roomId })
+			console.log(`Invite sent from ${inviterId} to ${inviteeId}`)
+		} else {
+			console.log(`Invite failed. ${inviteeId} is not connected.`)
+		}
+	})
+
+	// Handle user disconnect
+	socket.on('disconnect', () => {
+		// Remove user from connected users list on disconnect
+		for (let userId in connectedUsers) {
+			if (connectedUsers[userId] === socket.id) {
+				delete connectedUsers[userId]
+				console.log(`User ${userId} disconnected`)
+				break
+			}
+		}
+	})
+})
+
 
 
 // Health check
@@ -278,11 +336,6 @@ app.post('/users/byUIDs', async (req: any, res: any) => {
 	}
 });
 
-// Example request body:
-// {
-//   "uids": ["uid1", "uid2", "uid3"]
-// }
-
 app.get('/relations/:id/friends', async (req: any, res: any) => {
 	try {
 		const { id } = req.params
@@ -472,61 +525,174 @@ app.post('/relations', async (req: any, res: any) => {
 	}
 })
 
-/* app.post('/rooms', async (req, res): Promise<any> => {
-	const { idToken, roomType, roomName, maxClients, customRules } = req.body
-
-	if (!idToken || !roomType) {
-		return res.status(400).json({ error: 'Missing required fields' })
-	}
-
+app.get('/success/:id', async (req: any, res: any) => {
 	try {
-		// 1. Verify Firebase token
-		const decoded = await verifyIdToken(idToken)
-		const firebase_uid = decoded.uid
-		const pseudo = decoded.name || decoded.email || "Anonymous"
+		const { id } = req.params
 
+		const success = await prisma.joueurs_has_Succes.findMany({
+			where: {
+				idUtilisateur: Number(id),
+				obtenu: true, // Only fetch successes that have been obtained
+			},
+			select: {
+				Succes: {
+					select: {
+						nom: true,
+						points: true,
+						description: true,
+						objectif: true,
+						image: true,
+					},
+				},
+			},
+		})
 
-		console.log("Max clients :", maxClients)
-		// 2. Prepare metadata
-		const metadata = {
-			roomName,
-			createdBy: firebase_uid,
-			creatorName: pseudo,
-			customRules,
-			maxClients
+		if (!success) {
+			return res.status(404).json({ error: 'No success found' })
 		}
 
-		// 3. Create room via Colyseus matchmaking API
-		const COLYSEUS_URL = process.env.COLYSEUS_URL || "https://partygameb3-production-40fb.up.railway.app"
-		const response = await axios.post(`${COLYSEUS_URL}/matchmake/create/${roomType}`, {
-			metadata,
-			maxClients,
-		})
-
-		const room = response.data.room
-
-		console.log("Response :", response.data)
-
-		return res.status(201).json({
-			roomId: room.roomId,
-			joinOptions: {
-				// You can include any info you want the frontend to send to Colyseus during `join`
-				idToken, // For onAuth()
-			}
-		})
+		res.json(success)
 	} catch (error) {
-		if (axios.isAxiosError(error)) {
-			console.error("Room creation error:", error.response?.data || error.message)
-		} else {
-			console.error("Room creation error:", error)
-		}
-		return res.status(500).json({ error: "Failed to create room" })
+		console.error('Error fetching success:', error)
+		res.status(500).json({ error: 'Internal server error' })
 	}
-}) */
+})
 
+app.get('/games/:id', async (req: any, res: any) => {
+	try {
+		const { id } = req.params
+
+		const games = await prisma.joueurs_dans_Session.findMany({
+			where: {
+				idUtilisateur: Number(id),
+			},
+			select: {
+				session: {
+					select: {
+						nom: true,
+						date: true,
+						jeux: true,
+						joueurs: {
+							select: {
+								utilisateur: {
+									select: {
+										pseudo: true,
+									},
+								},
+								place: true,
+							},
+						},
+
+					},
+				},
+			},
+		})
+
+		if (!games) {
+			return res.status(404).json({ error: 'No games found' })
+		}
+
+		res.json(games)
+	} catch (error) {
+		console.error('Error fetching games:', error)
+		res.status(500).json({ error: 'Internal server error' })
+	}
+})
+
+app.post('/game/end', async (req: any, res: any) => {
+  const { nom, joueurs, jeux } = req.body;
+
+  if (!nom || !joueurs || !jeux) {
+    return res.status(400).json({ message: "Missing nom, joueurs, or jeux data" });
+  }
+
+  try {
+    // 1. Create a new session (auto-incremented ID will be generated)
+    const session = await prisma.session.create({
+      data: {
+        date: new Date(),  // Current date/time
+        nom: nom,          // Game name (sent from client)
+      },
+    });
+
+    // 2. Assign players to the session with their respective `place` (ranking)
+    const playerAssignments = joueurs.map(async (player: { idUtilisateur: number, place: number }) => {
+      // Create the player-session record
+      await prisma.joueurs_dans_Session.create({
+        data: {
+          idUtilisateur: player.idUtilisateur,  // Player ID
+          idSession: session.idsession,          // Newly created session ID
+          place: player.place,                   // Player's ranking (place)
+        },
+      });
+
+      // 3. Add the successes (idSucces 1 & 2) for each player
+      // Success 1
+      await prisma.joueurs_has_Succes.upsert({
+        where: {
+          idUtilisateur_idSucces: {
+            idUtilisateur: player.idUtilisateur,
+            idSucces: 1,
+          },
+        },
+        update: {
+          obtenu: true,  // Set to true if already exists
+        },
+        create: {
+          idUtilisateur: player.idUtilisateur,
+          idSucces: 1,
+          obtenu: true,
+        },
+      });
+
+      // Success 2
+      await prisma.joueurs_has_Succes.upsert({
+        where: {
+          idUtilisateur_idSucces: {
+            idUtilisateur: player.idUtilisateur,
+            idSucces: 2,
+          },
+        },
+        update: {
+          obtenu: true,  // Set to true if already exists
+        },
+        create: {
+          idUtilisateur: player.idUtilisateur,
+          idSucces: 2,
+          obtenu: true,
+        },
+      });
+    });
+
+    // Wait for all player assignments and success associations to complete
+    await Promise.all(playerAssignments);
+
+    // 4. Associate games with the session (i.e., the `Jeux_has_Session` table)
+    const gameAssociations = jeux.map(async (jeuId: number) => {
+      return prisma.jeux_has_Session.create({
+        data: {
+          idJeux: jeuId,                 // Game ID
+          idSession: session.idsession,  // Newly created session ID
+        },
+      });
+    });
+
+    // Wait for all game associations to complete
+    await Promise.all(gameAssociations);
+
+    // Respond with the session ID and a success message
+    res.status(200).json({
+      message: "Game session created and results saved successfully!",
+      sessionId: session.idsession,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 
 const PORT = process.env.PORT || 3001
-app.listen(PORT, () => {
+server.listen(PORT, () => {
 	console.log(`Server running`)
 })

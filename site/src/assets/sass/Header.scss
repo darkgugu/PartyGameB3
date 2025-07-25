@@ -71,61 +71,90 @@
 }
 
 //Out of the Header class because react-modal make it not a child of Header
-.modal{
+.modal {
     display: flex;
-    align-items: start;
+    align-items: flex-start;
     justify-content: center;
     flex-direction: column;
-    padding: 15px;
+    padding: 24px 32px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    min-width: 320px;
+    max-width: 400px;
 
-    form{
+    form {
         position: relative;
         display: flex;
-        //align-items: flex-start;
-        justify-content: center;
         flex-direction: column;
+        gap: 16px;
         width: 100%;
 
-        label{
-            font-size: 1.3em;
+        label {
+            font-size: 1.1em;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #333232;
         }
-        input{
-            margin: 5px 0;
-            padding: 5px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            width: 100%;
+        input {
+            margin: 0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            width: 90%;
+            font-size: 1em;
+            background: #f9f9f9;
+            transition: border-color 0.2s;
+            &:focus {
+                border-color: #FE7A76;
+                outline: none;
+            }
         }
-        button{
-            margin: 5px 0;
+        button {
+            margin: 0;
             width: 100%;
-            padding: 5px 0;
-            border-radius: 5px;
+            padding: 10px 0;
+            border-radius: 6px;
             border: none;
-            background-color: #F4F3EE;
-            color: black;
+            background-color: #FE7A76;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1em;
             cursor: pointer;
+            transition: background 0.2s, color 0.2s;
         }
-        button:hover{
-            background-color: #333232;
-            color: white;
+        button:hover {
+            background-color: #e73c7e;
+            color: #fff;
         }
     }
-    hr{
+    hr {
         width: 100%;
-        margin: 10px 0;
-        background-color: black;
+        margin: 18px 0;
+        border: none;
+        height: 1px;
+        background-color: #e0e0e0;
     }
-    .connectProvider{
+    .connectProvider {
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-direction: column;
-        margin: 5px 0;
-        padding: 5px 0;
-        border-radius: 5px;
-        border: 1px solid #ccc;
+        flex-direction: row;
+        gap: 8px;
+        margin: 8px 0;
+        padding: 10px 0;
+        border-radius: 6px;
+        border: 1px solid #e0e0e0;
         width: 100%;
+        background: #f4f3ee;
+        color: #333232;
+        font-weight: 500;
         cursor: pointer;
+        transition: background 0.2s, border-color 0.2s;
+        &:hover {
+            background: #FE7A76;
+            color: #fff;
+            border-color: #FE7A76;
+        }
     }
 }

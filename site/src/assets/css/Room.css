@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
 }
-.Room button:not(.Toastify__close-button) {
+.Room .big-button {
   margin-top: 24px;
   padding: 12px 28px;
   font-size: 1.08rem;
@@ -19,7 +19,7 @@
   letter-spacing: 0.5px;
   transition: background 0.2s, color 0.2s, transform 0.2s;
 }
-.Room button:not(.Toastify__close-button):hover {
+.Room .big-button:hover {
   transform: scale(1.05);
 }
 .Room .leave-room-button {
@@ -103,12 +103,13 @@
 }
 .Room .LobbyScreen .player-item:hover {
   background: #eaeaea;
+  border-radius: 5px;
 }
 .Room .LobbyScreen .invite-link {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 360px;
+  width: 450px;
   height: 40px;
   background: #ececec;
   border-radius: 20px;

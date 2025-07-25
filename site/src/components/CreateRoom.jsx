@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { useUser } from '../context/UserContext'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FriendList } from './FriendList'
 
 //import { createColyseusRoom } from '../utils/createColyseusRoom'
 
@@ -24,7 +25,7 @@ export const CreateRoom = () => {
 	const [packChoices, setPackChoices] = useState([])
 	const [password, setPassword] = useState('')
 	const [minigames, setMinigames] = useState([])
-	const [rounds, setRounds] = useState(1)
+	const [rounds, setRounds] = useState(2)
 
 	useEffect(() => {
 		setMinigames([
@@ -38,14 +39,10 @@ export const CreateRoom = () => {
 			name: 'Tous les mini-jeux',
 			value: 'Pack contenant tous les mini-jeux',
 		},
-		{ name: 'Mini-jeux de combat', value: 'Pack de mini-jeux de combat' },
+		{ name: 'Pack 3d', value: 'Pack de mini-jeux de combat' },
 		{
-			name: 'Mini-jeux de stratégie',
+			name: 'Pack Quiz',
 			value: 'Pack de mini-jeux de stratégie',
-		},
-		{
-			name: 'Mini-jeux de réflexion',
-			value: 'Pack de mini-jeux de réflexion',
 		},
 	]
 
@@ -99,7 +96,7 @@ export const CreateRoom = () => {
 	return (
 		<div className="CreateRoom">
 			<div className="room-settings">
-				<h2>Create a New Room</h2>
+				<h2>Créer une salle</h2>
 				<form
 					onSubmit={(e) => {
 						e.preventDefault()
@@ -279,9 +276,12 @@ export const CreateRoom = () => {
 						</div>
 					</div>
 
-					<button type="submit">Create Room</button>
+					<button type="submit" className="big-button">
+						Create Room
+					</button>
 				</form>
 			</div>
+			<FriendList />
 		</div>
 	)
 }

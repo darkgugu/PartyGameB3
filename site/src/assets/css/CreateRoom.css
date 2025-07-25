@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
 }
-.CreateRoom button {
+.CreateRoom .big-button {
   margin-top: 24px;
   padding: 12px 28px;
   font-size: 1.08rem;
@@ -18,7 +18,7 @@
   letter-spacing: 0.5px;
   transition: background 0.2s, color 0.2s, transform 0.2s;
 }
-.CreateRoom button:hover {
+.CreateRoom .big-button:hover {
   transform: scale(1.05);
 }
 .CreateRoom .room-settings {
@@ -67,6 +67,28 @@
   outline: none;
   transition: border-color 0.2s;
   min-height: 38px;
+}
+.CreateRoom .room-settings form .form-content select {
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 15px;
+  background: #36a568;
+  font-size: 1rem;
+  color: #234d36;
+  outline: none;
+  transition: border-color 0.2s;
+  min-height: 38px;
+  scrollbar-width: none;
+}
+.CreateRoom .room-settings form .form-content select::-webkit-scrollbar {
+  display: none;
+}
+.CreateRoom .room-settings form .form-content select option:checked,
+.CreateRoom .room-settings form .form-content select option[selected] {
+  background: #234d36;
+  color: #fff;
+  border-radius: 5px;
 }
 .CreateRoom .room-settings form .form-content input[type=checkbox] {
   width: 25px;
