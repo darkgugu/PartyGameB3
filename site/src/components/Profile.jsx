@@ -219,14 +219,14 @@ export const Profile = () => {
 						</p>
 						<p className="content-info">
 							Email : {user.email}{' '}
-							{isOwner && (
+							{/* 							{isOwner && (
 								<button
 									className="edit-profile"
 									onClick={() => handleEditClick('email')}
 								>
 									<FontAwesomeIcon icon={faPencilAlt} />
 								</button>
-							)}
+							)} */}
 						</p>
 					</div>
 				</div>
