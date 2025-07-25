@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import * as BABYLON from '@babylonjs/core'
 import '@babylonjs/loaders'
 import { Chronometer } from './utils/Chronometer'
+import MusicPlayer from '../MusicPlayer'
 
 export const Labyrinth = ({ room, state }) => {
 	const canvasRef = useRef(null)
@@ -49,7 +50,7 @@ export const Labyrinth = ({ room, state }) => {
 			{ width: 0.5, height: 1.3, depth: 2.4 },
 			scene,
 		)
-		backWall.position = new BABYLON.Vector3(-20, 0, 19)
+		backWall.position = new BABYLON.Vector3(-25, 0, 19)
 		backWall.checkCollisions = true
 		const backWallMat = new BABYLON.StandardMaterial('backWallMat', scene)
 		backWallMat.diffuseColor = new BABYLON.Color3(0.8, 0.4, 0.2)
@@ -347,6 +348,7 @@ export const Labyrinth = ({ room, state }) => {
 				ref={canvasRef}
 				style={{ width: '100vw', height: '100vh', display: 'block' }}
 			/>
+			<MusicPlayer isGameActive={true} track="labyrinth" />
 		</>
 	)
 }

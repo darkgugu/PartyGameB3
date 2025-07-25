@@ -3,6 +3,7 @@ import { capitalData } from './data/capitals'
 import { useEffect, useState } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import MusicPlayer from '../MusicPlayer'
 
 export const QuizCapitals = ({ room, state }) => {
 	const [quizData, setQuizData] = useState([])
@@ -175,6 +176,7 @@ export const QuizCapitals = ({ room, state }) => {
 					)}
 				</div>
 			)}
+			<MusicPlayer isGameActive={true} track="quiz" />
 		</div>
 	)
 }

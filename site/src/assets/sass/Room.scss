@@ -85,6 +85,8 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        overflow-y: auto;
+        max-height: 90vh;
 
         .player-list {
             width: 15vw;
@@ -122,6 +124,7 @@
             align-items: center;
             width: 450px;
             height: 40px;
+            min-height: 40px;
             background: #ececec;
             border-radius: 20px;
             filter: blur(5px);
