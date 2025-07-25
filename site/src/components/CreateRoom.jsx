@@ -39,14 +39,10 @@ export const CreateRoom = () => {
 			name: 'Tous les mini-jeux',
 			value: 'Pack contenant tous les mini-jeux',
 		},
-		{ name: 'Mini-jeux de combat', value: 'Pack de mini-jeux de combat' },
+		{ name: 'Pack 3d', value: 'Pack de mini-jeux de combat' },
 		{
-			name: 'Mini-jeux de stratégie',
+			name: 'Pack Quiz',
 			value: 'Pack de mini-jeux de stratégie',
-		},
-		{
-			name: 'Mini-jeux de réflexion',
-			value: 'Pack de mini-jeux de réflexion',
 		},
 	]
 
