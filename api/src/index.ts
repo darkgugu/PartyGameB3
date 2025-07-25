@@ -617,19 +617,57 @@ app.post('/game/end', async (req: any, res: any) => {
 
     // 2. Assign players to the session with their respective `place` (ranking)
     const playerAssignments = joueurs.map(async (player: { idUtilisateur: number, place: number }) => {
-      return prisma.joueurs_dans_Session.create({
+      // Create the player-session record
+      await prisma.joueurs_dans_Session.create({
         data: {
           idUtilisateur: player.idUtilisateur,  // Player ID
           idSession: session.idsession,          // Newly created session ID
           place: player.place,                   // Player's ranking (place)
         },
       });
+
+      // 3. Add the successes (idSucces 1 & 2) for each player
+      // Success 1
+      await prisma.joueurs_has_Succes.upsert({
+        where: {
+          idUtilisateur_idSucces: {
+            idUtilisateur: player.idUtilisateur,
+            idSucces: 1,
+          },
+        },
+        update: {
+          obtenu: true,  // Set to true if already exists
+        },
+        create: {
+          idUtilisateur: player.idUtilisateur,
+          idSucces: 1,
+          obtenu: true,
+        },
+      });
+
+      // Success 2
+      await prisma.joueurs_has_Succes.upsert({
+        where: {
+          idUtilisateur_idSucces: {
+            idUtilisateur: player.idUtilisateur,
+            idSucces: 2,
+          },
+        },
+        update: {
+          obtenu: true,  // Set to true if already exists
+        },
+        create: {
+          idUtilisateur: player.idUtilisateur,
+          idSucces: 2,
+          obtenu: true,
+        },
+      });
     });
 
-    // Wait for all player assignments to complete
+    // Wait for all player assignments and success associations to complete
     await Promise.all(playerAssignments);
 
-    // 3. Associate games with the session (i.e., the `Jeux_has_Session` table)
+    // 4. Associate games with the session (i.e., the `Jeux_has_Session` table)
     const gameAssociations = jeux.map(async (jeuId: number) => {
       return prisma.jeux_has_Session.create({
         data: {
@@ -652,6 +690,7 @@ app.post('/game/end', async (req: any, res: any) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 const PORT = process.env.PORT || 3001
 server.listen(PORT, () => {
