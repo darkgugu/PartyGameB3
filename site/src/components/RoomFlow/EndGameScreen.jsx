@@ -1,3 +1,5 @@
+import { LeaveRoomButton } from '../LeaveRoomButton'
+
 const EndGameScreen = ({ state, room }) => {
 	const players = Array.from(state.players.entries()).map(
 		([sessionId, player]) => {
@@ -39,6 +41,7 @@ const EndGameScreen = ({ state, room }) => {
 						))}
 				</tbody>
 			</table>
+			<LeaveRoomButton />
 		</div>
 	)
 }

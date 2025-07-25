@@ -31,7 +31,7 @@ const RoundScreen = ({ room, state, mySessionId, ownerId }) => {
 			<h2>
 				Round {state.roundCounter}/{state.rounds}
 			</h2>
-			<p>Minijeu suivant: {state.currentMinigame}</p>
+			<p>Mini-jeu suivant: {state.currentMinigame}</p>
 
 			<table>
 				<thead>
