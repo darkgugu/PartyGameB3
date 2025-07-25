@@ -209,12 +209,12 @@ export const Header = () => {
 							>
 								Se connecter avec Google
 							</div>
-							<div
+							{/* 							<div
 								className="connectProvider guest"
 								onClick={handleGuestLogin}
 							>
 								Se connecter en tant qu'invité
-							</div>
+							</div> */}
 						</div>
 					) : (
 						<div className="modal">
@@ -269,12 +269,12 @@ export const Header = () => {
 								>
 									Continuer avec Google
 								</div>
-								<div
+								{/* 								<div
 									className="connectProvider guest"
 									onClick={handleGuestLogin}
 								>
 									Continuer en tant qu'invité
-								</div>
+								</div> */}
 							</form>
 						</div>
 					)}
