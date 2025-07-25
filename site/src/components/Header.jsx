@@ -108,11 +108,41 @@ export const Header = () => {
 		}
 	}
 
+	const displayError = (error) => {
+		console.error('Error:', error)
+		if (error.includes('Password must contain an upper case character')) {
+			return 'Le mot de passe doit contenir au moins une majuscule.'
+		} else if (
+			error.includes('Password must contain a numeric character')
+		) {
+			return 'Le mot de passe doit contenir au moins un chiffre.'
+		} else if (
+			error.includes('Password must contain a non-alphanumeric character')
+		) {
+			return 'Le mot de passe doit contenir au moins un caractère non alphanumérique.'
+		} else if (
+			error.includes('Password must contain at least 6 characters')
+		) {
+			return 'Le mot de passe doit contenir au moins 6 caractères.'
+		} else if (
+			error.includes('Password must contain a lower case character')
+		) {
+			return 'Le mot de passe doit contenir au moins une minuscule.'
+		} else if (error.includes('auth/operation-not-allowed')) {
+			return "L'opération n'est pas autorisée. Veuillez contacter le support."
+		} else if (error.includes('auth/email-already-in-use')) {
+			return "L'email fourni est déjà utilisé."
+		} else if (error.includes('auth/invalid-credential')) {
+			return "Les informations d'identification fournies sont invalides."
+		} else {
+			return 'Une erreur est survenue. Veuillez réessayer plus tard.'
+		}
+	}
+
 	if (loading) return null
 
 	return (
 		<>
-			{' '}
 			<ToastContainer position="bottom-right" autoClose={2500} />
 			<div className="Header">
 				<Link
@@ -200,7 +230,14 @@ export const Header = () => {
 									}
 									required
 								/>
-								{error && <p className="error">{error}</p>}
+								{error && (
+									<p
+										className="error"
+										style={{ color: 'red' }}
+									>
+										{displayError(error)}
+									</p>
+								)}
 								<button type="submit">Se connecter</button>
 							</form>
 							<hr />
@@ -261,7 +298,14 @@ export const Header = () => {
 									}
 									required
 								/>
-								{error && <p className="error">{error}</p>}
+								{error && (
+									<p
+										className="error"
+										style={{ color: 'red' }}
+									>
+										{displayError(error)}
+									</p>
+								)}
 								<button type="submit">S'inscrire</button>
 								<hr />
 								<div
